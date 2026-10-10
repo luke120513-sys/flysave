@@ -30,6 +30,8 @@ nav button.on{color:var(--g);font-weight:700}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1.5px solid var(--g);color:var(--g);background:#fff;border-radius:20px;padding:7px 13px;font-size:14px;font-weight:700;font-family:inherit}
 .chip.on{background:var(--g);color:#fff}
+.sortc{margin:-4px 0 12px;align-items:center}.sortc span{font-size:13px;color:#666}.sortc .chip{padding:5px 11px;font-size:13px}
+.bagl{font-size:14px;font-weight:700;color:#333;margin:2px 0}.bagl.inc{color:#047A35}.bagnote{font-size:12px;color:#777;margin:-6px 0 10px}
 .cal-head{display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px}
 .cal-head b{font-size:16px}
 .cal-head button{border:0;background:var(--lg);color:#047a35;border-radius:12px;padding:5px 12px;font-size:13px;font-weight:700}
@@ -146,8 +148,11 @@ function saveDate(from,to,mode,cb){
 }
 function all(k){return ((D&&D[k])||[]).filter(fresh);}
 function okItem(x){return (st.origin==='ALL'||x.origin===st.origin)&&(st.region==='全部'||x.region===st.region)&&(st.region!=='東南亞'||!st.country||st.country==='全部'||x.country===st.country);}
-function merge(items){var m={};items.forEach(function(x){var k=x.origin+x.code;if(!m[k]||x.price<m[k].price)m[k]=x;});return Object.keys(m).map(function(k){return m[k];});}
-function sortKey(x){return x.score!=null&&x.score!==''?+x.score:+x.price;}
+var SORT_BAG=false;try{SORT_BAG=localStorage.getItem('tb_sort')==='bag';}catch(e){}
+function kp(x){return SORT_BAG&&x.priceWithBag?+x.priceWithBag:+x.price;}
+function merge(items){var m={};items.forEach(function(x){var k=x.origin+x.code;if(!m[k]||kp(x)<kp(m[k]))m[k]=x;});return Object.keys(m).map(function(k){return m[k];});}
+function sortKey(x){return kp(x)+(x.score!=null&&x.score!==''?+x.score-x.price:0);}
+function bagLine(x){if(x.bagIncluded===true)return '🧳 已含行李'+(x.bagKg?'（'+x.bagKg+'kg）':'');if(x.bagIncluded===false&&x.priceWithBag)return '🧳 含 '+(x.bagKg||20)+'kg 行李 約 NT$'+num(x.priceWithBag);return '';}
 function regions(){var s={};all('short').concat(all('long'),all('custom')).forEach(function(x){s[x.region]=1;});return ['日本','韓國','東南亞','港澳'].concat(s['中國大陸']?['中國大陸']:[]);}
 function countries(){var s={};all('short').concat(all('long'),all('custom')).forEach(function(x){if(x.region==='東南亞')s[x.country]=1;});return COUNTRY_ORDER.filter(function(c,i){return i<7||s[c];});}
 
@@ -220,18 +225,19 @@ function fareCard(x,grp,showOrg){
   if(x.mode==='cp'&&st.dep&&x.depart&&(x.depart!==st.dep||x.return!==st.ret))h+='<div class="tip">⚠️ 日期已調整（你選 '+md(st.dep)+'–'+md(st.ret)+'）</div>';
   if(x.reason)h+='<div class="tip">💡 '+esc(x.reason)+'</div>';
   if(x.depTime||x.retTime)h+='<div class="info" style="font-size:12px">🕘 去 '+esc(x.depTime||'?')+'／回 '+esc(x.retTime||'?')+'</div>';
+  var bl=bagLine(x);if(bl)h+='<div class="bagl'+(x.bagIncluded?' inc':'')+'">'+esc(bl)+'</div>';
   if(x.bag)h+='<div class="info" style="font-size:12px">🧳 '+esc(x.bag)+'</div>';
   if(x.duration)h+='<div class="info" style="font-size:12px;color:#999">⏱ '+esc(x.duration)+'</div>';
   return h+meta(x)+links(x.link,x.trip)+'</div>';
 }
 function exactCard(x,grp,showOrg){
-  var o=(x.options&&x.options.length?x.options:[x]).slice().sort(function(a,b){return a.price-b.price;});
+  var o=(x.options&&x.options.length?x.options:[x]).slice().sort(function(a,b){return kp(a)-kp(b);});
   var h='<div class="card"><div class="grp">'+esc(grp)+'</div><div class="dest">'+flag(x)+' '+esc(x.dest)+'</div>'+(showOrg?'<div class="org">'+ORIGIN[x.origin]+'出發</div>':'')+
     '<div class="info" style="color:var(--g);font-weight:800">'+o.length+' 個選項，最低 約 NT$'+num(o[0].price)+'</div>'+meta(x);
   o.forEach(function(p,j){
     var out=[p.flightOut,(p.depTime||'')+(p.arrTime?'→'+p.arrTime:'')].filter(Boolean).join(' '), bk=[p.flightBack,(p.retDepTime||'')+(p.retArrTime?'→'+p.retArrTime:'')].filter(Boolean).join(' ');
     h+='<div class="opt"><div class="r"><span>'+(j+1)+') '+esc(p.airline||x.airline||'航班')+'</span><span>約 NT$'+num(p.price)+'</span></div>'+
-      ((out||bk)?'<div style="color:#555;font-size:12px">去 '+esc(out||'?')+'｜回 '+esc(bk||'?')+'</div>':'')+(p.bag?'<div style="color:#555;font-size:12px">🧳 '+esc(p.bag)+'</div>':'')+links(p.link||x.link,p.trip||x.trip,true)+'</div>';
+      ((out||bk)?'<div style="color:#555;font-size:12px">去 '+esc(out||'?')+'｜回 '+esc(bk||'?')+'</div>':'')+(p.bag?'<div style="color:#555;font-size:12px">🧳 '+esc(p.bag)+'</div>':'')+(bagLine(p)?'<div class="bagl'+(p.bagIncluded?' inc':'')+'" style="font-size:12px">'+esc(bagLine(p))+'</div>':'')+links(p.link||x.link,p.trip||x.trip,true)+'</div>';
   });
   return h+'</div>';
 }
@@ -241,7 +247,8 @@ function cardsHtml(items,make){
 }
 function result(){
   var head='<p class="summary">'+esc(MODE[st.mode]+'\n🛫 '+ORIGIN[st.origin]+'｜🌏 '+regionLabel()+'｜來回直飛')+'</p>';
-  var again='<div class="chips" style="margin:4px 0 12px">'+chip('換地區','again:region')+chip('換出發地','again:origin')+chip('重新查','again:mode')+'</div>';
+  var again='<div class="chips" style="margin:4px 0 12px">'+chip('換地區','again:region')+chip('換出發地','again:origin')+chip('重新查','again:mode')+'</div>'+
+    '<div class="chips sortc"><span>排序</span>'+chip('💰 票價最低','sort:price',!SORT_BAG)+chip('🧳 含行李最低','sort:bag',SORT_BAG)+'</div>'+(SORT_BAG?'<p class="bagnote">行李費為估計（20kg、來回；韓系廉航 15kg），以訂票頁為準</p>':'');
   var general=merge(all('short').concat(all('long')).filter(okItem));
   if(st.mode==='nodate'){
     if(!general.length)return head+again+'<div class="empty">這個範圍目前沒有直飛票價，換個地區或出發地看看。</div>';
@@ -330,6 +337,7 @@ document.addEventListener('click',function(e){
   var v=a.dataset.act, k=v.split(':')[0], x=v.slice(k.length+1);
   var ds=((D&&D.dates)||[]).filter(function(q){return q.to>=today();});
   if(k==='tab'){tab=x;render();return;}
+  if(k==='sort'){SORT_BAG=x==='bag';try{localStorage.setItem('tb_sort',x);}catch(err){}render();return;}
   if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;st.origin=st.origin||'ALL';st.region='全部';st.country=null;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除所有存起來的日期？'))clearDates();return;}
