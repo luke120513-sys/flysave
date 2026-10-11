@@ -60,6 +60,9 @@ nav button.on{color:var(--g);font-weight:700}
 .card .tip{background:var(--tipbg);color:var(--tip);font-size:12px;font-weight:700;border-radius:10px;padding:6px 8px;margin-top:6px}
 .card .meta{font-size:11px;color:var(--grey);margin-top:6px;line-height:1.6}
 .card .meta .alt{color:#555}
+.flform input,.flform select{padding:8px;border:1px solid #ccc;border-radius:8px;margin:3px 0;font-size:15px}
+.hint{color:#E65100;font-weight:600}
+.card .meta .seller{color:#E65100;font-weight:700;font-size:13px}
 .card .opt{border-top:1px solid #eee;margin-top:8px;padding-top:8px;font-size:13px}
 .card .opt .r{display:flex;justify-content:space-between;font-weight:700}
 .card .opt .r span:last-child{color:var(--g)}
@@ -291,7 +294,8 @@ function taxLine(x){return x&&x.taxIncluded===false&&x.priceBase?'未稅 NT$'+nu
 function taxDiv(x,promo){var t=taxLine(x);return '<div class="taxl">'+esc(promo?(t?'含稅總價｜'+t:'含稅總價'):(t||'來回含稅'))+'</div>';}
 function meta(x){
   var c=checked(x), a=x.alt&&x.alt.price?(SRC[x.alt.source]||x.alt.source||'其他網站')+'：約 NT$'+num(x.alt.price)+(x.alt.airline?'（'+x.alt.airline+'）':''):'';
-  return '<div class="meta">'+(c?'🔎 '+esc(c)+'<br>':'')+(a?'<span class="alt">↔️ '+esc(a)+'</span><br>':'')+'價錢為來回含稅總價；票價隨時會變，訂票網站可能另加手續費</div>';
+  var cs=x.cheapestSeller&&x.cheapestSeller.name&&x.cheapestSeller.price?'🏷️ 最便宜平台：'+x.cheapestSeller.name+' NT$'+num(x.cheapestSeller.price)+(x.cheapestSeller.separate?'（分開購票）':''):'';
+  return '<div class="meta">'+(cs?'<span class="seller">'+esc(cs)+'</span><br>':'')+(c?'🔎 '+esc(c)+'<br>':'')+(a?'<span class="alt">↔️ '+esc(a)+'</span><br>':'')+'價錢為來回含稅總價；票價隨時會變，訂票網站可能另加手續費</div>';
 }
 function links(l,t,small){
   var b=[]; if(okUrl(l))b.push('<a href="'+esc(l)+'" target="_blank" rel="noopener">Google'+(small?'':' 訂票')+'</a>');
@@ -435,7 +439,7 @@ function help(){
     '<h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
-    '<h3>🛫 航班提醒</h3><p>登機前 3 小時提醒請在 LINE 輸入「航班 BR198 12/20 08:30」。</p></div>';
+    notifyPanel()+'</div>';
 }
 
 /* ---------- 操作 ---------- */
@@ -464,6 +468,68 @@ document.addEventListener('click',function(e){
   render();
   if(st.step==='result')load(render);
 });
+
+/* ===== v18 推播：特價通知（FCM topics）＋ 航班提醒（本機通知） ===== */
+var FB_CFG={"apiKey":"AIzaSyAguQSoX4yxi9N3OjN0-wctY7emdD_DU3k","authDomain":"flysave-28017.firebaseapp.com","projectId":"flysave-28017","storageBucket":"flysave-28017.firebasestorage.app","messagingSenderId":"55694360376","appId":"1:55694360376:web:e4318bd17848073e9a4bcd","measurementId":"G-T5Z7VYPTQL"}, VAPID="BIaszRRxUstzk3xRBUoFRtrRAMTUy_VIV97x04KQ_WJfBHQ8iRUXl9PgIRHW5bqfOgwmyM9OuKP7q2P_gPjUvnU";
+var NAT=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+var PN=NAT&&Capacitor.Plugins&&Capacitor.Plugins.PushNotifications, LN=NAT&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
+var GAS=!!(window.google&&google.script&&google.script.run);
+var WEBPUSH=!NAT&&!GAS&&('serviceWorker' in navigator)&&('Notification' in window)&&('PushManager' in window);
+function lsg(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}}
+function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var PUSH=lsg('fs_push',NAT?'on':'off'), PTOP=lsg('fs_ptop',[]), PTOK=lsg('fs_ptok',''), PMSG='';
+function topics(){return ['deals'].concat(PTOP.map(function(o){return 'deals_'+o;}));}
+function pushSave(tok){PTOK=tok||PTOK;lss('fs_ptok',PTOK);if(!PTOK||!API)return;
+  fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webSubscribe',token:PTOK,topics:topics(),platform:NAT?'android':'web'})}).catch(function(){});}
+function pushDrop(){if(PTOK&&API)fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webUnsubscribe',token:PTOK})}).catch(function(){});}
+function openLink(u){if(!u)return;if(u.indexOf('luke120513-sys.github.io/flysave')>=0&&u.indexOf('#')>=0){location.hash=u.split('#')[1];location.reload();return;}if(/^https:\/\//.test(u))window.location.href=u;}
+function nativePushOn(){if(!PN)return;
+  PN.addListener('registration',function(t){pushSave(t.value);PMSG='✅ 已開啟特價通知';render();});
+  PN.addListener('registrationError',function(){PMSG='⚠️ 通知註冊失敗，請稍後再試';render();});
+  PN.addListener('pushNotificationActionPerformed',function(a){var d=(a.notification&&a.notification.data)||{};openLink(d.link);});
+  PN.createChannel&&PN.createChannel({id:'deals',name:'特價通知',importance:4}).catch(function(){});
+  PN.requestPermissions().then(function(r){if(r.receive==='granted')PN.register();else{PMSG='⚠️ 請到手機「設定 → 通知」允許飛省';render();}});}
+function webPushOn(){
+  if(/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone){PMSG='📱 iPhone 要先「分享 → 加入主畫面」，從主畫面打開才能收通知（iOS 16.4 以上）';render();return;}
+  Notification.requestPermission().then(function(p){if(p!=='granted'){PMSG='⚠️ 瀏覽器沒有允許通知';render();return;}
+    loadFb(function(){navigator.serviceWorker.ready.then(function(reg){
+      firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg}).then(function(t){pushSave(t);PMSG='✅ 已開啟特價通知';render();})
+       .catch(function(){PMSG='⚠️ 通知註冊失敗';render();});});});});}
+function loadFb(cb){if(window.firebase&&firebase.messaging)return cb();var n=0,src=['https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js'];
+  (function nx(){if(n>=src.length){if(!firebase.apps.length)firebase.initializeApp(FB_CFG);return cb();}var sc=document.createElement('script');sc.src=src[n++];sc.onload=nx;document.head.appendChild(sc);})();}
+function pushOn(){PUSH='on';lss('fs_push','on');if(NAT)nativePushOn();else if(WEBPUSH)webPushOn();}
+function pushOff(){PUSH='off';lss('fs_push','off');pushDrop();if(PN)PN.unregister&&PN.unregister().catch(function(){});PMSG='已關閉特價通知';}
+// 航班提醒：App 用本機通知（起飛前 3 小時）；網頁只在頁面開著時提醒（盡力而為），完整提醒請用 LINE。
+var FLTS=lsg('fs_flights',[]);
+var TPE_T={JX:'第一航廈',IT:'第一航廈',TR:'第一航廈',MM:'第一航廈',CX:'第一航廈',UO:'第一航廈',BR:'第二航廈',CI:'第二航廈（部分航班第一航廈）',AE:'第二航廈',NH:'第二航廈',JL:'第二航廈'};
+function flInfo(f){var al=f.no.slice(0,2);return f.from==='TPE'&&TPE_T[al]?'桃園機場'+TPE_T[al]+'，櫃台請看機場看板':(f.from==='KHH'?'高雄小港機場國際線航廈':'航廈與報到櫃台請以機場公告為準');}
+function flSchedule(){FLTS=FLTS.filter(function(f){return Date.parse(f.at)>Date.now();});lss('fs_flights',FLTS);
+  if(LN){LN.requestPermissions().then(function(){var arr=FLTS.map(function(f,i){return {id:1000+((Date.parse(f.at)/60000)%100000|0)+i,title:'✈️ '+f.no+' 3 小時後起飛',body:md(f.at.slice(0,10))+' '+f.at.slice(11,16)+' 起飛｜'+flInfo(f)+'，記得提早報到',schedule:{at:new Date(Date.parse(f.at)-3*3600e3),allowWhileIdle:true}};}).filter(function(n){return n.schedule.at>new Date();});
+    LN.getPending().then(function(p){return LN.cancel({notifications:p.notifications||[]});}).catch(function(){}).then(function(){if(arr.length)LN.schedule({notifications:arr});});});}
+  else FLTS.forEach(function(f){var ms=Date.parse(f.at)-3*3600e3-Date.now();if(ms>0&&ms<864e5)setTimeout(function(){if(Notification&&Notification.permission==='granted')navigator.serviceWorker.ready.then(function(r){r.showNotification('✈️ '+f.no+' 3 小時後起飛',{body:flInfo(f),icon:'icon-192.png'});});},ms);});}
+function notifyPanel(){
+  var can=NAT||WEBPUSH, h='<h3>🔔 特價通知</h3>';
+  if(!can)h+='<p>'+(GAS?'這個網頁版沒辦法收推播，請改用 <a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省網站</a> 或 Android App，或加 LINE @750yoqzz。':'這個瀏覽器不支援推播通知，可以改用 Android App 或 LINE @750yoqzz。')+'</p>';
+  else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':'🔕 特價通知：關',PUSH==='on'?'push:off':'push:on',PUSH==='on')+'</div>';
+    if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+chip('台北出發','pt:TPE',PTOP.indexOf('TPE')>=0)+chip('高雄出發','pt:KHH',PTOP.indexOf('KHH')>=0)+'</div>';}
+  if(PMSG)h+='<p class="hint">'+esc(PMSG)+'</p>';
+  h+='<h3>🛫 航班提醒</h3>';
+  if(NAT||WEBPUSH){h+='<p>'+(NAT?'起飛前 3 小時用手機通知提醒你航廈和報到櫃台。':'網頁版只有在飛省頁面開著時才會提醒，想確定收到請用 App 或 LINE。')+'</p>'+
+    '<div class="flform"><input id="flno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="fldt" type="datetime-local"> <select id="flfrom"><option value="TPE">桃園</option><option value="KHH">高雄</option><option value="">其他</option></select> <button class="chip" data-act="fl:add">＋ 新增提醒</button></div>';
+    FLTS.forEach(function(f,i){h+='<div class="card q"><b>'+esc(f.no)+'</b> '+md(f.at.slice(0,10))+' '+f.at.slice(11,16)+'<br><small>'+esc(flInfo(f))+'</small> <button class="chip" data-act="fl:del:'+i+'">刪除</button></div>';});}
+  h+='<p>也可以在 LINE 輸入「航班 BR198 12/20 08:30」。</p>';
+  return h;}
+document.addEventListener('click',function(e){var a=e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
+  if(v==='push:on'){pushOn();render();}else if(v==='push:off'){pushOff();render();}
+  else if(v.indexOf('pt:')===0){var o=v.slice(3),i=PTOP.indexOf(o);if(i>=0)PTOP.splice(i,1);else PTOP.push(o);lss('fs_ptop',PTOP);pushSave();render();}
+  else if(v==='fl:add'){var no=($('flno').value||'').toUpperCase().replace(/\s/g,''),dt=$('fldt').value;if(!/^[A-Z0-9]{2}\d{1,4}$/.test(no)||!dt){alert('請輸入航班號碼和起飛時間');return;}
+    FLTS.push({no:no,at:dt.slice(0,16),from:$('flfrom').value});lss('fs_flights',FLTS);if(!NAT&&Notification.permission!=='granted')Notification.requestPermission();flSchedule();PMSG='✅ 已新增 '+no+' 的提醒';render();}
+  else if(v.indexOf('fl:del:')===0){FLTS.splice(+v.slice(7),1);lss('fs_flights',FLTS);flSchedule();render();}
+},true);
+if(NAT&&PUSH==='on')setTimeout(nativePushOn,1500);
+if(WEBPUSH&&PUSH==='on'&&Notification.permission==='granted')setTimeout(webPushOn,2500);
+if(FLTS.length)setTimeout(flSchedule,2000);
+if(!NAT&&WEBPUSH)navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.link)openLink(e.data.link);});
 document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.btn');if(!b||b.disabled)return;b.classList.remove('press');void b.offsetWidth;b.classList.add('press');});
 (function init(){
   var sp=$('splash'); if(LOGO)$('splogo').innerHTML='<img src="'+LOGO+'" alt="">';
