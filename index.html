@@ -135,6 +135,7 @@ main.inR{animation:inR .28s ease-out both}main.inL{animation:inL .28s ease-out b
 <nav>
  <button data-tab="search" class="on"><b>🔎</b>查機票</button>
  <button data-tab="mine"><b>📋</b>我的查詢</button>
+ <button data-tab="notify"><b>🔔</b>通知</button>
  <button data-tab="promos"><b>🔥</b>最新優惠</button>
  <button data-tab="help"><b>💡</b>說明</button>
 </nav>
@@ -158,6 +159,17 @@ var st = {step:'mode', mode:null, dep:null, ret:null, month:null, origin:null, r
 var LH_SUBS=['北美','歐洲','大洋洲','中東/南亞'], LH_ICON={'北美':'🌎','歐洲':'🇪🇺','大洋洲':'🦘','中東/南亞':'🕌'}, LH_MS=26*3600e3;
 var LHK='connect';try{if(localStorage.getItem('tb_lhk')==='nonstop')LHK='nonstop';}catch(e){}
 try { var sv = JSON.parse(localStorage.getItem('tb_st')||'{}'); if (sv.origin) st.origin = sv.origin; } catch(e){}
+// v21：全域出發地篩選（台北／高雄，可複選；都不選＝全部），存在 localStorage fs_org，套用到 查機票／我的查詢／通知／最新優惠
+var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fs_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
+function orgSync(){st.origin=ORG.length===1?ORG[0]:'ALL';}
+orgSync();
+function orgOk(o){if(ORG.length!==1||!o)return true;o=String(o).toUpperCase();return (o==='TSA'?'TPE':o)===ORG[0];}
+function orgBar(){return '<div class="chips sortc orgbar"><span>🛫 出發地</span>'+chip('台北','og:TPE',ORG.indexOf('TPE')>=0)+chip('高雄','og:KHH',ORG.indexOf('KHH')>=0)+'<span style="font-size:12px;color:#999">'+(ORG.length===1?'只看'+ORIGIN[ORG[0]]+'出發':'不選＝台北＋高雄都看')+'</span></div>';}
+function orgToggle(o){var i=ORG.indexOf(o);if(i>=0)ORG.splice(i,1);else ORG.push(o);if(ORG.length===2)ORG=[];try{localStorage.setItem('fs_org',JSON.stringify(ORG));localStorage.setItem('tb_st',JSON.stringify({origin:ORG.length===1?ORG[0]:'ALL'}));}catch(e){}orgSync();
+  if(typeof PTOP!=='undefined'){PTOP=ORG.slice();try{localStorage.setItem('fs_ptop',JSON.stringify(PTOP));}catch(e){}if(PUSH==='on'&&typeof pushSave==='function')pushSave().catch(function(){});}}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
+  if(v.indexOf('og:')===0){e.stopPropagation();orgToggle(v.slice(3));LAST_HTML=null;render();}
+  else if(v==='o:go'){e.stopPropagation();orgSync();st.step='region';render();}},true);
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -203,7 +215,7 @@ function saveDate(from,to,mode,cb){
   else done({ok:true});
 }
 function all(k){return ((D&&D[k])||[]).filter(fresh);}
-function okItem(x){return (st.origin==='ALL'||x.origin===st.origin)&&(st.region==='全部'||regOf(x)===st.region||(LEGACY_REGION[st.region]||[]).indexOf(regOf(x))>=0)&&(st.region!=='東南亞'||!st.country||st.country==='全部'||x.country===st.country);}
+function okItem(x){return (st.origin==='ALL'||x.origin===st.origin)&&orgOk(x.origin)&&(st.region==='全部'||regOf(x)===st.region||(LEGACY_REGION[st.region]||[]).indexOf(regOf(x))>=0)&&(st.region!=='東南亞'||!st.country||st.country==='全部'||x.country===st.country);}
 var SORT_BAG=false;try{SORT_BAG=localStorage.getItem('tb_sort')==='bag';}catch(e){}
 function kp(x){return SORT_BAG&&x.priceWithBag?+x.priceWithBag:+x.price;}
 function merge(items){var m={};items.forEach(function(x){var k=x.origin+x.code;if(!m[k]||kp(x)<kp(m[k]))m[k]=x;});return Object.keys(m).map(function(k){return m[k];});}
@@ -216,7 +228,7 @@ function countries(){var s={};all('short').concat(all('long'),all('custom')).for
 function render(){
   document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===tab);});
   $('upd').textContent = D&&D.updatedAt ? '票價 '+D.updatedAt+' 查詢・來回直飛' : '來回直飛便宜機票';
-  var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='help'?help():search();
+  var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():search();
   var html=h+footer(), m=$('main');
   if(html===LAST_HTML)return; var changed=LAST_TAB!==null, tabChg=LAST_TAB!==tab, stepChg=LAST_STEP!==st.step, sameView=!tabChg&&!stepChg;
   m.innerHTML=html; LAST_HTML=html;
@@ -226,8 +238,8 @@ function render(){
   if(fx) animCards(m);
   LAST_TAB=tab; LAST_STEP=st.step; LAST_SIG=sig();
 }
-var LAST_HTML=null, LAST_TAB=null, LAST_STEP=null, LAST_SIG=null, LOADING=false, TABS=['search','mine','promos','help'];
-function sig(){return [tab,st.step,st.mode,st.dep,st.ret,st.origin,st.region,st.country,SORT_BAG,!!D,LOADING].join('|');}
+var LAST_HTML=null, LAST_TAB=null, LAST_STEP=null, LAST_SIG=null, LOADING=false, TABS=['search','mine','notify','promos','help'];
+function sig(){return [ORG.join(','),tab,st.step,st.mode,st.dep,st.ret,st.origin,st.region,st.country,SORT_BAG,!!D,LOADING].join('|');}
 var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 function animCards(m){
   var cs=m.querySelectorAll('.card'); cs.forEach(function(c,i){c.style.setProperty('--i',Math.min(i,8));c.classList.add('fl');});
@@ -255,7 +267,7 @@ function search(){
     '</div><p class="sel" style="font-size:12px;color:#777">🏆 會幫你前後挪 1～2 天找最划算的；📅 只看你選的那兩天；💰 直接看最近最便宜的。</p></div>';
   if(st.step==='cal') return back+'<div class="panel">'+crumbs()+'<p class="step">📅 查機票（2/4）選去程和回程日期</p>'+calendar()+'</div>';
   if(st.step==='origin') return back+'<div class="panel">'+crumbs()+'<p class="step">🛫 查機票（3/4）從哪裡出發？</p><div class="chips">'+
-    chip('台北','o:TPE',st.origin==='TPE')+chip('高雄','o:KHH',st.origin==='KHH')+chip('兩個都看','o:ALL',st.origin==='ALL')+'</div></div>';
+    '</div>'+orgBar()+'<div class="chips">'+chip('下一步 ›','o:go',true)+'</div></div>';
   if(st.step==='region') return back+'<div class="panel">'+crumbs()+'<p class="step">🌏 查機票（4/4）想去哪個地區？</p><div class="chips">'+
     regions().map(function(r){return chip(REGION_ICON[r]+r,'r:'+r,st.region===r);}).join('')+chip('🌏全部','r:全部',st.region==='全部')+'</div></div>';
   if(st.step==='lhsub') return back+'<div class="panel">'+crumbs()+'<p class="step">🌍 遠程（可轉機）想去哪一區？</p><div class="chips">'+
@@ -294,7 +306,7 @@ function taxLine(x){return x&&x.taxIncluded===false&&x.priceBase?'未稅 NT$'+nu
 function taxDiv(x,promo){var t=taxLine(x);return '<div class="taxl">'+esc(promo?(t?'含稅總價｜'+t:'含稅總價'):(t||'來回含稅'))+'</div>';}
 function meta(x){
   var c=checked(x), a=x.alt&&x.alt.price?(SRC[x.alt.source]||x.alt.source||'其他網站')+'：約 NT$'+num(x.alt.price)+(x.alt.airline?'（'+x.alt.airline+'）':''):'';
-  var cs=x.cheapestSeller&&x.cheapestSeller.name&&x.cheapestSeller.price?'🏷️ 最便宜平台：'+x.cheapestSeller.name+' NT$'+num(x.cheapestSeller.price)+(x.cheapestSeller.separate?'（分開購票）':''):'';
+  var cs=x.cheapestSeller&&x.cheapestSeller.name&&x.cheapestSeller.price&&+x.cheapestSeller.price<=+(x.priceTotal||x.price||0)?'🏷️ 最便宜平台：'+x.cheapestSeller.name+' NT$'+num(x.cheapestSeller.price)+(x.cheapestSeller.separate?'（分開購票）':''):'';
   return '<div class="meta">'+(cs?'<span class="seller">'+esc(cs)+'</span><br>':'')+(c?'🔎 '+esc(c)+'<br>':'')+(a?'<span class="alt">↔️ '+esc(a)+'</span><br>':'')+'價錢為來回含稅總價；票價隨時會變，訂票網站可能另加手續費</div>';
 }
 function links(l,t,small){
@@ -336,7 +348,7 @@ function result(){
 }
 function result0(){
   var head='<p class="summary">'+esc(MODE[st.mode]+'\n🛫 '+ORIGIN[st.origin]+'｜🌏 '+regionLabel()+'｜來回直飛')+'</p>';
-  var again='<div class="chips" style="margin:4px 0 12px">'+chip('換地區','again:region')+chip('換出發地','again:origin')+chip('重新查','again:mode')+'</div>'+
+  var again=orgBar()+'<div class="chips" style="margin:4px 0 12px">'+chip('換地區','again:region')+chip('重新查','again:mode')+'</div>'+
     '<div class="chips sortc"><span>排序</span>'+chip('💰 票價最低','sort:price',!SORT_BAG)+chip('🧳 含行李最低','sort:bag',SORT_BAG)+'</div>'+(SORT_BAG?'<p class="bagnote">行李費為估計（20kg、來回；韓系廉航 15kg），以訂票頁為準</p>':'');
   var general=merge(all('short').concat(all('long')).filter(okItem));
   if(st.mode==='nodate'){
@@ -364,11 +376,11 @@ function lhCard(x,grp,kind,showOrg){
     '<div class="meta">回程轉機以實際頁面為準；票價隨時會變，訂票網站可能另加手續費</div>'+links(x.link,x.trip)+'</div>';
   return h;}
 function lhResult(){
-  var all=lhAll(), items=all.filter(function(x){return (st.origin==='ALL'||x.origin===st.origin)&&(!st.lhSub||st.lhSub==='全部'||x.sub===st.lhSub);}), p=lhPick(items,LHK);
+  var all=lhAll(), items=all.filter(function(x){return (st.origin==='ALL'||x.origin===st.origin)&&orgOk(x.origin)&&(!st.lhSub||st.lhSub==='全部'||x.sub===st.lhSub);}), p=lhPick(items,LHK);
   var ds={};all.forEach(function(x){if(x.dates)ds[x.dates]=1;});
   var h='<p class="summary">'+esc('🌍 '+regionLabel()+'｜🛫 '+ORIGIN[st.origin]+(Object.keys(ds).length?'\n📅 遠程固定查：'+Object.keys(ds).join('、')+'（不是你選的日期）':'')+'\n價錢為 Google Flights 來回含稅；轉機時間只看去程，回程以實際頁面為準。')+'</p>'+
     '<div class="chips sortc"><span>顯示</span>'+chip('✈️ 直飛','lk:nonstop',LHK==='nonstop')+chip('🔁 可轉機','lk:connect',LHK==='connect')+'</div>'+
-    '<div class="chips" style="margin:0 0 12px">'+chip('換遠程地區','again:lhsub')+chip('換地區','again:region')+chip('重新查','again:mode')+'</div>';
+    orgBar()+'<div class="chips" style="margin:0 0 12px">'+chip('換遠程地區','again:lhsub')+chip('換地區','again:region')+chip('重新查','again:mode')+'</div>';
   if(!p.length)return h+'<div class="empty">'+(all.length?'這個範圍目前沒有'+(LHK==='nonstop'?'直飛票價，按「🔁 可轉機」看看。':'票價，換個地區看看。'):'遠程票價還在建立中，每天 23:00 查詢後就會有。')+'</div>';
   return h+p.map(function(x,i){return lhCard(x,(x.sub||'遠程')+'・'+(i+1),LHK,st.origin==='ALL');}).join('');
 }
@@ -376,9 +388,9 @@ var MODE_ICON={cp:'🏆',exact:'📅'};
 function mine(){
   var ds=((D&&D.dates)||[]).filter(function(x){return x.to>=today();});
   if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有查詢過的日期。<br>按「查機票」選日期，查過的日期會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>';
-  var h='<p class="summary">📋 我的查詢（最多 5 組）\n點一組日期就能看結果，每天 07:00／15:00／23:00 更新。</p>';
+  var h='<p class="summary">📋 我的查詢（最多 5 組）\n點一組日期就能看結果，每天 07:00／15:00／23:00 更新。</p>'+orgBar();
   ds.forEach(function(x,i){
-    var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to;});
+    var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to&&orgOk(c.origin);});
     var low=n.length?Math.min.apply(null,n.map(function(c){return +c.price;})):0;
     h+='<div class="card q"><button class="qopen" data-act="open:'+i+'"><div class="dest" style="font-size:17px">'+MODE_ICON[x.mode]+' '+md(x.from)+'–'+md(x.to)+'<small style="font-size:13px;color:#777;font-weight:400">（'+days(x.from,x.to)+'天）</small></div>'+
       '<div class="info">'+esc(MODE[x.mode])+'</div><div class="info" style="color:'+(n.length?'var(--g)':'var(--tip)')+';font-weight:700;margin-top:4px">'+(n.length?n.length+' 個目的地，最低 約 NT$'+num(low):'⏳ 還在查，下一次查詢後就有結果')+'</div></button>'+
@@ -386,13 +398,41 @@ function mine(){
   });
   return h+'<button class="btn" style="background:#fff;color:#C0392B;border:2px solid #E6B0AA" data-act="clear">清除所有日期</button>';
 }
+var NFY_HL='';
+function notifyView(){
+  var now=Date.now(), o=st.origin||'ALL', ns=((D&&D.notify)||[]).filter(function(x){return orgOk(x.origin)&&(!x.expires||new Date(String(x.expires).length===10?x.expires+'T00:00:00+08:00':x.expires).getTime()>now)&&(!x.checkedAt||now-new Date(x.checkedAt).getTime()<26*3600e3);});
+  ns.sort(function(a,b){return new Date(b.notifiedAt)-new Date(a.notifiedAt)||a.price-b.price;});
+  if(!D)return '<div class="panel"><p class="step">🔔 通知</p><div class="empty">載入中…</div></div>';
+  if(!ns.length)return orgBar()+'<div class="panel"><p class="step">🔔 通知</p><div class="empty">'+(ORG.length===1?'這個出發地':'目前')+'沒有特價通知。<br>有新的特價時會推播通知你，並列在這裡。</div></div>';
+  function tm(t){var d=new Date(t);if(isNaN(d))return '';var x=new Date(d.getTime()+8*3600e3);return (x.getUTCMonth()+1)+'/'+x.getUTCDate()+' '+('0'+x.getUTCHours()).slice(-2)+':'+('0'+x.getUTCMinutes()).slice(-2);}
+  var ON={TPE:'台北',TSA:'台北',KHH:'高雄'};
+  return '<p class="summary">🔔 特價通知（'+ns.length+' 筆，最新在前）</p>'+orgBar()+ns.map(function(x){
+    var p=x.sellerPrice&&x.sellerPrice<x.price?x.sellerPrice:x.price, b=[];
+    if(okUrl(x.sellerLink))b.push('<a href="'+esc(x.sellerLink)+'" target="_blank" rel="noopener">'+esc(x.seller||'最便宜平台')+'</a>');
+    if(okUrl(x.link))b.push('<a href="'+esc(x.link)+'" target="_blank" rel="noopener">Google</a>');
+    if(okUrl(x.trip))b.push('<a href="'+esc(x.trip)+'" target="_blank" rel="noopener">Trip.com</a>');
+    var hl=NFY_HL&&x.id===NFY_HL;
+    return '<div class="card" id="n-'+esc(x.id||'')+'"'+(hl?' style="outline:3px solid var(--g);outline-offset:-3px"':'')+'><div class="grp">🔔 '+esc(tm(x.notifiedAt))+' 通知'+(hl?'・👈 你點的這筆':'')+'</div>'+
+      '<div class="dest" style="font-size:17px">'+esc((ON[x.origin]||x.origin||'')+' ⇄ '+(x.dest||x.code||''))+' <small style="font-size:13px;color:#777;font-weight:400">'+esc(x.dates||'')+' '+(x.nonstop===false?'轉機':'直飛')+'</small></div>'+
+      '<div class="price"><small>約 </small>NT$'+num(p)+'<small> 來回含稅</small></div>'+
+      '<div class="info">'+esc(x.airline||'')+(x.belowPct?'・<b style="color:#C0392B">比平常便宜 '+x.belowPct+'%</b>':'')+'</div>'+
+      '<div class="info" style="font-size:12px">'+(x.seller?'最便宜平台：'+esc(x.seller)+(x.sellerPrice?' NT$'+num(x.sellerPrice):''):'平台：Google Flights 比價')+(x.bag?'・'+esc(x.bag):'')+'</div>'+
+      (b.length?'<div class="links">'+b.join('')+'</div>':'')+'</div>';
+  }).join('')+'<p style="text-align:center;font-size:12px;color:#999">過期或價格回升的會自動移除，最多保留 30 筆</p>';
+}
 function promos(){
-  var o=st.origin||'ALL', ps=((D&&D.promos)||[]).filter(function(x){return o==='ALL'||!x.origin||x.origin===o;});
-  if(!ps.length)return '<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷時，LINE 也會通知你。</div></div>';
-  return '<p class="summary">🔥 最新優惠</p>'+ps.map(function(x){
+  var ps=((D&&D.promos)||[]).filter(function(x){return orgOk(x.origin);});
+  if(!ps.length)return orgBar()+'<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷時，LINE 也會通知你。</div></div>';
+  return '<p class="summary">🔥 最新優惠</p>'+orgBar()+ps.map(function(x){
     return '<div class="card">'+(x.origin?'<div class="grp">〔'+(ORIGIN[x.origin]||x.origin)+'出發〕</div>':'')+'<div class="dest" style="font-size:17px">🔥 '+esc(x.title)+'</div>'+
       (x.price?'<div class="price"><small>約 </small>NT$'+num(x.price)+'</div>'+taxDiv(x,true):'')+(x.deadline?'<div class="tip">⏰ '+esc(x.deadline)+'</div>':'')+
-      (x.note?'<div class="info" style="font-size:12px;margin-top:6px">'+esc(x.note)+'</div>':'')+(okUrl(x.link)?'<div class="links"><a href="'+esc(x.link)+'" target="_blank" rel="noopener">看優惠</a></div>':'')+'</div>';
+      (x.note?'<div class="info" style="font-size:12px;margin-top:6px">'+esc(x.note)+'</div>':'')+(function(){var b=[],pl=x.promoLink||(x.trip?'':x.link),gl=x.trip?x.link:'';
+        function md(d){var m=String(d||'').match(/^\d{4}-(\d\d)-(\d\d)$/);return m?(+m[1])+'/'+(+m[2]):'';}
+        if(okUrl(gl))b.push('<a href="'+esc(gl)+'" target="_blank" rel="noopener">Google 訂票</a>');
+        if(okUrl(x.trip))b.push('<a href="'+esc(x.trip)+'" target="_blank" rel="noopener">Trip.com 訂票</a>');
+        if(okUrl(pl))b.push('<a href="'+esc(pl)+'" target="_blank" rel="noopener">促銷活動頁</a>');
+        var sd=md(x.sampleDepart)&&md(x.sampleReturn)?'<div class="info" style="font-size:12px">📅 例如 '+md(x.sampleDepart)+'–'+md(x.sampleReturn)+'（直飛來回，可在訂票頁改日期）</div>':'';
+        return sd+(b.length?'<div class="links">'+b.join('')+'</div>':'');})()+'</div>';
   }).join('');
 }
 var SPONSOR_URL='https://portaly.cc/dreamworld369/support';                        // 贊助連結（有了再填，例如綠界贊助頁）；空字串 = 不顯示贊助按鈕
@@ -436,7 +476,7 @@ function help(){
   return video()+(okUrl(SPONSOR_URL)?'<a class="sponsor" style="display:block;text-align:center;margin:0 0 12px" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>和 LINE 機器人用同一份票價資料，每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
     '<h3>🔎 查機票</h3><ul><li>🏆 CP值最高：前後挪 1～2 天找最划算的</li><li>📅 只查指定日期：只看你選的那兩天，列出每個班次</li><li>💰 不指定日期：最近最便宜的 5～7 天行程</li></ul>'+
     '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期；LINE 裡的「我的查詢」也看得到。</p>'+
-    '<h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
+    '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「通知」「最新優惠」上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
     notifyPanel()+'</div>';
@@ -451,7 +491,7 @@ document.addEventListener('click',function(e){
   var ds=((D&&D.dates)||[]).filter(function(q){return q.to>=today();});
   if(k==='tab'){tab=x;render();return;}
   if(k==='sort'){SORT_BAG=x==='bag';try{localStorage.setItem('tb_sort',x);}catch(err){}render();return;}
-  if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;st.origin=st.origin||'ALL';st.region='全部';st.country=null;st.step='result';render();load(render);return;}
+  if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();st.region='全部';st.country=null;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除所有存起來的日期？'))clearDates();return;}
   if(k==='m'){st.mode=x;st.step=x==='nodate'?'origin':'cal';if(x==='nodate'){st.dep=st.ret=null;}}
@@ -479,25 +519,55 @@ function lsg(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse
 function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var PUSH=lsg('fs_push',NAT?'on':'off'), PTOP=lsg('fs_ptop',[]), PTOK=lsg('fs_ptok',''), PMSG='';
 function topics(){return ['deals'].concat(PTOP.map(function(o){return 'deals_'+o;}));}
-function pushSave(tok){PTOK=tok||PTOK;lss('fs_ptok',PTOK);if(!PTOK||!API)return;
-  fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webSubscribe',token:PTOK,topics:topics(),platform:NAT?'android':'web'})}).catch(function(){});}
+// v18.2：伺服器回 ok 才算訂閱成功；失敗會丟出錯誤，讓開關退回「關」並顯示原因。
+function pushSave(tok){PTOK=tok||PTOK;lss('fs_ptok',PTOK);
+  if(!PTOK)return Promise.reject(new Error('沒有拿到通知憑證'));if(!API)return Promise.reject(new Error('沒有伺服器網址'));
+  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webSubscribe',token:PTOK,topics:topics(),platform:NAT?'android':'web'})})
+    .then(function(r){return r.json();}).then(function(j){if(!j||!j.ok)throw new Error('伺服器沒有存到（'+((j&&j.error)||'未知錯誤')+'）');return j;});}
+function pushOk(){PUSH='on';lss('fs_push','on');PMSG='✅ 已開啟特價通知';render();}
+function pushFail(m){PUSH='off';lss('fs_push','off');PMSG='⚠️ '+m;render();}
+function withTimeout(pr,ms,m){return new Promise(function(ok,no){var t=setTimeout(function(){no(new Error(m));},ms);pr.then(function(v){clearTimeout(t);ok(v);},function(e){clearTimeout(t);no(e);});});}
 function pushDrop(){if(PTOK&&API)fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webUnsubscribe',token:PTOK})}).catch(function(){});}
-function openLink(u){if(!u)return;if(u.indexOf('luke120513-sys.github.io/flysave')>=0&&u.indexOf('#')>=0){location.hash=u.split('#')[1];location.reload();return;}if(/^https:\/\//.test(u))window.location.href=u;}
+// v18.1：通知連結一律當作 App 內路由（route=deals / tab / dest / date…）；只有外部訂票連結才開瀏覽器。
+function parseRoute(u){var q={};if(!u)return q;var s=String(u);var site=/luke120513-sys\.github\.io\/flysave/.test(s);
+  if(/^https?:\/\//i.test(s)&&!site)return null; // 外部連結
+  var parts=[];var qi=s.indexOf('?'),hi=s.indexOf('#');
+  if(qi>=0)parts.push(s.slice(qi+1,hi>qi?hi:undefined));if(hi>=0)parts.push(s.slice(hi+1));
+  if(!/^https?:/i.test(s)&&qi<0&&hi<0)parts.push(s.replace(/^\/?/,''));
+  parts.join('&').split('&').forEach(function(p){if(!p)return;var kv=p.split('=');try{q[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\+/g,' '));}catch(e){}});return q;}
+function hlScroll(){if(!NFY_HL)return;var e=document.getElementById('n-'+NFY_HL);if(e)e.scrollIntoView({block:'center'});}
+function goRoute(q){q=q||{};var r=q.route||'';
+  if(q.tab&&TABS.concat(['about','privacy','terms']).indexOf(q.tab)>=0)tab=q.tab;
+  else if(r==='notify'||r==='hot'||r==='deals')tab='notify';
+  else if(r==='promos'||r==='latest')tab='promos';
+  else if(r==='mine')tab='mine'; else if(r==='help')tab='help';
+  ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});
+  if(q.date&&!q.dep)st.dep=q.date; if(q.ret_date&&!q.ret)st.ret=q.ret_date;
+  if(q.dest||r==='result'||(q.dep&&q.ret)){tab='search';st.mode=st.mode||(st.dep?'exact':'nodate');st.origin=st.origin||'ALL';st.region=st.region||'全部';if(q.dest)st.dest=q.dest;st.step='result';}
+  else if(!q.tab&&!r)tab='notify';
+  NFY_HL=q.id||'';window.scrollTo(0,0);render();if(tab==='notify'){load(function(){render();hlScroll();});return;}if(tab==='search'&&st.step==='result')load(render);else if(!D)load(render);}
+function openLink(u,d){d=d||{};var q=parseRoute(u);
+  if(q===null){if(!d.route&&!d.dest)q={route:'deals'};else q={};}  // 外部連結不自動開瀏覽器
+  ['route','tab','id','dest','date','dep','ret','origin','region','country'].forEach(function(k){if(d[k]&&!q[k])q[k]=d[k];});
+  goRoute(q);}
 function nativePushOn(){if(!PN)return;
-  PN.addListener('registration',function(t){pushSave(t.value);PMSG='✅ 已開啟特價通知';render();});
-  PN.addListener('registrationError',function(){PMSG='⚠️ 通知註冊失敗，請稍後再試';render();});
-  PN.addListener('pushNotificationActionPerformed',function(a){var d=(a.notification&&a.notification.data)||{};openLink(d.link);});
-  PN.createChannel&&PN.createChannel({id:'deals',name:'特價通知',importance:4}).catch(function(){});
-  PN.requestPermissions().then(function(r){if(r.receive==='granted')PN.register();else{PMSG='⚠️ 請到手機「設定 → 通知」允許飛省';render();}});}
+  PN.addListener('registration',function(t){pushSave(t.value).then(pushOk,function(e){pushFail('通知開啟失敗：'+e.message+'，請稍後再試');});});
+  PN.addListener('registrationError',function(){pushFail('通知註冊失敗，請稍後再試');});
+    PN.createChannel&&PN.createChannel({id:'deals',name:'特價通知',importance:4}).catch(function(){});
+  PN.requestPermissions().then(function(r){if(r.receive==='granted')PN.register();else pushFail('請到手機「設定 → 通知」允許飛省');});}
 function webPushOn(){
-  if(/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone){PMSG='📱 iPhone 要先「分享 → 加入主畫面」，從主畫面打開才能收通知（iOS 16.4 以上）';render();return;}
-  Notification.requestPermission().then(function(p){if(p!=='granted'){PMSG='⚠️ 瀏覽器沒有允許通知';render();return;}
-    loadFb(function(){navigator.serviceWorker.ready.then(function(reg){
-      firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg}).then(function(t){pushSave(t);PMSG='✅ 已開啟特價通知';render();})
-       .catch(function(){PMSG='⚠️ 通知註冊失敗';render();});});});});}
-function loadFb(cb){if(window.firebase&&firebase.messaging)return cb();var n=0,src=['https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js'];
+  if(/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone){pushFail('iPhone 要先「分享 → 加入主畫面」，從主畫面打開才能收通知（iOS 16.4 以上）');return;}
+  Promise.resolve(Notification.requestPermission()).then(function(p){
+    if(p==='denied')throw new Error('瀏覽器封鎖了通知：請點網址列左邊的圖示 →「通知」改成「允許」，再按一次');
+    if(p!=='granted')throw new Error('沒有允許通知（通知詢問被關掉或被 Chrome 自動擋下）：請點網址列左邊的圖示 →「通知」改成「允許」，再按一次');
+    return withTimeout(new Promise(function(ok,no){loadFb(ok);setTimeout(function(){no(new Error('通知元件載入失敗'));},15000);}),16000,'通知元件載入失敗');})
+  .then(function(){return withTimeout(navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready;}),15000,'背景服務沒有啟動，請重新整理再試');})
+  .then(function(reg){return withTimeout(firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg}),20000,'拿不到通知憑證');})
+  .then(function(t){return pushSave(t);})
+  .then(pushOk,function(e){console.warn('webPushOn',e);pushFail('通知開啟失敗：'+((e&&e.message)||e));});}
+function loadFb(cb){if(window.firebase&&firebase.messaging){if(!firebase.apps.length)firebase.initializeApp(FB_CFG);return cb();}var n=0,src=['https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js'];
   (function nx(){if(n>=src.length){if(!firebase.apps.length)firebase.initializeApp(FB_CFG);return cb();}var sc=document.createElement('script');sc.src=src[n++];sc.onload=nx;document.head.appendChild(sc);})();}
-function pushOn(){PUSH='on';lss('fs_push','on');if(NAT)nativePushOn();else if(WEBPUSH)webPushOn();}
+function pushOn(){if(PUSH==='wait')return;PUSH='wait';PMSG='⏳ 正在開啟通知…';if(NAT)nativePushOn();else if(WEBPUSH)webPushOn();else pushFail('這個瀏覽器不支援推播通知');}
 function pushOff(){PUSH='off';lss('fs_push','off');pushDrop();if(PN)PN.unregister&&PN.unregister().catch(function(){});PMSG='已關閉特價通知';}
 // 航班提醒：App 用本機通知（起飛前 3 小時）；網頁只在頁面開著時提醒（盡力而為），完整提醒請用 LINE。
 var FLTS=lsg('fs_flights',[]);
@@ -510,8 +580,8 @@ function flSchedule(){FLTS=FLTS.filter(function(f){return Date.parse(f.at)>Date.
 function notifyPanel(){
   var can=NAT||WEBPUSH, h='<h3>🔔 特價通知</h3>';
   if(!can)h+='<p>'+(GAS?'這個網頁版沒辦法收推播，請改用 <a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省網站</a> 或 Android App，或加 LINE @750yoqzz。':'這個瀏覽器不支援推播通知，可以改用 Android App 或 LINE @750yoqzz。')+'</p>';
-  else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':'🔕 特價通知：關',PUSH==='on'?'push:off':'push:on',PUSH==='on')+'</div>';
-    if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+chip('台北出發','pt:TPE',PTOP.indexOf('TPE')>=0)+chip('高雄出發','pt:KHH',PTOP.indexOf('KHH')>=0)+'</div>';}
+  else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':PUSH==='wait'?'⏳ 開啟中…':'🔕 特價通知：關',PUSH==='on'?'push:off':PUSH==='wait'?'push:wait':'push:on',PUSH==='on')+'</div>';
+    if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+chip('台北出發','pt:TPE',ORG.indexOf('TPE')>=0)+chip('高雄出發','pt:KHH',ORG.indexOf('KHH')>=0)+'<span style="font-size:12px;color:#999">（和畫面上的出發地篩選同步）</span>'+'</div>';}
   if(PMSG)h+='<p class="hint">'+esc(PMSG)+'</p>';
   h+='<h3>🛫 航班提醒</h3>';
   if(NAT||WEBPUSH){h+='<p>'+(NAT?'起飛前 3 小時用手機通知提醒你航廈和報到櫃台。':'網頁版只有在飛省頁面開著時才會提醒，想確定收到請用 App 或 LINE。')+'</p>'+
@@ -521,23 +591,25 @@ function notifyPanel(){
   return h;}
 document.addEventListener('click',function(e){var a=e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v==='push:on'){pushOn();render();}else if(v==='push:off'){pushOff();render();}
-  else if(v.indexOf('pt:')===0){var o=v.slice(3),i=PTOP.indexOf(o);if(i>=0)PTOP.splice(i,1);else PTOP.push(o);lss('fs_ptop',PTOP);pushSave();render();}
+  else if(v.indexOf('pt:')===0){orgToggle(v.slice(3));pushSave().then(function(){PMSG='✅ 已更新出發地';render();},function(e){PMSG='⚠️ 更新失敗：'+e.message;render();});render();}
   else if(v==='fl:add'){var no=($('flno').value||'').toUpperCase().replace(/\s/g,''),dt=$('fldt').value;if(!/^[A-Z0-9]{2}\d{1,4}$/.test(no)||!dt){alert('請輸入航班號碼和起飛時間');return;}
     FLTS.push({no:no,at:dt.slice(0,16),from:$('flfrom').value});lss('fs_flights',FLTS);if(!NAT&&Notification.permission!=='granted')Notification.requestPermission();flSchedule();PMSG='✅ 已新增 '+no+' 的提醒';render();}
   else if(v.indexOf('fl:del:')===0){FLTS.splice(+v.slice(7),1);lss('fs_flights',FLTS);flSchedule();render();}
 },true);
-if(NAT&&PUSH==='on')setTimeout(nativePushOn,1500);
-if(WEBPUSH&&PUSH==='on'&&Notification.permission==='granted')setTimeout(webPushOn,2500);
+// 通知點擊監聽要在啟動時馬上註冊（冷啟動時 Capacitor 會保留這個事件直到有人接收）
+if(PN)PN.addListener('pushNotificationActionPerformed',function(a){var d=(a.notification&&a.notification.data)||{};openLink(d.route?'':d.link,d);});
+if(NAT&&PUSH!=='off'){PUSH='wait';setTimeout(nativePushOn,1500);}
+if(WEBPUSH&&PUSH!=='off'){if(Notification.permission==='granted'){PUSH='wait';setTimeout(webPushOn,2500);}else{PUSH='off';lss('fs_push','off');}}  // 每次打開都重新確認伺服器有存到；權限沒了就顯示「關」
 if(FLTS.length)setTimeout(flSchedule,2000);
-if(!NAT&&WEBPUSH)navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.link)openLink(e.data.link);});
+if(!NAT&&WEBPUSH)navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&(e.data.link||e.data.route))openLink(e.data.link,e.data);});
 document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.btn');if(!b||b.disabled)return;b.classList.remove('press');void b.offsetWidth;b.classList.add('press');});
 (function init(){
   var sp=$('splash'); if(LOGO)$('splogo').innerHTML='<img src="'+LOGO+'" alt="">';
   setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove();},400);},RM?200:950);
   if(LOGO)$('logo').src=LOGO; else $('logo').style.display='none';
   var h=location.hash.replace(/^#/,''); if(h){var q={};h.split('&').forEach(function(p){var kv=p.split('=');q[kv[0]]=decodeURIComponent(kv[1]||'');});
-    if(q.tab)tab=q.tab; ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});}
-  render(); if(!D)load(render);
+    if(q.tab)tab=q.tab; if(q.route==='notify'||q.route==='hot')tab='notify'; if(q.id)NFY_HL=q.id; ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});}
+  render(); if(!D)load(function(){render();hlScroll();});
 })();
 </script>
 </body>
