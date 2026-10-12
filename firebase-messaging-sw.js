@@ -1,4 +1,9 @@
 // 飛省 FlySave：推播已合併在 sw.js（scope /flysave/）。這個檔只給 Firebase 預設路徑備用。
+// v22.1 iPhone 推播修正：自己處理 push 事件，每則一定顯示通知（iOS 規定），不靠 Firebase SDK 代為顯示
+self.addEventListener('push',e=>{let p={};try{p=e.data?e.data.json():{}}catch(x){try{p={notification:{body:e.data.text()}}}catch(y){}}
+ const n=p.notification||{},d=p.data||{},t=n.title||d.title||'飛省 FlySave',l=(p.fcmOptions&&p.fcmOptions.link)||d.link||'./#tab=notify';
+ e.stopImmediatePropagation();
+ e.waitUntil(self.registration.showNotification(t,{body:n.body||d.body||'',icon:'icon-192.png',badge:'icon-96.png',tag:d.id||undefined,data:{link:l}}));});
 // v18 FCM web push（Firebase Cloud Messaging）
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 try{firebase.initializeApp({"apiKey":"AIzaSyAguQSoX4yxi9N3OjN0-wctY7emdD_DU3k","authDomain":"flysave-28017.firebaseapp.com","projectId":"flysave-28017","storageBucket":"flysave-28017.firebasestorage.app","messagingSenderId":"55694360376","appId":"1:55694360376:web:e4318bd17848073e9a4bcd","measurementId":"G-T5Z7VYPTQL"});const m=firebase.messaging();
