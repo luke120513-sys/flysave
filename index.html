@@ -13,10 +13,26 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});</script>
 <style>
+.annb{display:flex;align-items:center;gap:8px;background:#EAF7FF;border:1px solid #BFE3FA;border-radius:14px;margin:0 0 10px;padding:4px 4px 4px 12px}
+.annb.imp{background:var(--tipbg);border-color:#F3C58C}
+.annb .ao{flex:1;min-height:44px;border:0;background:none;text-align:left;font-family:inherit;font-size:14px;color:#222;padding:4px 0;display:flex;flex-direction:column;justify-content:center}
+.annb .ao span{font-size:12px;color:#666;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.annb .ax{width:44px;height:44px;border:0;background:none;font-size:20px;color:#888;font-family:inherit}
+.annc{background:#fff;border-radius:14px;padding:14px;margin:0 0 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #BFE3FA}
+.annc.imp{border-left-color:var(--tip)}.annc.hl{outline:2px solid var(--g)}
+.annc h3{margin:0 0 4px;font-size:16px}.annc .ad{font-size:12px;color:var(--grey);margin-bottom:6px}
+.annc p{margin:0;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.annc .links{margin-top:10px}.ntag{display:inline-block;background:#E53935;color:#fff;font-size:11px;border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+nav button{position:relative}.udot{position:absolute;top:6px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:#E53935}
+.mopt em.cnt{display:inline-block;width:auto;font-style:normal;vertical-align:2px;margin-left:6px;background:#E53935;color:#fff;font-size:12px;font-weight:800;border-radius:10px;padding:1px 7px;margin-right:6px}
 :root{--g:#06C755;--lg:#D7F5E3;--grey:#999;--tip:#C25E00;--tipbg:#FFF1DE}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;background:#F2F4F3;color:#111;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 header{background:var(--g);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+#annbell{position:relative;width:44px;height:44px;margin:-6px -4px -6px -8px;border:0;background:rgba(255,255,255,.16);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+#annbell svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+#annn{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none;border:1.5px solid var(--g)}
+#annn.on{display:block}
 header img{width:34px;height:34px;border-radius:50%;background:#fff}
 header h1{font-size:19px;margin:0;font-weight:800}
 header small{display:block;font-size:11px;opacity:.9;font-weight:400}
@@ -171,7 +187,7 @@ nav button{font-size:10px;letter-spacing:-.3px}nav button svg{width:22px;height:
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="lg" id="splogo">✈️</div><b>飛省 FlySave</b><small>來回直飛・含稅總價比價</small></div>
-<header><img id="logo" alt=""><h1>飛省 FlySave<small id="upd">來回直飛・含稅總價比價</small></h1></header>
+<header><button id="annbell" data-act="an:list" aria-label="公告"><svg viewBox="0 0 24 24"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><b id="annn"></b></button><img id="logo" alt=""><h1>飛省 FlySave<small id="upd">來回直飛・含稅總價比價</small></h1></header>
 <main id="main"></main>
 <nav>
  <button data-tab="search" class="on" aria-label="查機票"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>查機票</button>
@@ -205,7 +221,7 @@ try { var sv = JSON.parse(localStorage.getItem('tb_st')||'{}'); if (sv.origin) s
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fs_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fs_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fs_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v24';
+var APPVER='v25';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fs_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fs_myq',JSON.stringify(MYQ));}catch(e){}}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
@@ -296,11 +312,11 @@ function countries(){var s={};all('short').concat(all('long'),all('custom')).for
 function render(){
   document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===(MORE_SUB.indexOf(tab)>=0?'more':tab));});
   $('upd').textContent = D&&D.updatedAt ? '票價更新：'+D.updatedAt+'・來回直飛含稅' : '來回直飛・含稅總價比價';
-  var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():tab==='feedback'?feedbackView():tab==='more'?moreView():tab==='flights'?flightsView():search();
+  var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():tab==='feedback'?feedbackView():tab==='announce'?annView():tab==='more'?moreView():tab==='flights'?flightsView():search();
   if(MORE_SUB.indexOf(tab)>=0)h='<button class="back" data-act="tomore">‹ 其他</button>'+h;
   var html=h+footer(), m=$('main');
   if(html===LAST_HTML)return; var changed=LAST_TAB!==null, tabChg=LAST_TAB!==tab, stepChg=LAST_STEP!==st.step, sameView=!tabChg&&!stepChg;
-  m.innerHTML=html; LAST_HTML=html;
+  m.innerHTML=html; LAST_HTML=html; annDot(); if(tab==='announce')annSeen();
   if(!sameView) window.scrollTo(0,0);
   if(changed&&!sameView){var ti=TABS.indexOf(tab),pi=TABS.indexOf(LAST_TAB);m.classList.remove('inR','inL','inF');void m.offsetWidth;m.classList.add(tabChg&&ti>=0&&pi>=0?(ti>pi?'inR':'inL'):'inF');}
   var fx=!sameView||LAST_SIG!==sig();
@@ -335,7 +351,7 @@ function crumbs(){
 function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';return h+'</div>';}
 function search(){
   var back = st.step!=='mode' ? '<button class="back" data-act="back">‹ 上一步</button>' : '';
-  if(st.step==='mode') return myqCard()+'<div class="panel">'+bar(1,3)+'<p class="step">查機票 1/3・要怎麼查？</p>'+
+  if(st.step==='mode') return annBanner()+myqCard()+'<div class="panel">'+bar(1,3)+'<p class="step">查機票 1/3・要怎麼查？</p>'+
     modeOpt('cp','🏆','CP值最高','前後挪 1～2 天，找最划算的組合',true)+modeOpt('exact','📅','只查指定日期','只看你選的兩天，列出每個班次')+modeOpt('nodate','💰','不指定日期','直接看最近最便宜的行程')+'</div>';
   if(st.step==='cal') return back+'<div class="panel">'+bar(2,3)+crumbs()+'<p class="step">查機票 2/3・選去程和回程日期</p>'+calendar()+'</div>';
   if(st.step==='origin') st.step='region';   // v23：出發地步驟併入地區頁（舊連結相容）
@@ -501,6 +517,28 @@ function fbSend(){
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('fbc:')===0){e.stopPropagation();var t=$('fbtx')&&$('fbtx').value,c=$('fbct')&&$('fbct').value;FB_CAT=v.slice(4);LAST_HTML=null;render();if(t)$('fbtx').value=t;if(c)$('fbct').value=c;}
   else if(v==='fb:send'){e.stopPropagation();fbSend();}},true);
+/* ---------- v25：公告 ---------- */
+var ANN_HL='', ANN_NEW={}, ANN_PREV='search';
+function annBack(){return '<button class="back" data-act="an:back">‹ 返回</button>';}
+function annGo(){if(tab!=='announce')ANN_PREV=tab;tab='announce';}
+function anns(){return ((D&&D.ann)||[]).filter(function(a){return a&&a.id&&a.title&&(!a.expiresAt||Date.parse(a.expiresAt)>Date.now());});}
+function annRead(){return lsg('fs_ann_read',[]);}
+function annUnread(){var r=annRead();return anns().filter(function(a){return r.indexOf(a.id)<0;});}
+function annMark(ids){var r=annRead();ids.forEach(function(i){if(r.indexOf(i)<0)r.push(i);});lss('fs_ann_read',r.slice(-100));}
+function annDot(){var e=$('annn');if(!e)return;var n=annUnread().length;e.textContent=n>9?'9+':n?String(n):'';e.classList.toggle('on',n>0);$('annbell').setAttribute('aria-label','公告'+(n?'（'+n+' 則未讀）':''));}
+function annSeen(){var u=annUnread();if(!u.length)return;u.forEach(function(a){ANN_NEW[a.id]=1;});annMark(u.map(function(a){return a.id;}));annDot();}
+function annWhen(a){var t=new Date(Date.parse(a.createdAt)+8*3600e3);return isNaN(t)?'':(t.getUTCFullYear()+'/'+(t.getUTCMonth()+1)+'/'+t.getUTCDate());}
+function annBanner(){var dis=lsg('fs_ann_dis',[]),a=annUnread().filter(function(x){return dis.indexOf(x.id)<0;})[0];if(!a)return '';
+  return '<div class="annb'+(a.level==='important'?' imp':'')+'"><button class="ao" data-act="an:open:'+esc(a.id)+'"><b>'+(a.level==='important'?'⚠️ ':'📢 ')+esc(a.title)+'</b>'+(a.body?'<span>'+esc(a.body)+'</span>':'')+'</button><button class="ax" aria-label="關閉公告" data-act="an:x:'+esc(a.id)+'">×</button></div>';}
+function annView(){var L=anns();annUnread().forEach(function(a){ANN_NEW[a.id]=1;});
+  if(!L.length)return annBack()+'<div class="panel"><p class="step">📢 公告</p></div><div class="empty">目前沒有公告。</div>';
+  return annBack()+'<div class="panel"><p class="step">📢 公告・'+L.length+' 則</p></div>'+L.map(function(a){return '<div class="annc'+(a.level==='important'?' imp':'')+(ANN_HL===a.id?' hl':'')+'" id="ann-'+esc(a.id)+'"><h3>'+(a.pinned?'📌 ':'')+(a.level==='important'?'⚠️ ':'')+esc(a.title)+(ANN_NEW[a.id]?'<span class="ntag">新</span>':'')+'</h3><div class="ad">'+annWhen(a)+'</div>'+(a.body?'<p>'+esc(a.body)+'</p>':'')+(okUrl(a.link)?'<div class="links"><a class="pri" href="'+esc(a.link)+'" target="_blank" rel="noopener">查看詳情 ›</a></div>':'')+'</div>';}).join('');}
+function annHl(){if(!ANN_HL)return;var e=document.getElementById('ann-'+ANN_HL);if(e)e.scrollIntoView({block:'center'});}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
+  if(v.indexOf('an:x:')===0){e.stopPropagation();var d=lsg('fs_ann_dis',[]);d.push(v.slice(5));lss('fs_ann_dis',d.slice(-100));LAST_HTML=null;render();}
+  else if(v.indexOf('an:open:')===0){e.stopPropagation();ANN_HL=v.slice(8);annGo();render();annHl();}
+  else if(v==='an:list'){e.stopPropagation();if(tab==='announce'){tab=ANN_PREV;}else{ANN_HL='';annGo();}render();if(!D)load(render);}
+  else if(v==='an:back'){e.stopPropagation();tab=ANN_PREV||'search';render();}},true);
 var MYF=lsg('fs_myflights',[]);
 function flNorm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
 function flLinks(f){var n=f.no,g='https://www.google.com/search?q='+encodeURIComponent(n+' flight status'+(f.date?' '+f.date:''));
@@ -670,15 +708,16 @@ function parseRoute(u){var q={};if(!u)return q;var s=String(u);var site=/luke120
   parts.join('&').split('&').forEach(function(p){if(!p)return;var kv=p.split('=');try{q[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\+/g,' '));}catch(e){}});return q;}
 function hlScroll(){if(!NFY_HL)return;var e=document.getElementById('n-'+NFY_HL);if(e)e.scrollIntoView({block:'center'});}
 function goRoute(q){q=q||{};var r=q.route||'';
-  if(q.tab&&TABS.concat(['about','privacy','terms']).indexOf(q.tab)>=0)tab=q.tab;
+  if(q.tab&&TABS.concat(['about','privacy','terms','announce']).indexOf(q.tab)>=0)tab=q.tab;
   else if(r==='notify'||r==='hot'||r==='deals')tab='notify';
   else if(r==='promos'||r==='latest')tab='promos';
+  else if(r==='announce'){tab='announce';}
   else if(r==='mine')tab='mine'; else if(r==='help')tab='help';
   ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});if(st.step==='origin')st.step='region';
   if(q.date&&!q.dep)st.dep=q.date; if(q.ret_date&&!q.ret)st.ret=q.ret_date;
   if(q.dest||r==='result'||(q.dep&&q.ret)){tab='search';st.mode=st.mode||(st.dep?'exact':'nodate');st.origin=st.origin||'ALL';st.region=st.region||'全部';if(q.dest)st.dest=q.dest;st.step='result';}
   else if(!q.tab&&!r)tab='notify';
-  NFY_HL=q.id||'';window.scrollTo(0,0);render();if(tab==='notify'){load(function(){render();hlScroll();});return;}if(tab==='search'&&st.step==='result')load(render);else if(!D)load(render);}
+  NFY_HL=q.id||'';if(tab==='announce')ANN_HL=q.id||'';window.scrollTo(0,0);render();if(tab==='announce'){annHl();if(!D)load(render);return;}if(tab==='notify'){load(function(){render();hlScroll();});return;}if(tab==='search'&&st.step==='result')load(render);else if(!D)load(render);}
 function openLink(u,d){d=d||{};var q=parseRoute(u);
   if(q===null){if(!d.route&&!d.dest)q={route:'deals'};else q={};}  // 外部連結不自動開瀏覽器
   ['route','tab','id','dest','date','dep','ret','origin','region','country'].forEach(function(k){if(d[k]&&!q[k])q[k]=d[k];});
@@ -741,7 +780,7 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
   setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove();},400);},RM?200:600);
   if(LOGO)$('logo').src=LOGO; else $('logo').style.display='none';
   var h=location.hash.replace(/^#/,''); if(h){var q={};h.split('&').forEach(function(p){var kv=p.split('=');q[kv[0]]=decodeURIComponent(kv[1]||'');});
-    if(q.tab)tab=q.tab; if(q.route==='notify'||q.route==='hot')tab='notify'; if(q.id)NFY_HL=q.id; ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});if(st.step==='origin')st.step='region';}
+    if(q.tab)tab=q.tab; if(q.route==='notify'||q.route==='hot')tab='notify'; if(q.id){NFY_HL=q.id;ANN_HL=q.id;} ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});if(st.step==='origin')st.step='region';}
   render(); if(!D)load(function(){render();hlScroll();});
 })();
 </script>
