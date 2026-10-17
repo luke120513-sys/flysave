@@ -318,7 +318,7 @@ function countries(){var s={};all('short').concat(all('long'),all('custom')).for
 /* ---------- 畫面 ---------- */
 function render(){
   document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===(MORE_SUB.indexOf(tab)>=0?'more':tab));});
-  $('upd').textContent = D&&D.updatedAt ? '票價更新：'+D.updatedAt+'・來回直飛含稅' : '來回直飛・含稅總價比價';
+  updTick((D&&D.updatedAt||'')!==window.UPD_LAST);window.UPD_LAST=D&&D.updatedAt||'';
   nfyDot();
   var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():tab==='feedback'?feedbackView():tab==='announce'?annView():tab==='more'?moreView():tab==='flights'?flightsView():search();
   if(tab==='notify')h='<button class="back" data-act="nf:back">‹ 返回</button>'+h;
@@ -548,6 +548,24 @@ function annView(){var L=anns();annUnread().forEach(function(a){ANN_NEW[a.id]=1;
   if(!L.length)return annBack()+'<div class="panel"><p class="step">📢 公告</p></div><div class="empty">目前沒有公告。</div>';
   return annBack()+'<div class="panel"><p class="step">📢 公告・'+L.length+' 則</p></div>'+L.map(function(a){return '<div class="annc'+(a.level==='important'?' imp':'')+(ANN_HL===a.id?' hl':'')+'" id="ann-'+esc(a.id)+'"><h3>'+(a.pinned?'📌 ':'')+(a.level==='important'?'⚠️ ':'')+esc(a.title)+(ANN_NEW[a.id]?'<span class="ntag">新</span>':'')+'</h3><div class="ad">'+annWhen(a)+'</div>'+(a.body?'<p>'+esc(a.body)+'</p>':'')+(okUrl(a.link)?'<div class="links"><a class="pri" href="'+esc(a.link)+'" target="_blank" rel="noopener">查看詳情 ›</a></div>':'')+'</div>';}).join('');}
 function annHl(){if(!ANN_HL)return;var e=document.getElementById('ann-'+ANN_HL);if(e)e.scrollIntoView({block:'center'});}
+
+/* v27：標題下方動態列（相對時間＋輪播小提示） */
+var UPD_I=0,UPD_T=0,UPD_M=0,UPD_ANN='';
+var UPD_TIPS=['點左上角 📢 查看最新公告','點右上角 🔔 看特價通知','來回直飛・含稅總價','📋「我的查詢」每支手機各自保存','🛬「我的航班」看航廈、登機門、報到櫃檯'];
+function updWhen(){var m=D&&String(D.updatedAt||'').match(/^(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{2})$/);if(!m)return null;
+  var n=new Date(),y=new Date(n.getTime()+8*3600e3).getUTCFullYear(),t=Date.UTC(y,m[1]-1,+m[2],+m[3]-8,+m[4]);if(t>n.getTime()+864e5)t=Date.UTC(y-1,m[1]-1,+m[2],+m[3]-8,+m[4]);return t;}
+function updRel(){var t=updWhen();if(!t)return D&&D.updatedAt?'票價更新：'+D.updatedAt:'';var m=Math.max(0,Math.round((Date.now()-t)/60e3));
+  return '票價 '+(m<1?'剛剛':m<60?m+' 分鐘前':m<1440?Math.floor(m/60)+' 小時前':Math.floor(m/1440)+' 天前')+'更新';}
+function updItems(){var L=[],r=updRel();if(r)L.push({t:r});var a=(typeof annUnread==='function')?annUnread()[0]:null;if(a)L.push({t:'📢 新公告：'+a.title,a:a.id});
+  var tp=(D&&Array.isArray(D.tips)&&D.tips.length)?D.tips:UPD_TIPS;tp.forEach(function(x){x=String(x||'').trim();if(x)L.push({t:x.slice(0,40)});});return L.length?L:[{t:'來回直飛・含稅總價比價'}];}
+function updShow(){var e=$('upd');if(!e)return;var L=updItems(),it=L[UPD_I%L.length];
+  var put=function(){e.textContent=it.t;UPD_ANN=it.a||'';e.style.cursor=it.a?'pointer':'';e.style.opacity=1;};
+  if(RM||e.textContent===''){put();return;}e.style.opacity=0;setTimeout(put,300);}
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function updTick(now){if(now){UPD_I=0;var e=$('upd');if(e){e.style.transition=RM?'':'opacity .3s';}updShow();}
+  if(!UPD_T)UPD_T=setInterval(function(){UPD_I++;updShow();},RM?8000:4000);
+  if(!UPD_M)UPD_M=setInterval(function(){if(UPD_I%updItems().length===0)updShow();},60e3);}
+document.addEventListener('click',function(e){if(e.target&&e.target.id==='upd'&&UPD_ANN){e.stopPropagation();ANN_HL=UPD_ANN;annGo();render();annHl();}},true);
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('an:x:')===0){e.stopPropagation();var d=lsg('fs_ann_dis',[]);d.push(v.slice(5));lss('fs_ann_dis',d.slice(-100));LAST_HTML=null;render();}
   else if(v.indexOf('an:open:')===0){e.stopPropagation();ANN_HL=v.slice(8);annGo();render();annHl();}
