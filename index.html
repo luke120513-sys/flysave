@@ -190,6 +190,7 @@ nav button{min-height:52px}
 nav button{font-size:10px;letter-spacing:-.3px}nav button svg{width:22px;height:22px}
 .fbf textarea,.fbf input,.fbf select{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border:1px solid #d5dbe1;border-radius:10px;margin:6px 0}.fbf textarea{min-height:120px}
 .myqc{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#E9F9EF;border:2px solid #9be3b6;border-radius:14px;padding:12px;margin:0 0 12px;font:inherit;cursor:pointer}.myqc b{font-size:16px}.myqc span{display:block;font-size:13px;color:#4a5560}
+.flc{border:1px solid #e3e8ee;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fafcff}.flc.late{border-color:#F5B041}.flc.bad{border-color:#E74C3C}.fh{font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:center}.fst{font-size:13px;padding:2px 8px;border-radius:10px;background:#E8F8F0;color:#1E8449;white-space:nowrap}.flc.late .fst{background:#FEF5E7;color:#B9770E}.flc.bad .fst{background:#FDEDEC;color:#C0392B}.fgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 10px;margin-top:8px}.fr{display:flex;flex-direction:column}.fr span{font-size:12px;color:#888}.fr b{font-size:15px}.frem{margin-top:8px;background:#EBF5FB;color:#1B4F72;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -558,16 +559,39 @@ var MYF=lsg('fs_myflights',[]);
 function flNorm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
 function flLinks(f){var n=f.no,g='https://www.google.com/search?q='+encodeURIComponent(n+' flight status'+(f.date?' '+f.date:''));
   return '<div class="links small"><a class="pri" href="'+esc(g)+'" target="_blank" rel="noopener">Google</a><a href="https://www.flightaware.com/live/flight/'+esc(n)+'" target="_blank" rel="noopener">FlightAware</a><a href="https://www.flightradar24.com/data/flights/'+esc(n.toLowerCase())+'" target="_blank" rel="noopener">Flightradar24</a></div>';}
+var FLS={},FLT=0;
+function flKey(f){return f.no+'|'+(f.date||'');}
+function flFetch(force){var now=Date.now();MYF.forEach(function(f){var k=flKey(f),c=FLS[k];if(c&&c.loading)return;if(c&&!force&&now-c.t<300e3)return;
+  FLS[k]={loading:true,t:now,r:c&&c.r};post('webFlight',[f.no,f.date||''],{action:'webFlight',no:f.no,date:f.date||''},function(r){FLS[k]={t:Date.now(),r:r||{ok:false}};if(tab==='flights'){LAST_HTML=null;render();}});});
+  clearTimeout(FLT);FLT=setTimeout(function(){if(tab==='flights')flFetch(true);},300e3);}
+function flHm(d,t,addMin){if(!t)return '';var x=new Date((d||'2000-01-01')+'T'+t+':00+08:00');if(isNaN(x))return '';x=new Date(x.getTime()+addMin*60e3+8*3600e3);return ('0'+x.getUTCHours()).slice(-2)+':'+('0'+x.getUTCMinutes()).slice(-2);}
+function flCard(x){var dep=x.dir==='D',t=x.est||x.sched,td=x.estDate||x.schedDate,chg=x.est&&x.est!==x.sched,intl=x.terminal!=='國內線';
+  var bad=/取消|CANCEL/.test(x.status),gone=/出發|離站|已到|抵達|DEPART|ARRIV/.test(x.status),late=/延|更改|DELAY|CHANGE/.test(x.status);
+  var cnt=String(x.counter||'').replace(/[–-]0$/,'');
+  var row=function(k,v,big){return v?'<div class="fr"><span>'+k+'</span><b'+(big?' style="font-size:20px"':'')+'>'+esc(v)+'</b></div>':'';};
+  var h='<div class="flc'+(bad?' bad':late?' late':'')+'"><div class="fh">'+(dep?'🛫 '+esc(x.airportName)+' → '+esc(x.city):'🛬 '+esc(x.city)+' → '+esc(x.airportName))+'<span class="fst">'+esc(x.status||'—')+'</span></div>'+
+    '<div class="fgrid">'+row('航廈',x.terminal,1)+row(dep?'登機門':'登機門',x.gate||'未公布',1)+(dep?row('報到櫃檯',cnt||'未公布',1):row('行李轉盤',x.belt||'未公布',1))+
+    row(dep?'表定起飛':'表定抵達',md(x.schedDate)+' '+x.sched)+(x.est?'<div class="fr"><span>'+(dep?'預計／實際起飛':'預計／實際抵達')+'</span><b'+(chg?' style="color:#C0392B"':'')+'>'+esc((x.estDate&&x.estDate!==x.schedDate?md(x.estDate)+' ':'')+x.est)+'</b></div>':'')+row('機型',x.aircraft)+'</div>';
+  if(dep&&!bad&&!gone&&t)h+='<div class="frem">⏰ 提醒：<br>・建議 <b>'+flHm(td,t,intl?-180:-60)+'</b> 前到'+(cnt?'櫃檯 '+esc(cnt):'櫃檯')+'報到（起飛前 '+(intl?'3 小時':'1 小時')+'）<br>・<b>'+flHm(td,t,-40)+'</b> 前到登機門 '+esc(x.gate||'')+'（起飛前 40 分）<br>・櫃檯通常起飛前 '+(intl?'60':'30')+' 分關閉</div>';
+  if(bad)h+='<div class="frem" style="background:#FDEDEC;color:#922B21">⚠️ 航班已取消，請聯絡'+esc(x.airline||'航空公司')+'。</div>';
+  return h+'</div>';}
 function flightsView(){
-  var h='<div class="panel"><p class="step">🛬 我的航班・查即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">航班動態由 Google／FlightAware／Flightradar24 提供，點按鈕在新頁面查看。資料只存在這台裝置。</p></div>';
+  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">只支援<b>桃園（TPE）、高雄（KHH）</b>出發或抵達的航班，資料來自兩座機場官方即時航班，約可查前天到後天（高雄只有今天），每 5 分鐘自動更新。其他機場請點下方連結查看。資料只存在這台裝置。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
-  return h+MYF.map(function(f,i){return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+'</div>'+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('刪除','mf:del:'+i)+'</div></div>';}).join('');
+  setTimeout(function(){flFetch(false);},0);
+  return h+MYF.map(function(f,i){var c=FLS[flKey(f)],r=c&&c.r,b;
+    if(!r)b='<div class="info">⏳ 讀取航班資料中…</div>';
+    else if(!r.ok)b='<div class="info" style="color:var(--tip)">讀取失敗，稍後會自動重試。</div>';
+    else if(!r.flights.length)b='<div class="info" style="color:var(--tip)">桃園／高雄機場目前查不到這個航班'+(f.date?'（'+md(f.date)+'）':'')+'。可能日期太遠、不是從這兩座機場起降，或是共掛航班號碼，請用下方連結查。</div>';
+    else b=r.flights.map(flCard).join('')+'<div class="info" style="font-size:12px;color:#888">更新於 '+new Date(c.t+8*3600e3).toISOString().slice(11,16)+(c.loading?'・更新中…':'')+'</div>';
+    return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+(r&&r.flights&&r.flights[0]?' <small style="font-size:14px;color:#777">'+esc(r.flights[0].airline)+'</small>':'')+'</div>'+b+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('↻ 重新整理','mf:ref')+chip('刪除','mf:del:'+i)+'</div></div>';}).join('');
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v==='tomore'){e.stopPropagation();tab='more';render();}
   else if(v.indexOf('go:')===0){e.stopPropagation();tab=v.slice(3);render();if(tab==='mine')load(render);}
   else if(v==='mf:add'){e.stopPropagation();var no=flNorm($('mfno').value),dt=$('mfdt').value;if(!/^[A-Z0-9]{2}[0-9]{1,4}[A-Z]?$/.test(no)){toast('請輸入正確的航班號碼，例如 BR198');return;}
     MYF=MYF.filter(function(f){return !(f.no===no&&f.date===dt);});MYF.unshift({no:no,date:dt||''});MYF=MYF.slice(0,20);lss('fs_myflights',MYF);toast('✅ 已加入 '+no);LAST_HTML=null;render();}
+  else if(v==='mf:ref'){e.stopPropagation();flFetch(true);toast('更新中…');}
   else if(v.indexOf('mf:del:')===0){e.stopPropagation();MYF.splice(+v.slice(7),1);lss('fs_myflights',MYF);LAST_HTML=null;render();}},true);
 var MODE_ICON={cp:'🏆',exact:'📅'};
 function mine(){
