@@ -33,6 +33,13 @@ header{background:var(--g);color:#fff;padding:calc(12px + env(safe-area-inset-to
 #annbell svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 #annn{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none;border:1.5px solid var(--g)}
 #annn.on{display:block}
+#nfybell{position:relative;width:44px;height:44px;margin:-6px -8px -6px auto;border:0;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+#nfybell svg{width:24px;height:24px;fill:var(--g);stroke:var(--g);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+#nfybell.on{box-shadow:0 0 0 3px rgba(255,255,255,.55)}
+#nfyn{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none;border:1.5px solid var(--g)}
+#nfyn.on{display:block}
+header h1{min-width:0;flex:1 1 auto;overflow:hidden}header small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:360px){header{gap:6px;padding-left:12px;padding-right:12px}header img{width:28px;height:28px}header h1{font-size:16px}}
 header img{width:34px;height:34px;border-radius:50%;background:#fff}
 header h1{font-size:19px;margin:0;font-weight:800}
 header small{display:block;font-size:11px;opacity:.9;font-weight:400}
@@ -187,13 +194,12 @@ nav button{font-size:10px;letter-spacing:-.3px}nav button svg{width:22px;height:
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="lg" id="splogo">✈️</div><b>飛省 FlySave</b><small>來回直飛・含稅總價比價</small></div>
-<header><button id="annbell" data-act="an:list" aria-label="公告"><svg viewBox="0 0 24 24"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><b id="annn"></b></button><img id="logo" alt=""><h1>飛省 FlySave<small id="upd">來回直飛・含稅總價比價</small></h1></header>
+<header><button id="annbell" data-act="an:list" aria-label="公告"><svg viewBox="0 0 24 24"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><b id="annn"></b></button><img id="logo" alt=""><h1>飛省 FlySave<small id="upd">來回直飛・含稅總價比價</small></h1><button id="nfybell" data-act="nf:open" aria-label="特價通知"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><b id="nfyn"></b></button></header>
 <main id="main"></main>
 <nav>
  <button data-tab="search" class="on" aria-label="查機票"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>查機票</button>
  <button data-tab="mine" aria-label="我的查詢"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4M8 14h3"/></svg>我的查詢</button>
  <button data-tab="promos" aria-label="最新優惠"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 2 2 3 2 0-2-1-4 0-6z"/></svg>最新優惠</button>
- <button data-tab="notify" aria-label="通知"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>通知</button>
  <button data-tab="flights" aria-label="我的航班"><svg viewBox="0 0 24 24"><path d="M2 16l20-6-2-3-7 3-5-6H6l3 8-5 1-2-2z"/><path d="M3 21h18"/></svg>我的航班</button>
  <button data-tab="more" aria-label="其他"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>其他</button>
 </nav>
@@ -312,18 +318,20 @@ function countries(){var s={};all('short').concat(all('long'),all('custom')).for
 function render(){
   document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===(MORE_SUB.indexOf(tab)>=0?'more':tab));});
   $('upd').textContent = D&&D.updatedAt ? '票價更新：'+D.updatedAt+'・來回直飛含稅' : '來回直飛・含稅總價比價';
+  nfyDot();
   var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():tab==='feedback'?feedbackView():tab==='announce'?annView():tab==='more'?moreView():tab==='flights'?flightsView():search();
+  if(tab==='notify')h='<button class="back" data-act="nf:back">‹ 返回</button>'+h;
   if(MORE_SUB.indexOf(tab)>=0)h='<button class="back" data-act="tomore">‹ 其他</button>'+h;
   var html=h+footer(), m=$('main');
   if(html===LAST_HTML)return; var changed=LAST_TAB!==null, tabChg=LAST_TAB!==tab, stepChg=LAST_STEP!==st.step, sameView=!tabChg&&!stepChg;
-  m.innerHTML=html; LAST_HTML=html; annDot(); if(tab==='announce')annSeen();
+  m.innerHTML=html; LAST_HTML=html; annDot(); if(tab==='announce')annSeen(); if(tab==='notify')nfySeen(); nfyDot();
   if(!sameView) window.scrollTo(0,0);
   if(changed&&!sameView){var ti=TABS.indexOf(tab),pi=TABS.indexOf(LAST_TAB);m.classList.remove('inR','inL','inF');void m.offsetWidth;m.classList.add(tabChg&&ti>=0&&pi>=0?(ti>pi?'inR':'inL'):'inF');}
   var fx=!sameView||LAST_SIG!==sig();
   if(fx) animCards(m);
   LAST_TAB=tab; LAST_STEP=st.step; LAST_SIG=sig();
 }
-var LAST_HTML=null, LAST_TAB=null, LAST_STEP=null, LAST_SIG=null, LOADING=false, TABS=['search','mine','promos','notify','flights','more'];
+var LAST_HTML=null, LAST_TAB=null, LAST_STEP=null, LAST_SIG=null, LOADING=false, TABS=['search','mine','promos','flights','more'];
 var MORE_SUB=['help','about','privacy','terms','feedback'];
 function sig(){return [ORG.join(','),tab,st.step,st.city,st.mode,st.dep,st.ret,st.origin,st.region,st.country,SORT_BAG,!!D,LOADING].join('|');}
 var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -525,6 +533,11 @@ function anns(){return ((D&&D.ann)||[]).filter(function(a){return a&&a.id&&a.tit
 function annRead(){return lsg('fs_ann_read',[]);}
 function annUnread(){var r=annRead();return anns().filter(function(a){return r.indexOf(a.id)<0;});}
 function annMark(ids){var r=annRead();ids.forEach(function(i){if(r.indexOf(i)<0)r.push(i);});lss('fs_ann_read',r.slice(-100));}
+var NFY_PREV='search';
+function nfyList(){var now=Date.now();return ((D&&D.notify)||[]).filter(function(x){return orgOk(x.origin)&&(!x.expires||new Date(String(x.expires).length===10?x.expires+'T00:00:00+08:00':x.expires).getTime()>now)&&(!x.checkedAt||now-new Date(x.checkedAt).getTime()<26*3600e3);});}
+function nfyT(x){var t=new Date(x.notifiedAt||0).getTime();return isNaN(t)?0:t;}
+function nfySeen(){if(!D)return;var m=0;nfyList().forEach(function(x){m=Math.max(m,nfyT(x));});var o=+(localStorage.getItem('fs_nfy_seen')||0);if(m>o||localStorage.getItem('fs_nfy_seen')===null)try{localStorage.setItem('fs_nfy_seen',String(m));}catch(e){}}
+function nfyDot(){var e=$('nfyn'),b=$('nfybell');if(!e||!b)return;if(D&&localStorage.getItem('fs_nfy_seen')===null)nfySeen();var seen=+(localStorage.getItem('fs_nfy_seen')||0),n=nfyList().filter(function(x){return nfyT(x)>seen;}).length;e.textContent=n>9?'9+':n?String(n):'';e.classList.toggle('on',n>0);b.classList.toggle('on',tab==='notify');b.setAttribute('aria-label','特價通知'+(n?'（'+n+' 則未讀）':''));}
 function annDot(){var e=$('annn');if(!e)return;var n=annUnread().length;e.textContent=n>9?'9+':n?String(n):'';e.classList.toggle('on',n>0);$('annbell').setAttribute('aria-label','公告'+(n?'（'+n+' 則未讀）':''));}
 function annSeen(){var u=annUnread();if(!u.length)return;u.forEach(function(a){ANN_NEW[a.id]=1;});annMark(u.map(function(a){return a.id;}));annDot();}
 function annWhen(a){var t=new Date(Date.parse(a.createdAt)+8*3600e3);return isNaN(t)?'':(t.getUTCFullYear()+'/'+(t.getUTCMonth()+1)+'/'+t.getUTCDate());}
@@ -538,6 +551,8 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
   if(v.indexOf('an:x:')===0){e.stopPropagation();var d=lsg('fs_ann_dis',[]);d.push(v.slice(5));lss('fs_ann_dis',d.slice(-100));LAST_HTML=null;render();}
   else if(v.indexOf('an:open:')===0){e.stopPropagation();ANN_HL=v.slice(8);annGo();render();annHl();}
   else if(v==='an:list'){e.stopPropagation();if(tab==='announce'){tab=ANN_PREV;}else{ANN_HL='';annGo();}render();if(!D)load(render);}
+  else if(v==='nf:open'){e.stopPropagation();if(tab==='notify'){tab=NFY_PREV||'search';render();}else{NFY_PREV=tab;tab='notify';NFY_HL='';render();load(render);}}
+  else if(v==='nf:back'){e.stopPropagation();tab=NFY_PREV||'search';render();}
   else if(v==='an:back'){e.stopPropagation();tab=ANN_PREV||'search';render();}},true);
 var MYF=lsg('fs_myflights',[]);
 function flNorm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
@@ -645,8 +660,8 @@ function video(){                          // App（Capacitor WebView）：縮�
 function help(){
   return video()+(okUrl(SPONSOR_URL)?'<a class="sponsor" style="display:block;text-align:center;margin:0 0 12px" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>和 LINE 機器人用同一份票價資料，每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
     '<h3>🔎 查機票</h3><ul><li>🏆 CP值最高：前後挪 1～2 天找最划算的</li><li>📅 只查指定日期：只看你選的那兩天，列出每個班次</li><li>💰 不指定日期：最近最便宜的 5～7 天行程</li></ul>'+
-    '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。<b>每支手機（和每個 LINE 帳號）各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
-    '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「通知」「最新優惠」上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
+    '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機（和每個 LINE 帳號）各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
+    '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「最新優惠」和右上角 🔔 特價通知頁上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
     notifyPanel()+'</div>';
@@ -708,7 +723,7 @@ function parseRoute(u){var q={};if(!u)return q;var s=String(u);var site=/luke120
   parts.join('&').split('&').forEach(function(p){if(!p)return;var kv=p.split('=');try{q[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\+/g,' '));}catch(e){}});return q;}
 function hlScroll(){if(!NFY_HL)return;var e=document.getElementById('n-'+NFY_HL);if(e)e.scrollIntoView({block:'center'});}
 function goRoute(q){q=q||{};var r=q.route||'';
-  if(q.tab&&TABS.concat(['about','privacy','terms','announce']).indexOf(q.tab)>=0)tab=q.tab;
+  if(q.tab&&TABS.concat(['about','privacy','terms','announce','notify']).indexOf(q.tab)>=0)tab=q.tab;
   else if(r==='notify'||r==='hot'||r==='deals')tab='notify';
   else if(r==='promos'||r==='latest')tab='promos';
   else if(r==='announce'){tab='announce';}
