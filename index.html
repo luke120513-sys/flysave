@@ -520,7 +520,7 @@ var RQ_ST={pending:['⏳ 待查價','p'],active:['✈️ 已加入查價・看�
 function rqTime(t){if(!t)return '';var d=new Date(+t+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+' 加入';}
 function myCitiesView(){var L=myCities();
   var h='<p class="step" style="margin-top:18px">📍 我加入的城市</p>';
-  if(!L.length)return h+'<div class="panel mycy-empty"><div class="empty">還沒有加入城市。<br>到「查機票」上方的搜尋框輸入城市（例如 清邁、CNX），找不到直飛票時按「➕ 加入查價」，就會出現在這裡。</div><button class="btn" data-act="tab:search">🔎 去搜尋城市</button></div>';
+  if(!L.length)return h+'<div class="panel mycy-empty"><div class="empty">還沒有加入城市。<br>到「查機票 → 想去哪裡？」的搜尋框輸入城市（例如 清邁、CNX），找不到直飛票時按「➕ 加入查價」，就會出現在這裡。</div><button class="btn" data-act="rqgo:s:">🔎 去搜尋城市</button></div>';
   return h+L.map(function(x){var S=RQ_ST[x.st],og=x.origins.map(function(o){return o==='KHH'?'高雄':'台北';}).join('・');
     var tap=x.st==='active'?'rqgo:ns:'+x.code:x.st==='conn'?'rqgo:cn:'+x.code:x.st==='active0'?'rqgo:q:'+x.code:'';
     return '<div class="card mycy"><div class="mycy-h"><b>'+esc(x.name)+'</b> <small>'+esc(x.code)+'</small><button class="mycy-x" aria-label="移除 '+esc(x.name)+'" data-act="rqdel:'+esc(x.code)+'">✕</button></div>'+
@@ -532,7 +532,8 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
       if(D)D.reqCities=(D.reqCities||[]).filter(function(o){return !(o.code===c&&o.n<=1);}).map(function(o){if(o.code===c){o=Object.assign({},o);delete o.mine;}return o;});toast('🗑️ 已移除 '+nm);render();};
     if(x&&!x.srv){done();return;}a.disabled=true;
     post('webUnrequestCity',[{code:c,dev:DEV}],{action:'unrequestCity',code:c,dev:DEV},function(r){if(r&&r.ok)done();else{a.disabled=false;toast((r&&r.error)||'移除失敗，請稍後再試');}});return;}
-  var p=v.split(':'),k=p[1],c=p[2];tab='search';st.step='mode';
+  var p=v.split(':'),k=p[1],c=p[2];tab='search';if(!st.mode)st.mode='nodate';st.step='region';
+  if(k==='s'){FT='ns';DSQ='';render();var q0=$('dsq');if(q0)q0.focus();return;}
   if(k==='cn'){FT='cn';DSQ=c;render();dsUpd();var i=$('dsq');if(i)i.value=c;return;}
   if(k==='q'){FT='ns';var y=myCities().filter(function(o){return o.code===c;})[0];DSQ=y?y.name:c;render();var j=$('dsq');if(j)j.value=DSQ;dsUpd();return;}
   FT='ns';render();var b=document.createElement('button');b.dataset.act='ds:'+c;b.hidden=true;document.body.appendChild(b);b.click();b.remove();},true);
