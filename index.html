@@ -319,6 +319,7 @@ var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fs_myq'));if(Arra
 function myqSave(){try{localStorage.setItem('fs_myq',JSON.stringify(MYQ));}catch(e){}}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
 function PD(){return !!(D&&D.perDevice);}            // 後端 v22 以上＝每支手機一份；舊後端只用本機清單
+var HEALED={};
 function syncMyq(){                                 // 讀完資料後對齊本機清單
   if(!D)return;
   if(PD()){
@@ -328,7 +329,12 @@ function syncMyq(){                                 // 讀完資料後對齊本�
       myDates().forEach(function(q){saveDate(q.from,q.to,q.mode,null,true);});
       return;
     }
-    MYQ=srv;myqSave();
+    // v28.16：本機清單為主，和伺服器合併；伺服器暫時回空／少回（上傳中、備援專案、讀取不完整）時不刪本機的
+    var key=function(q){return q.from+'|'+q.to+'|'+q.mode;},have={};MYQ.forEach(function(q){have[key(q)]=1;});
+    srv.forEach(function(q){if(!have[key(q)]){MYQ.push(q);have[key(q)]=1;}});
+    var sk={};srv.forEach(function(q){sk[key(q)]=1;});
+    if(!D._fb)myDates().forEach(function(q){if(!sk[key(q)]&&!HEALED[key(q)]){HEALED[key(q)]=1;saveDate(q.from,q.to,q.mode,null,true);}});   // 伺服器少了 → 靜默補存（每次開啟最多一次）
+    myqSave();
   }
   D.dates=myDates();
 }
@@ -373,13 +379,13 @@ function cachedNote(){if(!CACHED)return '';var d=new Date(CACHED+8*3600e3);retur
 function load(cb){
   LOADING=true; var done=cb; cb=function(){LOADING=false;done&&done();};
   if(tab==='search'&&st.step==='result')render();
-  var got=function(d){D=d;syncMyq();cb&&cb();if($('dsres'))dsUpd();};
+  var got=function(d,fb){var prev=D;if(fb)d._fb=1;if(prev&&prev.custom&&prev.custom.length&&(!d.custom||!d.custom.length)&&myDates().length){d.custom=prev.custom;}D=d;syncMyq();cb&&cb();if($('dsres'))dsUpd();};
   if (window.google && google.script && google.script.run) {
     google.script.run.withSuccessHandler(got).withFailureHandler(function(){LOADING=false;toast('讀取失敗，請稍後再試');render();}).webGetDeals(DEV);return;}
   if (!API) return cb();
   if(!D){var lg=lgGet();if(lg){D=lg.d;CACHED=lg.t;syncMyq();render();}}
   var seq=++LOAD_SEQ,q='action=deals&dev='+encodeURIComponent(DEV),urls=[API,API,API_WEB],wait=[0,1500,4000],n=0;
-  (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;lgPut(d);got(d);},function(e){
+  (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;var fb=u===API_WEB;if(!fb)lgPut(d);got(d,fb);},function(e){
     if(seq!==LOAD_SEQ)return;console.warn('load',n,e&&e.message);n++;
     if(n<urls.length){setTimeout(go,wait[n]);return;}
     LOADING=false;var lg=lgGet();
@@ -391,7 +397,7 @@ function post(fn,args,body,cb){            // google.script.run（Apps Script �
   else if (API) fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(function(x){return x.json();}).then(cb).catch(function(){cb(null);});
   else cb({ok:true,dates:[]});
 }
-function setDates(r){if(PD()&&r&&r.ok&&r.dates){MYQ=r.dates.map(function(x){return {from:x.from,to:x.to,mode:x.mode};});myqSave();}if(D)D.dates=myDates();}
+function setDates(r){if(PD()&&r&&r.ok&&r.dates){var h={};MYQ.forEach(function(q){h[q.from+'|'+q.to+'|'+q.mode]=1;});r.dates.forEach(function(x){if(!h[x.from+'|'+x.to+'|'+x.mode])MYQ.push({from:x.from,to:x.to,mode:x.mode});});myqSave();}if(D)D.dates=myDates();}
 function delDate(x){MYQ=MYQ.filter(function(q){return !(q.from===x.from&&q.to===x.to&&q.mode===x.mode);});myqSave();if(D)D.dates=myDates();post('webDeleteDate',[x.from,x.to,x.mode,DEV],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode,dev:DEV},function(r){setDates(r);toast(r&&r.ok||!PD()?'🗑️ 已刪除 '+md(x.from)+'–'+md(x.to):(r&&r.error)||'刪除失敗');render();});}
 function clearDates(){
   var mineList=myDates();MYQ=[];myqSave();if(D)D.dates=[];
