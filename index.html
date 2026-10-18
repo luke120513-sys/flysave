@@ -104,7 +104,8 @@ nav button.on{color:var(--g);font-weight:700}
 .links a.pill{cursor:pointer}
 .links a.del{border-color:#E6B0AA;color:#C0392B}
 .yt{display:block;position:relative;width:min(100%,300px);margin:0 auto;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000}
-.yt iframe,.yt img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.yt iframe,.yt img,.yt video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.yt video{object-fit:contain}
 .yt .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,0,0,.9);color:#fff;font-size:28px;line-height:64px;text-align:center;padding-left:4px;box-sizing:border-box}
 footer{text-align:center;font-size:12px;color:#777;line-height:1.9;padding:10px 0 4px}
 footer a{color:#047a35;text-decoration:none;font-weight:700;cursor:pointer}
@@ -1026,12 +1027,12 @@ function terms(){return page('📄 服務條款',
   '<li>請勿以自動化程式大量存取、干擾或濫用本服務。</li>'+
   '<li>本服務可能隨時調整內容或暫停，條款更新會公布在本頁。</li>'+
   '<li>如有問題請來信：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></li></ol>');}
-// 教學影片：換新影片只要改 YT_ID（YouTube 影片／Shorts ID）
+// 教學影片：v28.15 改用網站上的 tutorial.mp4（YT_ID 保留給 App 舊連結，不再使用）
 var YT_ID='z5pa6EZhs1c', YT_URL='https://youtube.com/shorts/'+YT_ID;
-function video(){                          // App（Capacitor WebView）：縮圖→外部 YouTube；網頁：內嵌播放器＋備用連結
-  var thumb='<a class="yt" href="'+YT_URL+'" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/'+YT_ID+'/hqdefault.jpg" alt="使用教學影片"><span class="play">▶</span></a>';
-  var body=window.Capacitor?thumb:'<div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/'+YT_ID+'?playsinline=1&rel=0" title="飛省 FlySave 使用教學" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
-  return '<div class="panel"><p class="step">🎬 使用教學影片（1 分鐘看懂）</p>'+body+'<p style="text-align:center;margin:8px 0 0;font-size:13px"><a href="'+YT_URL+'" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">'+(window.Capacitor?'在 YouTube 打開':'播不出來？在 YouTube 打開')+'</a></p></div>';
+function video(){                          // v28.15：教學影片放在 GitHub 網站（tutorial.mp4），不再用 YouTube
+  var src=(API&&location.hostname.indexOf('github.io')<0&&!/^(localhost|127\.)/.test(location.hostname)?'https://luke120513-sys.github.io/flysave/':'')+'tutorial.mp4?v=2815';
+  var post=src.replace('tutorial.mp4?v=2815','tutorial-cover.jpg?v=2815');
+  return '<div class="panel"><p class="step">🎬 使用教學影片（1 分鐘看懂）</p><div class="yt"><video controls playsinline preload="metadata" poster="'+post+'" src="'+src+'" title="飛省 FlySave 使用教學"></video></div></div>';
 }
 function help(){
   return video()+'<div class="sprow" style="margin:0 0 12px">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>'+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
