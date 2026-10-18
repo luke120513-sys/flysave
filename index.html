@@ -301,6 +301,7 @@ html.dark a,html.dark footer a{color:#8FD3A8}
 html.dark .mopt,html.dark .mopt b,html.dark .tile,html.dark .card,html.dark .annc h3,html.dark h2,html.dark h3,html.dark .dest,html.dark .grid .d,html.dark .wpick{color:#F1EBDD}
 html.dark .links a{border-color:#5FB37E;color:#8FD3A8}html.dark .links a.pri{background:#388153;border-color:#388153;color:#fff}
 html.dark .tile.on,html.dark .mopt .rec,html.dark .cal-head button{background:#1F3528;color:#A8E0BC;border-color:#5FB37E}
+.links a.hotel{border-color:#CE623E;color:#C2410C}html.dark .links a.hotel{border-color:#E08A66;color:#F2A07A}.paxt{font-size:13px;font-weight:700;color:var(--g);margin:2px 0}html.dark .paxt{color:#8FD3A8}.fanchip{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:5px 12px;border-radius:999px;background:#FDEBE3;color:#A8471F;font-size:13px;font-weight:700;border:1px solid #F0C2AE}.fanchip button{border:0;background:none;color:inherit;font-size:15px;padding:0 0 0 4px}html.dark .fanchip{background:#3A2316;color:#F5B58F;border-color:#7A3A1C}
 </style>
 </head>
 <body>
@@ -461,6 +462,7 @@ function render(){
   updTick((D&&D.updatedAt||'')!==window.UPD_LAST);window.UPD_LAST=D&&D.updatedAt||'';
   nfyDot();
   var h = tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='mine'?mine():tab==='promos'?promos():tab==='notify'?notifyView():tab==='help'?help():tab==='feedback'?feedbackView():tab==='announce'?annView():tab==='more'?moreView():tab==='flights'?flightsView():search();
+  if(tab==='search'&&FROMFAN&&st.step==='result')h='<div class="fanchip">🏨 從飯省帶入'+(PAX>1?'・'+PAX+' 人':'')+'<button data-act="fan:x" aria-label="關閉">×</button></div>'+h;
   h=cachedNote()+h;
   if(tab==='notify')h='<button class="back" data-act="nf:back">‹ 返回</button>'+h;
   if(MORE_SUB.indexOf(tab)>=0)h='<button class="back" data-act="tomore">‹ 其他</button>'+h;
@@ -661,7 +663,7 @@ function cnCard(x){var via=(x.via||[]).filter(Boolean);
   return '<div class="card cncard"><div class="dest">'+flag(x)+' '+esc(x.dest)+' <span class="cntag">轉機</span></div><div class="org">'+ORIGIN[x.origin]+'出發</div>'+
   '<div class="price"><small>約 </small>NT$'+num(x.price)+'</div><div class="taxl">來回含稅（Google Flights）</div><div class="info">'+esc([x.airline,x.dates].filter(Boolean).join('｜'))+'</div>'+
   '<div class="info" style="font-size:13px">🔁 '+(x.stops||1)+' 次轉機'+(via.length?'・經 '+esc(via.join('、')):'')+(x.duration?'・總時間 '+esc(x.duration):'')+'</div>'+
-  links(x.link,x.trip)+'</div>';}
+  links(x.link,x.trip,false,x)+'</div>';}
 function cnCards(L){return L.length?L.map(cnCard).join(''):'<p class="dsno">目前沒有轉機結果</p>';}
 function cnMatch(q){q=String(q||'').trim();var L=cnAll();if(!q)return L;var n=dsNorm(q);return L.filter(function(x){return dsScore(String(x.code).toUpperCase(),x.dest||'',q.toLowerCase())<99||(x.country||'').indexOf(n)>=0;});}
 function dsBody(){if(FT==='cn'&&cnAll().length)return cnCards(cnMatch(DSQ));return DSQ.trim()?dsRes():rqChips();}
@@ -704,15 +706,29 @@ function ordered(items){
   });
 }
 function taxLine(x){return x&&x.taxIncluded===false&&x.priceBase?'未稅 NT$'+num(x.priceBase)+'＋稅費約 NT$'+num(x.taxEstimate||0)+(x.taxSource==='estimate'?'（估算）':''):'';}
-function taxDiv(x,promo){var t=taxLine(x);return '<div class="taxl">'+esc(promo?(t?'含稅總價｜'+t:'含稅總價'):(t||'來回含稅'))+'</div>';}
+function taxDiv(x,promo){var t=taxLine(x),pp=+(x.priceTotal||x.price||0);return '<div class="taxl">'+esc(promo?(t?'含稅總價｜'+t:'含稅總價'):(t||'來回含稅'))+'</div>'+(PAX>1&&pp&&!promo?'<div class="paxt">👥 '+PAX+' 人總價 約 NT$'+num(pp*PAX)+'（每人 NT$'+num(pp)+' ×'+PAX+'）</div>':'');}
 function meta(x){
   var c=checked(x), a=x.alt&&x.alt.price?(SRC[x.alt.source]||x.alt.source||'其他網站')+'：約 NT$'+num(x.alt.price)+(x.alt.airline?'（'+x.alt.airline+'）':''):'';
   var cs=x.cheapestSeller&&x.cheapestSeller.name&&x.cheapestSeller.price&&+x.cheapestSeller.price<=+(x.priceTotal||x.price||0)?'🏷️ 最便宜平台：'+x.cheapestSeller.name+' NT$'+num(x.cheapestSeller.price)+(x.cheapestSeller.separate?'（分開購票）':''):'';
   return '<div class="meta">'+(cs?'<span class="seller">'+esc(cs)+'</span><br>':'')+(c?'🔎 '+esc(c)+'<br>':'')+(a?'<span class="alt">↔️ '+esc(a)+'</span>':'')+'</div>';
 }
-function links(l,t,small){
+
+// v28.21 飛省↔飯省連動
+var FAN_URL='https://luke120513-sys.github.io/fansave/';
+function addDay(d,n){var t=new Date(d+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10);}
+function hm(t){var m=String(t||'').match(/(\d{1,2}):(\d\d)/);return m?(+m[1])*60+(+m[2]):null;}
+function hotelUrl(x,p){p=p||x;var q=x.query||{},dep=(x.mode==='exact'&&q.from)||x.depart||q.from||st.dep,ret=(x.mode==='exact'&&q.to)||x.return||q.to||st.ret,c=String(x.code||'').toUpperCase();
+  if(!/^[A-Z]{3}$/.test(c))return '';var u=FAN_URL+'?city='+c;
+  if(/^\d{4}-\d\d-\d\d$/.test(dep||'')&&/^\d{4}-\d\d-\d\d$/.test(ret||'')){var a=p.arrTime||x.arrTime,d=p.depTime||x.depTime,ind=dep;
+    if(/\+1/.test(a||''))ind=addDay(dep,1);else if(hm(a)!=null&&hm(d)!=null&&hm(a)<hm(d))ind=addDay(dep,1);
+    if(ind<ret)u+='&in='+ind+'&out='+ret;}
+  return u+'&guests='+(PAX>1?PAX:2)+'&from=flysave';}
+function hotelA(x,p){var u=hotelUrl(x,p);return u?'<a class="hotel" href="'+esc(u)+'" target="_blank" rel="noopener">🏨 查飯店</a>':'';}
+var PAX=1,FROMFAN=false;
+function links(l,t,small,x){
   var b=[]; if(okUrl(l))b.push('<a class="pri" href="'+esc(l)+'" target="_blank" rel="noopener">Google'+(small?'':' 訂票')+'</a>');
   if(okUrl(t))b.push('<a'+(b.length?'':' class="pri"')+' href="'+esc(t)+'" target="_blank" rel="noopener">Trip.com'+(small?'':' 訂票')+'</a>');
+  if(x){var hb=hotelA(x);if(hb)b.push(hb);}
   return b.length?'<div class="links'+(small?' small':'')+'">'+b.join('')+'</div>':'';
 }
 // v28.17：CP 模式才可能挪日期，清楚標出哪一天不同；「只查指定日期」永遠不挪
@@ -736,7 +752,7 @@ function fareCard(x,grp,showOrg){
   var bl=bagLine(x);if(bl)h+='<div class="bagl'+(x.bagIncluded?' inc':'')+'">'+esc(bl)+'</div>';
   if(x.bag)h+='<div class="info" style="font-size:12px">🧳 '+esc(x.bag)+'</div>';
   if(x.duration)h+='<div class="info" style="font-size:12px;color:#999">⏱ '+esc(x.duration)+'</div>';
-  return h+meta(x)+links(x.link,x.trip)+'</div>';
+  return h+meta(x)+links(x.link,x.trip,false,x)+'</div>';
 }
 function exactCard(x,grp,showOrg){
   var o=(x.options&&x.options.length?x.options:[x]).slice().sort(function(a,b){return kp(a)-kp(b);});
@@ -747,7 +763,7 @@ function exactCard(x,grp,showOrg){
     h+='<div class="opt"><div class="r"><span>'+(j+1)+') '+esc(p.airline||x.airline||'航班')+'</span><span>約 NT$'+num(p.price)+'</span></div>'+
       ((out||bk)?'<div style="color:#555;font-size:12px">去 '+esc(out||'?')+'｜回 '+esc(bk||'?')+'</div>':'')+(p.bag?'<div style="color:#555;font-size:12px">🧳 '+esc(p.bag)+'</div>':'')+(bagLine(p)?'<div class="bagl'+(p.bagIncluded?' inc':'')+'" style="font-size:12px">'+esc(bagLine(p))+'</div>':'')+links(p.link||x.link,p.trip||x.trip,true)+'</div>';
   });
-  return h+'</div>';
+  var hb=hotelA(x,o[0]);return h+(hb?'<div class="links">'+hb+'</div>':'')+'</div>';
 }
 var BEST=null;
 function cardsHtml(items,make){
@@ -794,7 +810,7 @@ function lhCard(x,grp,kind,showOrg){
     '<div class="info" style="font-size:13px">🧳 '+(x.bagIncluded===false?'廉航，託運行李另計（未查證）':'行李未查證'+(/傳統/.test(x.bag||'')?'（傳統航空通常含託運）':''))+'</div>'+
     (x.warnings||[]).map(function(w){return '<div class="lhw">⚠️ '+esc(w)+'</div>';}).join('')+
     (kind==='connect'&&x.score?'<div class="meta">CP分數 '+num(x.score)+'（越低越划算）</div>':'')+
-    links(x.link,x.trip)+'</div>';
+    links(x.link,x.trip,false,x)+'</div>';
   return h;}
 function lhResult(){
   var all=lhAll(), items=all.filter(function(x){return (st.origin==='ALL'||x.origin===st.origin)&&orgOk(x.origin)&&(!st.lhSub||st.lhSub==='全部'||x.sub===st.lhSub)&&(st.region!=='遠程'||!st.city||st.city==='全部'||x.code===st.city);}), p=lhPick(items,LHK);
@@ -809,7 +825,7 @@ function lhResult(){
 function moreView(){
   function row(t,ic,ti,d){return '<button class="mopt" data-act="go:'+t+'"><span class="ic">'+ic+'</span><span class="tx"><b>'+ti+'</b><span>'+d+'</span></span><span class="ar">›</span></button>';}
   var th='<div class="panel"><p class="step">🎨 外觀</p><div class="chips">'+[['auto','跟隨系統'],['light','淺色'],['dark','深色']].map(function(t){return chip(t[1],'theme:'+t[0],THEME===t[0]);}).join('')+'</div></div>';
-  return th+'<div class="panel"><p class="step">☰ 其他</p>'+row('feedback','💬','意見回饋','功能建議、問題回報，我們都會看')+row('help','💡','說明','按鈕說明、特價通知、起飛前提醒')+row('about','✈️','關於我們','服務說明')+row('privacy','🔒','隱私權政策','')+row('terms','📄','服務條款','')+'</div>';
+  return th+'<div class="panel"><p class="step">☰ 其他</p>'+row('feedback','💬','意見回饋','功能建議、問題回報，我們都會看')+row('help','💡','說明','按鈕說明、特價通知、起飛前提醒')+row('about','✈️','關於我們','服務說明')+row('privacy','🔒','隱私權政策','')+row('terms','📄','服務條款','')+'<a class="mopt" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><span class="ic">🏨</span><span class="tx"><b>飯省 FanSave</b><span>姊妹站：找 CP 值最高的飯店</span></span><span class="ar">›</span></a></div>';
 }
 /* ---------- v24：意見回饋 ---------- */
 var FB_CAT='功能建議', FB_BUSY=false;
@@ -1007,6 +1023,7 @@ function flightsView(){
     return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+(r&&r.flights&&r.flights[0]?' <small style="font-size:14px;color:#777">'+esc(r.flights[0].airline)+'</small>':'')+'</div>'+b+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('↻ 重新整理','mf:ref')+chip('刪除','mf:del:'+i).replace('class="chip"','class="chip mfdel"')+'</div></div>';}).join('');
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
+  if(v==='fan:x'){e.stopPropagation();FROMFAN=false;PAX=1;LAST_HTML=null;render();return;}
   if(v==='th:toggle'){e.stopPropagation();THEME=document.documentElement.classList.contains('dark')?'light':'dark';try{localStorage.setItem('fly_theme',THEME);}catch(x){}themeApply();LAST_HTML=null;render();return;}
   if(v.indexOf('theme:')===0){e.stopPropagation();THEME=v.slice(6);try{localStorage.setItem('fly_theme',THEME);}catch(x){}themeApply();LAST_HTML=null;render();}
   else if(v==='share'){shareSite();}
@@ -1087,7 +1104,7 @@ function viewsLoad(){if(!API||GAS)return;var inc='0';try{if(!sessionStorage.getI
 setTimeout(viewsLoad,1500);
 function footer(){
   var sp='<div class="sprow">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>';
-  return '<footer>'+sp+viewsTag()+'<div class="flinks"><a data-act="tab:about">關於我們</a>｜<a data-act="tab:privacy">隱私權政策</a>｜<a data-act="tab:terms">服務條款</a></div>'+
+  return '<footer>'+sp+viewsTag()+'<div class="flinks"><a data-act="tab:about">關於我們</a>｜<a data-act="tab:privacy">隱私權政策</a>｜<a data-act="tab:terms">服務條款</a>｜<a href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener">🏨 飯省 FanSave</a></div>'+
     '<div>聯絡我們：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></div><div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.21</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
@@ -1273,7 +1290,19 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
   if(LOGO)$('logo').src=LOGO; else $('logo').style.display='none';
   var h=location.hash.replace(/^#/,''); if(h){var q={};h.split('&').forEach(function(p){var kv=p.split('=');q[kv[0]]=decodeURIComponent(kv[1]||'');});
     if(q.tab)tab=q.tab; if(q.route==='notify'||q.route==='hot')tab='notify'; if(q.id){NFY_HL=q.id;ANN_HL=q.id;} ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});if(st.step==='origin')st.step='region';}
-  render(); if(!D)load(function(){render();hlScroll();});
+
+  (function(){var P=new URLSearchParams(location.search);if(!P.get('to'))return;var dep=P.get('dep')||'',ret=P.get('ret')||'',re=/^\d{4}-\d\d-\d\d$/;
+    PAX=Math.max(1,Math.min(9,parseInt(P.get('pax'),10)||1));FROMFAN=P.get('from')==='fansave';var og=(P.get('orig')||'').toUpperCase();if(og==='TPE'||og==='KHH')ORG=[og];
+    window.DEEP={to:P.get('to'),dep:re.test(dep)?dep:'',ret:re.test(ret)?ret:''};tab='search';
+    try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}})();
+  window.deepApply=function(){var q=window.DEEP;if(!q)return;var raw=String(q.to).trim(),u=raw.toUpperCase(),L=D?dsList():[],d=null;
+    d=L.filter(function(o){return o.code===u;})[0];if(!d&&L.length){var bs=99;L.forEach(function(o){var sc=dsScore(o.code,o.dest,raw.toLowerCase());if(sc<bs){bs=sc;d=o;}});if(bs>=99)d=null;}
+    if(!d&&!D)return; /* 等資料載入再判斷 */
+    window.DEEP=null;if(q.dep&&q.ret&&q.dep<q.ret){st.mode='exact';st.dep=q.dep;st.ret=q.ret;}
+    if(d){st.rq=null;st.city=d.code;st.lhSub=null;if(d.region==='遠程'){st.region='遠程';st.country=null;st.lhSub=d.sub||'全部';}else{st.region=d.region==='港澳'?'港澳':d.region;st.country=d.region==='東南亞'?d.country:null;}st.step=st.mode?'result':'mode';}
+    else{var r=rqResolve(raw);if(r){st.rq=r.code;st.city=r.code;st.region='全部';st.country=null;st.step='result';}}};
+  deepApply();
+  render(); if(!D)load(function(){deepApply();render();hlScroll();});
 })();
 </script>
 </body>
