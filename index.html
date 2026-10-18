@@ -301,7 +301,7 @@ html.dark a,html.dark footer a{color:#8FD3A8}
 html.dark .mopt,html.dark .mopt b,html.dark .tile,html.dark .card,html.dark .annc h3,html.dark h2,html.dark h3,html.dark .dest,html.dark .grid .d,html.dark .wpick{color:#F1EBDD}
 html.dark .links a{border-color:#5FB37E;color:#8FD3A8}html.dark .links a.pri{background:#388153;border-color:#388153;color:#fff}
 html.dark .tile.on,html.dark .mopt .rec,html.dark .cal-head button{background:#1F3528;color:#A8E0BC;border-color:#5FB37E}
-.links a.hotel{border-color:#CE623E;color:#C2410C}html.dark .links a.hotel{border-color:#E08A66;color:#F2A07A}.paxt{font-size:13px;font-weight:700;color:var(--g);margin:2px 0}html.dark .paxt{color:#8FD3A8}.fanchip{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:5px 12px;border-radius:999px;background:#FDEBE3;color:#A8471F;font-size:13px;font-weight:700;border:1px solid #F0C2AE}.fanchip button{border:0;background:none;color:inherit;font-size:15px;padding:0 0 0 4px}html.dark .fanchip{background:#3A2316;color:#F5B58F;border-color:#7A3A1C}
+.links a.hotel{border-color:#CE623E;color:#C2410C}html.dark .links a.hotel{border-color:#E08A66;color:#F2A07A}.paxt{font-size:13px;font-weight:700;color:var(--g);margin:2px 0}html.dark .paxt{color:#8FD3A8}.fanchip{display:flex;width:fit-content;align-items:center;gap:6px;margin:0 0 10px;padding:5px 12px;border-radius:999px;background:#FDEBE3;color:#A8471F;font-size:13px;font-weight:700;border:1px solid #F0C2AE}.fanchip button{border:0;background:none;color:inherit;font-size:15px;padding:0 0 0 4px}html.dark .fanchip{background:#3A2316;color:#F5B58F;border-color:#7A3A1C}
 </style>
 </head>
 <body>
@@ -757,7 +757,7 @@ function fareCard(x,grp,showOrg){
 function exactCard(x,grp,showOrg){
   var o=(x.options&&x.options.length?x.options:[x]).slice().sort(function(a,b){return kp(a)-kp(b);});
   var h='<div class="card">'+(grp?'<div class="grp">'+esc(grp)+'</div>':'')+'<div class="dest">'+flag(x)+' '+esc(x.dest)+bestTag(x)+'</div>'+(showOrg?'<div class="org">'+ORIGIN[x.origin]+'出發</div>':'')+
-    '<div class="info">📅 '+esc(md((x.query&&x.query.from)||x.depart||st.dep)+'–'+md((x.query&&x.query.to)||x.return||st.ret))+'（你選的日期，不會更動）</div><div class="info" style="color:var(--g);font-weight:800">'+o.length+' 個選項，最低 約 NT$'+num(o[0].price)+'</div>'+meta(x);
+    '<div class="info">📅 '+esc(md((x.query&&x.query.from)||x.depart||st.dep)+'–'+md((x.query&&x.query.to)||x.return||st.ret))+'（你選的日期，不會更動）</div><div class="info" style="color:var(--g);font-weight:800">'+o.length+' 個選項，最低 約 NT$'+num(o[0].price)+'</div>'+(PAX>1?'<div class="paxt">👥 '+PAX+' 人總價 約 NT$'+num(o[0].price*PAX)+'（每人 ×'+PAX+'）</div>':'')+meta(x);
   o.forEach(function(p,j){
     var out=[p.flightOut,(p.depTime||'')+(p.arrTime?'→'+p.arrTime:'')].filter(Boolean).join(' '), bk=[p.flightBack,(p.retDepTime||'')+(p.retArrTime?'→'+p.retArrTime:'')].filter(Boolean).join(' ');
     h+='<div class="opt"><div class="r"><span>'+(j+1)+') '+esc(p.airline||x.airline||'航班')+'</span><span>約 NT$'+num(p.price)+'</span></div>'+
