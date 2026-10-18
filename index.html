@@ -270,6 +270,8 @@ html.dark [style*="background:#FDEDEC"]{background:#3D1B18!important;color:#FF8A
 .sprow{gap:8px}.sprow .socg{gap:8px}.sprow .sponsor{height:36px;font-size:13.5px;padding:0 14px;border-width:1.5px;border-radius:18px;gap:5px;background:transparent}.sprow .sponsor.soc{width:36px;height:36px;padding:0}.sprow .sponsor.soc svg{width:17px;height:17px}.sprow .sponsor:hover{background:rgba(6,199,85,.08)}@media(max-width:360px){.sprow{gap:6px}.sprow .socg{gap:6px}.sprow .sponsor{padding:0 10px;font-size:13px;height:34px}.sprow .sponsor.soc{width:34px;height:34px;padding:0}}
 .sprow .sponsor,.sprow .sponsor:visited{color:var(--g)!important;border-color:var(--g)!important}html.dark .sprow .sponsor,html.dark .sprow .sponsor:visited{color:#6EDC9A!important;border-color:#2FAE63!important}
 .dsbox{margin:4px 0 12px}.dsin{display:flex;align-items:center;gap:8px;border:1.5px solid #d7dee6;border-radius:14px;padding:0 6px 0 12px;background:#fff;color:#889}.dsin:focus-within{border-color:var(--g);box-shadow:0 0 0 3px rgba(46,125,50,.15)}.dsin input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-family:inherit;font-size:16px;padding:12px 0;color:#222;-webkit-appearance:none;appearance:none}.dsin input::-webkit-search-cancel-button{display:none}.dsx{border:0;background:#e9edf1;color:#556;width:28px;height:28px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex:none}.dsx[hidden]{display:none}.dschips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.dschip{display:inline-flex;align-items:baseline;gap:4px;min-height:42px;padding:8px 14px;border:1px solid #cfe3d0;border-radius:22px;background:#f2f8f2;font-family:inherit;font-size:15px;color:#1b3d1d;cursor:pointer}.dschip small{font-size:12px;color:#6a7a6b}.dschip:active{transform:scale(.97)}.dsno{margin:10px 2px 0;font-size:14px;color:#777}html.dark .dsin{background:#1e2329;border-color:#3a434d;color:#9aa}html.dark .dsin input{color:#eee;background:transparent!important;border:0!important;box-shadow:none!important}html.dark .dsx{background:#333b44;color:#ccd}html.dark .dschip{background:#22302a;border-color:#3d5a44;color:#e3f1e4}html.dark .dschip small{color:#9fb5a2}html.dark .dsno{color:#aab}.cntag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600;background:#fff1e0;color:#a24d00;border:1px solid #f3cf9f;vertical-align:middle}html.dark .cntag{background:#3a2a18;color:#ffc27a;border-color:#6a4a22}.cncard{border-left:4px solid #f0a65a}.rqbox{margin-top:10px;padding:12px;border:1px dashed #b9cbb9;border-radius:14px;background:#fafcf9}.rqbox p{margin:0 0 8px;font-size:14px;color:#555}.rqadd{min-height:42px;padding:9px 16px;border:0;border-radius:22px;background:var(--g);color:#fff;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}.rqadd[disabled]{opacity:.6}.rqst{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rqchip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:12.5px;background:#fff6e0;color:#7a5600;border:1px solid #f0dca6}.rqchip.none{background:#f3f3f3;color:#666;border-color:#ddd}.rqchip.active{background:#e8f5e9;color:#1b5e20;border-color:#c8e6c9}html.dark .rqbox{background:#1c2320;border-color:#3d5a44}html.dark .rqbox p{color:#c3ccc5}html.dark .rqchip{background:#3a3220;color:#f3d98b;border-color:#5a4b25}html.dark .rqchip.none{background:#2a2e33;color:#aab;border-color:#3a434d}html.dark .rqchip.active{background:#1f3324;color:#a5d6a7;border-color:#2e5a35}
+.mycy{padding:12px 14px}.mycy-h{display:flex;align-items:baseline;gap:6px;font-size:16px}.mycy-h small{color:#889;font-size:12px}.mycy-x{margin-left:auto;border:0;background:transparent;color:#999;font-size:16px;padding:2px 6px;cursor:pointer;border-radius:8px}.mycy-x:hover{background:rgba(192,57,43,.1);color:#C0392B}.mycy-i{font-size:13px;color:#667;margin:4px 0 8px}.mycy-s{display:inline-block;border:0;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}span.mycy-s{cursor:default}.mycy-s.p{background:#FFF4D6;color:#8A5A00}.mycy-s.a{background:#E3F2E5;color:#1E6B2A}.mycy-s.n{background:#F1F1F3;color:#5b5b66}.mycy-s.c{background:#E4EEFB;color:#1F4E8C}
+html.dark .mycy-i{color:#aab}html.dark .mycy-s.p{background:#4a3a10;color:#FFD98A}html.dark .mycy-s.a{background:#1d3d24;color:#9FE0A9}html.dark .mycy-s.n{background:#33343a;color:#cfd0d8}html.dark .mycy-s.c{background:#1c2f4a;color:#A9C9F5}
 </style>
 </head>
 <body>
@@ -496,11 +498,44 @@ function rqChips(){var L=rqList().filter(function(x){return x.mine||RQ_LOCAL.ind
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rq:"]');if(!a)return;e.preventDefault();e.stopPropagation();
   var v=a.dataset.act.slice(3).split('|'),code=v[0],name=v[1],og=v[2];a.disabled=true;a.textContent='送出中…';
   post('webRequestCity',[{code:code,name:name,origin:og,dev:DEV}],{action:'requestCity',code:code,name:name,origin:og,dev:DEV},function(r){
-    if(r&&r.ok){if(RQ_LOCAL.indexOf(code)<0){RQ_LOCAL.push(code);try{localStorage.setItem('fs_rq',JSON.stringify(RQ_LOCAL.slice(-20)));}catch(_){}}
+    if(r&&r.ok){if(RQ_LOCAL.indexOf(code)<0){RQ_LOCAL.push(code);try{localStorage.setItem('fs_rq',JSON.stringify(RQ_LOCAL.slice(-20)));}catch(_){}}rqMetaSet(code,{name:name,og:og,t:Date.now()});
       if(D){D.reqCities=(D.reqCities||[]).filter(function(x){return x.code!==code;});var c=r.city||{code:code,name:name,status:'pending'};c.mine=true;D.reqCities.push(c);}
       toast(r.city&&r.city.status==='none'?'🚫 '+name+' 目前查無直飛':'✅ 已加入，下一輪查價會一起查');
       var box=a.parentNode;if(box)box.innerHTML='<p>✅ 已加入，下一輪查價（每天 07:00、15:00、23:00）會一起查，有直飛票就會出現。</p><div class="rqst"><span class="rqchip">⏳ '+esc(name)+' 待查價</span></div>';}
     else{a.disabled=false;a.textContent='➕ 加入查價';toast((r&&r.error)||'送出失敗，請稍後再試');}});},true);
+
+// v28.11：我的查詢 →「我加入的城市」（這台裝置自己的 requestCity 登記；可移除）
+function rqMeta(){try{return JSON.parse(localStorage.getItem('fs_rqm'))||{};}catch(e){return {};}}
+function rqMetaSet(c,v){var m=rqMeta();if(v)m[c]=v;else delete m[c];try{localStorage.setItem('fs_rqm',JSON.stringify(m));}catch(e){}}
+function rqHasNs(c){try{return dsList().some(function(o){return o.code===c;});}catch(e){return false;}}
+function rqHasCn(c){return ((D&&D.reqConn)||[]).some(function(x){return x.code===c&&+x.price>0&&(!x.expires||Date.parse(x.expires)>Date.now());});}
+function myCities(){var m=rqMeta(),out=[],seen={};
+  rqList().forEach(function(x){if(!(x.mine||RQ_LOCAL.indexOf(x.code)>=0))return;seen[x.code]=1;var l=m[x.code]||{};
+    var s=x.status==='active'?'active':x.status==='none'?(rqHasCn(x.code)?'conn':'none'):'pending';if(s==='active'&&!rqHasNs(x.code))s='active0';
+    out.push({code:x.code,name:x.name||l.name||x.code,origins:x.origins||[],t:x.t||l.t||0,st:s,srv:true});});
+  RQ_LOCAL.forEach(function(c){if(seen[c])return;var l=m[c]||{};var s=rqHasCn(c)?'conn':null;if(!s)return;   // 伺服器已移除（轉機查完）但結果還在
+    out.push({code:c,name:l.name||c,origins:l.og==='both'||!l.og?['TPE','KHH']:[l.og],t:l.t||0,st:s,srv:false});});
+  return out.sort(function(a,b){return (b.t||0)-(a.t||0);});}
+var RQ_ST={pending:['⏳ 待查價','p'],active:['✈️ 已加入查價・看直飛票','a'],active0:['✈️ 已加入查價','a'],none:['🚫 無直飛・下一輪查轉機','n'],conn:['🔁 轉機結果已出爐・查看','c']};
+function rqTime(t){if(!t)return '';var d=new Date(+t+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+' 加入';}
+function myCitiesView(){var L=myCities();
+  var h='<p class="step" style="margin-top:18px">📍 我加入的城市</p>';
+  if(!L.length)return h+'<div class="panel mycy-empty"><div class="empty">還沒有加入城市。<br>到「查機票」上方的搜尋框輸入城市（例如 清邁、CNX），找不到直飛票時按「➕ 加入查價」，就會出現在這裡。</div><button class="btn" data-act="tab:search">🔎 去搜尋城市</button></div>';
+  return h+L.map(function(x){var S=RQ_ST[x.st],og=x.origins.map(function(o){return o==='KHH'?'高雄':'台北';}).join('・');
+    var tap=x.st==='active'?'rqgo:ns:'+x.code:x.st==='conn'?'rqgo:cn:'+x.code:x.st==='active0'?'rqgo:q:'+x.code:'';
+    return '<div class="card mycy"><div class="mycy-h"><b>'+esc(x.name)+'</b> <small>'+esc(x.code)+'</small><button class="mycy-x" aria-label="移除 '+esc(x.name)+'" data-act="rqdel:'+esc(x.code)+'">✕</button></div>'+
+      '<div class="mycy-i">🛫 '+og+'出發'+(x.t?'・'+rqTime(x.t):'')+'</div>'+
+      (tap?'<button class="mycy-s '+S[1]+'" data-act="'+tap+'">'+S[0]+' ›</button>':'<span class="mycy-s '+S[1]+'">'+S[0]+'</span>')+'</div>';}).join('');}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rqgo:"],[data-act^="rqdel:"]');if(!a)return;e.preventDefault();e.stopPropagation();var v=a.dataset.act;
+  if(v.indexOf('rqdel:')===0){var c=v.slice(6),x=myCities().filter(function(o){return o.code===c;})[0],nm=x?x.name:c;if(!confirm('移除「'+nm+'」？之後不會再幫你查這個城市。'))return;
+    var done=function(){RQ_LOCAL=RQ_LOCAL.filter(function(k){return k!==c;});try{localStorage.setItem('fs_rq',JSON.stringify(RQ_LOCAL));}catch(_){}rqMetaSet(c,null);
+      if(D)D.reqCities=(D.reqCities||[]).filter(function(o){return !(o.code===c&&o.n<=1);}).map(function(o){if(o.code===c){o=Object.assign({},o);delete o.mine;}return o;});toast('🗑️ 已移除 '+nm);render();};
+    if(x&&!x.srv){done();return;}a.disabled=true;
+    post('webUnrequestCity',[{code:c,dev:DEV}],{action:'unrequestCity',code:c,dev:DEV},function(r){if(r&&r.ok)done();else{a.disabled=false;toast((r&&r.error)||'移除失敗，請稍後再試');}});return;}
+  var p=v.split(':'),k=p[1],c=p[2];tab='search';st.step='mode';
+  if(k==='cn'){FT='cn';DSQ=c;render();dsUpd();var i=$('dsq');if(i)i.value=c;return;}
+  if(k==='q'){FT='ns';var y=myCities().filter(function(o){return o.code===c;})[0];DSQ=y?y.name:c;render();var j=$('dsq');if(j)j.value=DSQ;dsUpd();return;}
+  FT='ns';render();var b=document.createElement('button');b.dataset.act='ds:'+c;b.hidden=true;document.body.appendChild(b);b.click();b.remove();},true);
 // v28.9：直飛／轉機 篩選（轉機＝無直飛城市的一次性查價，保留 3 天；不列入好價通知、沒有基準價）
 var FT='ns';
 function cnAll(){var now=Date.now();return ((D&&D.reqConn)||[]).filter(function(x){var e=Date.parse(x.expires||'');return orgOk(x.origin)&&(isNaN(e)||e>now)&&+x.price>0;}).sort(function(a,b){return a.price-b.price;});}
@@ -523,7 +558,7 @@ function cities(){            // v24：這個地區／國家實際有資料的�
 }
 function goCity(){st.city=null;if(cities().length>=2)st.step='city';else st.step='result';}
 function myqCard(){var ds=myDates();
-  return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選日期查一次就會出現在這裡')+'</span></span><span class="ar">›</span></button>';}
+  return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選日期查一次就會出現在這裡')+(function(){var L=myCities();if(!L.length)return '';var cn=L.filter(function(x){return x.st==='conn'||x.st==='active';}).length;return '<br>📍 加入的城市：'+L.slice(0,3).map(function(x){return esc(x.name);}).join('、')+(L.length>3?' 等 '+L.length+' 個':'')+(cn?'・'+cn+' 個有結果':'');})()+'</span></span><span class="ar">›</span></button>';}
 function calendar(){
   var min=addDays(today(),1), max=addDays(today(),180), m=st.month||min.slice(0,7);
   if(st.dep&&!st.ret&&addDays(st.dep,30)>max)max=addDays(st.dep,30);
@@ -853,7 +888,7 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 var MODE_ICON={cp:'🏆',exact:'📅'};
 function mine(){
   var ds=myDates();
-  if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有查詢過的日期。<br>按「查機票」選日期，查過的日期會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>';
+  if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有查詢過的日期。<br>按「查機票」選日期，查過的日期會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>'+myCitiesView();
   var h='<p class="summary">📋 我的查詢（這支手機自己的，最多 5 組）\n點一組日期就能看結果，每天 07:00／15:00／23:00 更新。</p>'+orgBar();
   ds.forEach(function(x,i){
     var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to&&orgOk(c.origin);});
@@ -862,7 +897,7 @@ function mine(){
       '<div class="info">'+esc(MODE[x.mode])+'</div><div class="info" style="color:'+(n.length?'var(--g)':'var(--tip)')+';font-weight:700;margin-top:4px">'+(n.length?n.length+' 個目的地，最低 約 NT$'+num(low):'⏳ 還在查，下一次查詢後就有結果')+'</div></button>'+
       '<div class="links small"><a data-act="open:'+i+'" class="pill">看結果</a><a data-act="del:'+i+'" class="pill del">刪除</a></div></div>';
   });
-  return h+'<button class="btn" style="background:#fff;color:#C0392B;border:2px solid #E6B0AA" data-act="clear">清除我的所有日期</button>';
+  return h+'<button class="btn" style="background:#fff;color:#C0392B;border:2px solid #E6B0AA" data-act="clear">清除我的所有日期</button>'+myCitiesView();
 }
 var NFY_HL='';
 function notifyView(){
