@@ -621,7 +621,7 @@ function nfyDot(){var e=$('nfyn'),b=$('nfybell');if(!e||!b)return;if(D&&localSto
 function annDot(){var e=$('annn');if(!e)return;var n=annUnread().length;e.textContent=n>9?'9+':n?String(n):'';e.classList.toggle('on',n>0);$('annbell').setAttribute('aria-label','公告'+(n?'（'+n+' 則未讀）':''));}
 function annSeen(){var u=annUnread();if(!u.length)return;u.forEach(function(a){ANN_NEW[a.id]=1;});annMark(u.map(function(a){return a.id;}));annDot();}
 function annWhen(a){var t=new Date(Date.parse(a.createdAt)+8*3600e3);return isNaN(t)?'':(t.getUTCFullYear()+'/'+(t.getUTCMonth()+1)+'/'+t.getUTCDate());}
-function annBanner(){var dis=lsg('fs_ann_dis',[]),a=annUnread().filter(function(x){return dis.indexOf(x.id)<0;})[0];if(!a)return '';
+function annBanner(){var dis=lsg('fs_ann_dis',[]),L=anns().slice().sort(function(x,y){return (Date.parse(y.createdAt)||0)-(Date.parse(x.createdAt)||0);}),a=L.filter(function(x){return x.pinned;})[0]||L[0];if(!a||dis.indexOf(a.id)>=0)return '';
   return '<div class="annb'+(a.level==='important'?' imp':'')+'"><button class="ao" data-act="an:open:'+esc(a.id)+'"><b>'+ANN_CATS[annCat(a)][0]+' '+esc(a.title)+'</b>'+(a.body?'<span>'+esc(a.body)+'</span>':'')+'</button><button class="ax" aria-label="關閉公告" data-act="an:x:'+esc(a.id)+'">×</button></div>';}
 var ANN_CAT='system',ANN_CTY='';
 var ANN_CATS={system:['🛠️','系統更新','#1E88E5','#E3F2FD'],travel:['🧳','旅遊資訊','#2E7D32','#E8F5E9'],special:['⚠️','特殊公告','#E65100','#FFF3E0']};
