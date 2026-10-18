@@ -527,9 +527,9 @@ function dsScore(code,dest,q){if(!q)return 99;var raw=q,n=dsNorm(q),lc=code.toLo
   if(best===99&&nq.length===3&&lc.indexOf(nq)===0)best=5;
   return best;}
 function dsMatch(q){q=String(q||'').trim();if(!q)return null;var raw=q.toLowerCase(),n=dsNorm(q);return dsList().map(function(d){var sc=dsScore(d.code,d.dest,raw);if(sc===99){var ce=CTRY_EN[d.label]||CTRY_EN[d.country]||'';if(d.label.indexOf(n)>=0||d.country.indexOf(n)>=0||(d.region||'').indexOf(n)>=0)sc=6;else if(n.length>=3&&(' '+ce).indexOf(' '+n)>=0)sc=7;}return {d:d,s:sc};}).filter(function(o){return o.s<99;}).sort(function(a,b){return a.s-b.s;}).map(function(o){return o.d;});}
-function rqMatches(q){var have={};dsList().forEach(function(d){have[d.code]=1;});return rqList().filter(function(x){return !have[x.code]&&x.status!=='active'&&dsScore(x.code,x.name||'',String(q).toLowerCase())<99;});}
-function rqBadge(x){return x.status==='none'?(rqHasCn(x.code)?'🔁 有轉機票':'無直飛・'+nextRun().replace('今天 ','')+' 更新'):'待查・'+nextRun().replace('今天 ','')+' 更新';}
-function rqChip(x){return '<button class="dschip rqc" data-act="rqci:'+esc(x.code)+'">'+(x.status==='none'?'🔁':'⏳')+' <b>'+esc(x.name||x.code)+'</b> <small>'+esc(x.code)+'</small> <span class="rqbadge">'+esc(rqBadge(x))+'</span></button>';}
+function rqMatches(q){var have={};dsList().forEach(function(d){have[d.code]=1;});return rqList().filter(function(x){return !have[x.code]&&dsScore(x.code,x.name||'',String(q).toLowerCase())<99;});}
+function rqBadge(x){return x.status==='active'?'已加入・'+nextRun().replace('今天 ','')+' 更新':x.status==='none'?(rqHasCn(x.code)?'🔁 有轉機票':'無直飛・'+nextRun().replace('今天 ','')+' 更新'):'待查・'+nextRun().replace('今天 ','')+' 更新';}
+function rqChip(x){return '<button class="dschip rqc" data-act="rqci:'+esc(x.code)+'">'+(x.status==='none'?'🔁':x.status==='active'?'✈️':'⏳')+' <b>'+esc(x.name||x.code)+'</b> <small>'+esc(x.code)+'</small> <span class="rqbadge">'+esc(rqBadge(x))+'</span></button>';}
 function dsRes(){var r=dsMatch(DSQ);if(r===null)return '';if(!D)return '<p class="dsno">⏳ 讀取航點中…</p>';var rqm=rqMatches(DSQ);
   if(!r.length&&rqm.length)return '<div class="dschips">'+rqm.map(rqChip).join('')+'</div>';
   if(!r.length)return rqBox(DSQ);
@@ -552,6 +552,7 @@ function rqResult(){var x=rqOf(st.rq)||{code:st.rq,name:st.rq,status:'pending'},
   var L=cnAll().filter(function(y){return y.code===x.code;}),nr=nextRun();
   var h='<p class="summary">📍 '+nm+'｜🛫 '+og0+'出發</p><div class="chips sortc"><span>調整</span>'+chip('換城市','again:region')+chip('重新查','again:mode')+'</div>';
   if(x.status==='none'){h+='<div class="panel"><b>目前沒有'+og0+'直飛來回</b><p style="font-size:14px;margin:6px 0 0">'+(L.length?'下面是轉機票（在搜尋框切到「轉機」也看得到）。':'⏳ '+nr+' 會查轉機票，查到後就會顯示在這裡（也可以在「轉機」篩選看到）。')+'</p><p style="font-size:12px;opacity:.7;margin:6px 0 0">查完轉機後，這個城市會從「待查清單」移除，轉機結果仍會保留在網站上。</p></div>';}
+  else if(x.status==='active')h+='<div class="panel"><b>✈️ 已加入定期查價</b><p style="font-size:14px;margin:6px 0 0">目前沒有符合條件的'+og0+'直飛票價，'+nr+' 會再查。</p></div>';
   else h+='<div class="panel"><b>⏳ 待查價</b><p style="font-size:14px;margin:6px 0 0">'+nr+' 會一起查'+og0+'出發的直飛來回；沒有直飛的話，下一輪再查轉機票。</p></div>';
   return h+(L.length?L.map(cnCard).join(''):'');}
 // v28.9：搜尋不到 → ➕ 加入查價（下一輪 07:00／15:00／23:00 一起查）
@@ -571,12 +572,7 @@ function rqOf(c){return rqList().filter(function(x){return x.code===c;})[0];}
 function rqWhen(x){var t=x.checkedAt?Date.parse(x.checkedAt):NaN;return isNaN(t)?'':'（'+md(new Date(t+8*3600e3).toISOString().slice(0,10))+' 查過）';}
 function nextRun(){var t=tw(),h=t.getUTCHours()+t.getUTCMinutes()/60,R=[7,15,23];for(var i=0;i<3;i++)if(h<R[i])return '今天 '+('0'+R[i]).slice(-2)+':00';return '明天 07:00';}
 function rqBox(q){var c=rqResolve(q);if(!c||/^(TPE|TSA|KHH|RMQ)$/.test(c.code))return '<p class="dsno">找不到「'+esc(q)+'」。可以輸入城市名稱或 3 碼機場代碼（例如 普吉島、HKT）</p>';
-  var x=rqOf(c.code),nm=esc(c.name)+'（'+esc(c.code)+'）';if(x)setTimeout(function(){rqTouch(c.code);},0);
-  if(x&&x.status==='none'){var og0=(x.origins||['TPE']).map(function(o){return o==='KHH'?'高雄':'台北';}).join('／');
-    if(rqHasCn(c.code))return '<div class="rqbox"><p>'+nm+' 目前沒有'+og0+'直飛來回，但<b>轉機票已經查好了</b>。</p><button class="rqadd" data-act="rqgo:cn:'+esc(c.code)+'">🔁 查看轉機票 ›</button></div>';
-    return '<div class="rqbox"><p>'+nm+' 目前沒有'+og0+'直飛來回'+rqWhen(x)+'，所以沒有票價可以選。</p><p>⏳ 轉機票會在下一輪查價（'+nextRun()+'）查，查到後切到「轉機」就能選。</p><p style="font-size:12px;opacity:.7">查完轉機後，這個城市會從「待查清單」移除（不是從網站移除）。</p></div>';}
-  if(x&&x.status==='pending')return '<div class="rqbox"><p>⏳ '+nm+' 已在待查清單，下一輪查價（每天 07:00、15:00、23:00）會一起查，有直飛票就會出現。</p></div>';
-  if(x&&x.status==='active')return '<div class="rqbox"><p>✈️ '+nm+' 已加入定期查價，目前沒有符合條件的直飛票價'+rqWhen(x)+'，下一輪會再查。</p></div>';
+  var x=rqOf(c.code),nm=esc(c.name)+'（'+esc(c.code)+'）';if(x){setTimeout(function(){rqTouch(c.code);},0);return '<div class="dschips">'+rqChip(x)+'</div>';}   // v28.19：和搜尋結果同一種卡片，可以點
   var og=ORG.length===1?ORG[0]:'both',ol=og==='TPE'?'台北出發':og==='KHH'?'高雄出發':'台北和高雄出發';
   return '<div class="rqbox"><p>目前沒有 <b>'+nm+'</b> 的直飛票價。要加入查價嗎？（'+ol+'）</p><button class="rqadd" data-act="rq:'+esc(c.code)+'|'+esc(c.name)+'|'+og+'">➕ 加入查價</button></div>';}
 function rqChips(){var L=rqList().filter(function(x){return x.mine||RQ_LOCAL.indexOf(x.code)>=0;});if(!L.length)return '';
