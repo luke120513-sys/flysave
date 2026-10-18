@@ -326,7 +326,7 @@ var HEALED={};
 function syncMyq(){                                 // 讀完資料後對齊本機清單
   if(!D)return;
   if(PD()){
-    var srv=(D.dates||[]).map(function(x){return {from:x.from,to:x.to,mode:x.mode};});
+    var srv=(D.dates||[]).map(function(x){return qx({from:x.from,to:x.to,mode:x.mode},x);});
     if(!srv.length&&myDates().length&&!lsgRaw('fs_myq_mig')){   // 第一次用新後端：把本機的日期補存上去
       try{localStorage.setItem('fs_myq_mig','1');}catch(e){}
       myDates().forEach(function(q){saveDate(q.from,q.to,q.mode,null,true);});
@@ -334,9 +334,9 @@ function syncMyq(){                                 // 讀完資料後對齊本�
     }
     // v28.16：本機清單為主，和伺服器合併；伺服器暫時回空／少回（上傳中、備援專案、讀取不完整）時不刪本機的
     var key=function(q){return q.from+'|'+q.to+'|'+q.mode;},have={};MYQ.forEach(function(q){have[key(q)]=1;});
-    srv.forEach(function(q){if(!have[key(q)]){MYQ.push(q);have[key(q)]=1;}});
+    srv.forEach(function(q){if(!have[key(q)]){MYQ.push(q);have[key(q)]=1;}else{var l=MYQ.filter(function(m){return key(m)===key(q);})[0];if(l&&!l.city&&!l.region&&(q.city||q.region))qx(l,q);}});
     var sk={};srv.forEach(function(q){sk[key(q)]=1;});
-    if(!D._fb)myDates().forEach(function(q){if(!sk[key(q)]&&!HEALED[key(q)]){HEALED[key(q)]=1;saveDate(q.from,q.to,q.mode,null,true);}});   // 伺服器少了 → 靜默補存（每次開啟最多一次）
+    if(!D._fb)myDates().forEach(function(q){if(!sk[key(q)]&&!HEALED[key(q)]){HEALED[key(q)]=1;saveDate(q.from,q.to,q.mode,null,true,q);}});   // 伺服器少了 → 靜默補存（每次開啟最多一次）
     myqSave();
   }
   D.dates=myDates();
@@ -373,7 +373,7 @@ function checked(x){
 /* ---------- 資料 ---------- */
 // v28.16：讀票價更穩：25 秒逾時、自動重試（1.5s→4s）、備援網頁版專案、失敗時顯示上次成功的資料（不再跳「讀取失敗」）
 var API_WEB='https://script.google.com/macros/s/AKfycbwfUys8iT8UTMEENbHRGUkjESwkYHeM-5SEuDL_WizwPYtm-CdPJ-BQaDKK-8i9yMhh0g/exec';
-var CACHED=null, LOAD_SEQ=0;
+var CACHED=null, LOAD_SEQ=0, LG_T=0;
 function lgGet(){try{var o=JSON.parse(localStorage.getItem('fs_deals_lg')||'null');return o&&o.d&&o.d.ok?o:null;}catch(e){return null;}}
 function lgPut(d){try{localStorage.setItem('fs_deals_lg',JSON.stringify({t:Date.now(),d:d}));}catch(e){}}
 function fetchJ(u,ms){return new Promise(function(ok,no){var ac=window.AbortController?new AbortController():null,t=setTimeout(function(){if(ac)ac.abort();no(new Error('timeout'));},ms);
@@ -386,13 +386,13 @@ function load(cb){
   if (window.google && google.script && google.script.run) {
     google.script.run.withSuccessHandler(got).withFailureHandler(function(){LOADING=false;toast('讀取失敗，請稍後再試');render();}).webGetDeals(DEV);return;}
   if (!API) return cb();
-  if(!D){var lg=lgGet();if(lg){D=lg.d;CACHED=lg.t;syncMyq();render();}}
+  if(!D){var lg=lgGet();if(lg){D=lg.d;LG_T=lg.t;syncMyq();render();}}   // 先顯示上次的資料，但不顯示「連線較慢」，等真的失敗才顯示
   var seq=++LOAD_SEQ,q='action=deals&dev='+encodeURIComponent(DEV),urls=[API,API,API_WEB],wait=[0,1500,4000],n=0;
-  (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;var fb=u===API_WEB;if(!fb)lgPut(d);got(d,fb);},function(e){
-    if(seq!==LOAD_SEQ)return;console.warn('load',n,e&&e.message);n++;
+  (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;LG_T=0;var fb=u===API_WEB;if(!fb)lgPut(d);got(d,fb);},function(e){
+    if(seq!==LOAD_SEQ)return;console.warn('load',n,e&&e.message);n++;if(D&&!CACHED&&LG_T&&n>=1){CACHED=LG_T;render();}
     if(n<urls.length){setTimeout(go,wait[n]);return;}
     LOADING=false;var lg=lgGet();
-    if(D||lg){if(!D){D=lg.d;syncMyq();}CACHED=(lg&&lg.t)||CACHED||Date.now();render();setTimeout(function(){if(CACHED)load(function(){render();});},60000);}
+    if(D||lg){if(!D){D=lg.d;syncMyq();}CACHED=(lg&&lg.t)||LG_T||CACHED||Date.now();render();setTimeout(function(){if(CACHED)load(function(){render();});},60000);}
     else{toast('連線較慢，30 秒後自動重試');render();setTimeout(function(){if(!D)load(function(){render();});},30000);}});})();
 }
 function post(fn,args,body,cb){            // google.script.run（Apps Script 頁面）或 POST（App／靜態網站）
@@ -400,18 +400,23 @@ function post(fn,args,body,cb){            // google.script.run（Apps Script �
   else if (API) fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(function(x){return x.json();}).then(cb).catch(function(){cb(null);});
   else cb({ok:true,dates:[]});
 }
-function setDates(r){if(PD()&&r&&r.ok&&r.dates){var h={};MYQ.forEach(function(q){h[q.from+'|'+q.to+'|'+q.mode]=1;});r.dates.forEach(function(x){if(!h[x.from+'|'+x.to+'|'+x.mode])MYQ.push({from:x.from,to:x.to,mode:x.mode});});myqSave();}if(D)D.dates=myDates();}
+function setDates(r){if(PD()&&r&&r.ok&&r.dates){var h={};MYQ.forEach(function(q){h[q.from+'|'+q.to+'|'+q.mode]=1;});r.dates.forEach(function(x){if(!h[x.from+'|'+x.to+'|'+x.mode])MYQ.push(qx({from:x.from,to:x.to,mode:x.mode},x));});myqSave();}if(D)D.dates=myDates();}
 function delDate(x){MYQ=MYQ.filter(function(q){return !(q.from===x.from&&q.to===x.to&&q.mode===x.mode);});myqSave();if(D)D.dates=myDates();post('webDeleteDate',[x.from,x.to,x.mode,DEV],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode,dev:DEV},function(r){setDates(r);toast(r&&r.ok||!PD()?'🗑️ 已刪除 '+md(x.from)+'–'+md(x.to):(r&&r.error)||'刪除失敗');render();});}
 function clearDates(){
   var mineList=myDates();MYQ=[];myqSave();if(D)D.dates=[];
   if(PD())post('webClearDates',[DEV],{action:'webClearDates',dev:DEV},function(r){setDates(r);toast(r&&r.ok?'🗑️ 已清除你的日期（不影響其他人）':'清除失敗');render();});
   else{mineList.forEach(function(x){post('webDeleteDate',[x.from,x.to,x.mode],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode},function(){});});toast('🗑️ 已清除你的日期（不影響其他人）');render();}   // 舊後端：只刪自己存的，絕不呼叫全部清除
 }
-function saveDate(from,to,mode,cb,quiet){
-  if(!MYQ.some(function(q){return q.from===from&&q.to===to&&q.mode===mode;})){MYQ.push({from:from,to:to,mode:mode});while(myDates().length>5)MYQ.splice(MYQ.indexOf(myDates()[0]),1);myqSave();}
+var QF=['city','cityName','origin','region','country','rq'];
+function qx(q,src){QF.forEach(function(k){if(src&&src[k])q[k]=src[k];});return q;}
+function saveDate(from,to,mode,cb,quiet,ex){ex=ex||{};
+  var ex0=MYQ.filter(function(q){return q.from===from&&q.to===to&&q.mode===mode;})[0];
+  if(ex0){if(ex.city||ex.region){QF.forEach(function(k){delete ex0[k];});qx(ex0,ex);}myqSave();}
+  else{MYQ.push(qx({from:from,to:to,mode:mode},ex));while(myDates().length>5)MYQ.splice(MYQ.indexOf(myDates()[0]),1);myqSave();}
+  if(!ex.city&&!ex.region&&ex0)ex=qx({},ex0);
   var done=function(r){setDates(r);if(quiet){cb&&cb(r);return;}if(r&&r.ok)toast('✅ 已存 '+md(from)+'–'+md(to)+'，下一次查詢（07:00／15:00／23:00）後就會有結果'+(r.note?'\n'+r.note:''));else toast((r&&r.error)||'存檔失敗');cb&&cb(r);};
-  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(done).withFailureHandler(function(){done(null);}).webSaveDate(from,to,mode,DEV);
-  else if (API) fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'webSaveDate',from:from,to:to,mode:mode,dev:DEV})}).then(function(r){return r.json();}).then(done).catch(function(){done(null);});
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(done).withFailureHandler(function(){done(null);}).webSaveDate(from,to,mode,DEV,ex);
+  else if (API) fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(qx({action:'webSaveDate',from:from,to:to,mode:mode,dev:DEV},ex))}).then(function(r){return r.json();}).then(done).catch(function(){done(null);});
   else done({ok:true});
 }
 function all(k){return ((D&&D[k])||[]).filter(fresh);}
@@ -476,7 +481,7 @@ function pendCard(){if(!(st.pend&&st.dep&&st.ret&&st.mode&&st.mode!=='nodate'))r
   return '<div class="panel pendc"><p class="step">💾 要儲存這組查詢嗎？</p><p>📅 '+md(st.dep)+'–'+md(st.ret)+'・'+esc(MODE[st.mode]||'')+'・📍 '+esc(w)+'</p><p style="font-size:13px;opacity:.75">儲存後，下一輪查價（07:00／15:00／23:00）會查這組日期，結果會出現在「我的查詢」。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pend:ok">✅ 確認儲存</button><button class="btn ghost" data-act="pend:no">取消</button></div></div>';}
 function cityName(c){try{var d=dsList().filter(function(o){return o.code===c;})[0];if(d)return d.dest;}catch(e){}return (typeof RQ_CITY!=='undefined'&&RQ_CITY[c]||c).split(' ')[0];}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="pend:"]');if(!a)return;e.preventDefault();e.stopPropagation();
-  if(a.dataset.act==='pend:ok'){st.pend=false;a.disabled=true;saveDate(st.dep,st.ret,st.mode,function(){render();});render();}
+  if(a.dataset.act==='pend:ok'){st.pend=false;a.disabled=true;saveDate(st.dep,st.ret,st.mode,function(){render();},false,{city:st.city&&st.city!=='全部'?st.city:'',cityName:st.city&&st.city!=='全部'?cityName(st.city):'',origin:st.origin!=='ALL'?st.origin:'',region:st.region&&st.region!=='全部'?st.region:'',country:st.country&&st.country!=='全部'?st.country:'',rq:st.rq?1:0});render();}
   else{st.pend=false;toast('已取消，這組日期沒有儲存');render();}},true);
 function search(){if(st.step==='result'&&st.cf&&!(st.dep&&st.ret)&&st.mode!=='nodate')st.step='cal';var h=search0();return st.step==='result'?pendCard()+h:h;}
 function search0(){
@@ -644,6 +649,7 @@ function cities(){            // v24：這個地區／國家實際有資料的�
   return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){var i=ORD.indexOf(a.code),j=ORD.indexOf(b.code);return (i<0?99:i)-(j<0?99:j);});
 }
 function goCity(){st.city=null;if(cities().length>=2)st.step='city';else st.step='result';}
+function qWhere(x){var w=x.city?(x.cityName||cityName(x.city))+' '+x.city:x.country||x.region||'所有城市';return w+(x.origin?'・'+(x.origin==='KHH'?'高雄':'台北')+'出發':'');}
 function myqCard(){var ds=myDates();
   return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選日期查一次就會出現在這裡')+(function(){var L=myCities();if(!L.length)return '';var cn=L.filter(function(x){return x.st==='conn'||x.st==='active';}).length;return '<br>📍 加入的城市：'+L.slice(0,3).map(function(x){return esc(x.name);}).join('、')+(L.length>3?' 等 '+L.length+' 個':'')+(cn?'・'+cn+' 個有結果':'');})()+'</span></span><span class="ar">›</span></button>';}
 function calendar(){
@@ -992,10 +998,10 @@ function mine(){
   if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有查詢過的日期。<br>按「查機票」選日期，查過的日期會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>'+myCitiesView();
   var h='<p class="summary">📋 我的查詢（這支手機自己的，最多 5 組）\n點一組日期就能看結果，每天 07:00／15:00／23:00 更新。</p>'+orgBar();
   ds.forEach(function(x,i){
-    var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to&&orgOk(c.origin);});
+    var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to&&orgOk(c.origin)&&(!x.city||c.code===x.city)&&(!x.origin||c.origin===x.origin)&&(x.city||!x.region||regOf(c)===x.region)&&(x.city||!x.country||c.country===x.country);});
     var low=n.length?Math.min.apply(null,n.map(function(c){return +c.price;})):0;
     h+='<div class="card q"><button class="qopen" data-act="open:'+i+'"><div class="dest" style="font-size:17px">'+MODE_ICON[x.mode]+' '+md(x.from)+'–'+md(x.to)+'<small style="font-size:13px;color:#777;font-weight:400">（'+days(x.from,x.to)+'天）</small></div>'+
-      '<div class="info">'+esc(MODE[x.mode])+'</div><div class="info" style="color:'+(n.length?'var(--g)':'var(--tip)')+';font-weight:700;margin-top:4px">'+(n.length?n.length+' 個目的地，最低 約 NT$'+num(low):'⏳ 還在查，下一次查詢後就有結果')+'</div></button>'+
+      '<div class="info">📍 '+esc(qWhere(x))+'</div><div class="info">'+esc(MODE[x.mode])+'</div><div class="info" style="color:'+(n.length?'var(--g)':'var(--tip)')+';font-weight:700;margin-top:4px">'+(n.length?(x.city?'最低 約 NT$'+num(low):n.length+' 個目的地，最低 約 NT$'+num(low)):'⏳ 還在查，下一次查詢後就有結果')+'</div></button>'+
       '<div class="links small"><a data-act="open:'+i+'" class="pill">看結果</a><a data-act="del:'+i+'" class="pill del">刪除</a></div></div>';
   });
   return h+'<button class="btn" style="background:#fff;color:#C0392B;border:2px solid #E6B0AA" data-act="clear">清除我的所有日期</button>'+myCitiesView();
@@ -1056,7 +1062,7 @@ setTimeout(viewsLoad,1500);
 function footer(){
   var sp='<div class="sprow">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>';
   return '<footer>'+sp+viewsTag()+'<div class="flinks"><a data-act="tab:about">關於我們</a>｜<a data-act="tab:privacy">隱私權政策</a>｜<a data-act="tab:terms">服務條款</a></div>'+
-    '<div>聯絡我們：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></div><div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.19</span></div></footer>';
+    '<div>聯絡我們：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></div><div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.20</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
@@ -1107,7 +1113,7 @@ document.addEventListener('click',function(e){
   var ds=myDates();
   if(k==='tab'){tab=x;render();if(x==='mine')load(render);return;}
   if(k==='sort'){SORT_BAG=x==='bag';try{localStorage.setItem('tb_sort',x);}catch(err){}render();return;}
-  if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();st.region='全部';st.country=null;st.city=null;st.step='result';render();load(render);return;}
+  if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();if(q.origin&&ORG.length!==1)st.origin=q.origin;st.region=q.region||'全部';st.country=q.country||null;st.city=q.city||null;st.rq=q.rq&&q.city?q.city:null;st.cf=false;st.pend=false;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除這支手機存起來的所有日期？（不影響其他人）'))clearDates();return;}
   if(k==='m'){st.pend=false;st.rq=null;st.cf=x==='city';if(st.cf){st.mode='exact';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
