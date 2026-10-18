@@ -192,6 +192,26 @@ nav button{min-height:52px}
 nav button{font-size:10px;letter-spacing:-.3px}nav button svg{width:22px;height:22px}
 .fbf textarea,.fbf input,.fbf select{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border:1px solid #d5dbe1;border-radius:10px;margin:6px 0}.fbf textarea{min-height:120px}
 .myqc{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#E9F9EF;border:2px solid #9be3b6;border-radius:14px;padding:12px;margin:0 0 12px;font:inherit;cursor:pointer}.myqc b{font-size:16px}.myqc span{display:block;font-size:13px;color:#4a5560}
+.fwx.wa{position:relative;overflow:hidden;isolation:isolate}.fwx.wa>*{position:relative;z-index:1}.fwx.wa>.wfx{position:absolute;inset:0;z-index:0!important;pointer-events:none;overflow:hidden}
+.fwx.wa.w-clear{background:linear-gradient(135deg,#FFF6D6,#FFE29A)}.fwx.wa.w-night{background:linear-gradient(135deg,#1F2A4A,#3A4A78);color:#EEF}.w-night .fwl,.w-night .fwd{color:#C9D3F5!important}
+.fwx.wa.w-cloud{background:linear-gradient(135deg,#EEF2F6,#CFD8E3)}.fwx.wa.w-rain{background:linear-gradient(135deg,#C9D6E3,#93A9C0)}.fwx.wa.w-storm{background:linear-gradient(135deg,#7C8799,#4A5466);color:#fff}.w-storm .fwl,.w-storm .fwd{color:#E3E8F0!important}
+.fwx.wa.w-snow{background:linear-gradient(135deg,#F4F8FC,#DCE7F2)}.fwx.wa.w-fog{background:linear-gradient(135deg,#ECEDEE,#D3D6D9)}
+html.dark .fwx.wa.w-clear{background:linear-gradient(135deg,#4A3B12,#6B5216)}html.dark .fwx.wa.w-cloud{background:linear-gradient(135deg,#252B33,#36404C)}html.dark .fwx.wa.w-rain{background:linear-gradient(135deg,#1C2836,#2D3F55)}html.dark .fwx.wa.w-snow{background:linear-gradient(135deg,#26303A,#3A4856)}html.dark .fwx.wa.w-fog{background:linear-gradient(135deg,#2A2D30,#3B3F43)}html.dark .fwx.wa.w-storm{background:linear-gradient(135deg,#1A1E26,#2E3440)}
+.wsun{position:absolute;right:14px;top:10px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#FFD54F 45%,#FFB300 70%,transparent 72%);box-shadow:0 0 18px 6px rgba(255,193,7,.55);animation:wglow 3s ease-in-out infinite}
+.wsun:before{content:'';position:absolute;inset:-12px;border-radius:50%;background:repeating-conic-gradient(rgba(255,179,0,.55) 0 8deg,transparent 8deg 30deg);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);animation:wspin 14s linear infinite}
+.wmoon{position:absolute;right:16px;top:10px;width:38px;height:38px;border-radius:50%;box-shadow:-9px 5px 0 0 #F3EDC8;filter:drop-shadow(0 0 8px rgba(243,237,200,.6));animation:wglow 4s ease-in-out infinite}
+.wstar{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:wtw 2.5s ease-in-out infinite}
+.wcl{position:absolute;width:70px;height:22px;border-radius:22px;background:rgba(255,255,255,.85);animation:wdrift 18s linear infinite}.wcl:before,.wcl:after{content:'';position:absolute;background:inherit;border-radius:50%}.wcl:before{width:30px;height:30px;left:10px;top:-14px}.wcl:after{width:22px;height:22px;left:34px;top:-9px}
+html.dark .wcl{background:rgba(160,175,195,.35)}.w-rain .wcl,.w-storm .wcl{background:rgba(110,125,145,.6)}
+.wdrop{position:absolute;top:-14px;width:2px;height:12px;border-radius:2px;background:linear-gradient(transparent,rgba(40,90,160,.75));animation:wfall .8s linear infinite}html.dark .wdrop,.w-storm .wdrop{background:linear-gradient(transparent,rgba(170,205,255,.8))}
+.wflk{position:absolute;top:-8px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 3px rgba(120,150,190,.7);animation:wsnow 5s linear infinite}
+.wfl{position:absolute;inset:0;background:#fff;opacity:0;animation:wflash 6s infinite}
+.wmist{position:absolute;left:-30%;width:160%;height:16px;border-radius:16px;background:rgba(255,255,255,.7);filter:blur(4px);animation:wmist 7s ease-in-out infinite}html.dark .wmist{background:rgba(200,205,210,.22)}
+@keyframes wspin{to{transform:rotate(360deg)}}@keyframes wglow{50%{filter:brightness(1.15);transform:scale(1.05)}}@keyframes wtw{50%{opacity:.2}}
+@keyframes wdrift{from{transform:translateX(-90px)}to{transform:translateX(420px)}}@keyframes wfall{to{transform:translate(-8px,140px)}}@keyframes wsnow{to{transform:translate(14px,140px) rotate(180deg)}}
+@keyframes wflash{0%,90%,94%,100%{opacity:0}91%,93%{opacity:.55}}@keyframes wmist{0%,100%{transform:translateX(0);opacity:.35}50%{transform:translateX(12%);opacity:.85}}
+.fwx.off .wfx *,.fwx.off .wfx *:before{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.wfx *,.wfx *:before{animation:none!important}.wdrop,.wflk,.wfl{display:none}}
 .fwx{margin-top:8px;background:#F4F9F4;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.5}.fwl{display:block;font-size:12px;color:#5f6b5f}.fwn b{font-size:18px}.fwd{font-size:13px;color:#2d4a2d}
 .flc{border:1px solid #e3e8ee;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fafcff}.flc.late{border-color:#F5B041}.flc.bad{border-color:#E74C3C}.fh{font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:center}.fst{font-size:13px;padding:2px 8px;border-radius:10px;background:#E8F8F0;color:#1E8449;white-space:nowrap}.flc.late .fst{background:#FEF5E7;color:#B9770E}.flc.bad .fst{background:#FDEDEC;color:#C0392B}.fgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 10px;margin-top:8px}.fr{display:flex;flex-direction:column}.fr span{font-size:12px;color:#888}.fr b{font-size:15px}.frem{margin-top:8px;background:#EBF5FB;color:#1B4F72;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.6}
 /* v28 深色模式 */
@@ -573,7 +593,7 @@ function annSeen(){var u=annUnread();if(!u.length)return;u.forEach(function(a){A
 function annWhen(a){var t=new Date(Date.parse(a.createdAt)+8*3600e3);return isNaN(t)?'':(t.getUTCFullYear()+'/'+(t.getUTCMonth()+1)+'/'+t.getUTCDate());}
 function annBanner(){var dis=lsg('fs_ann_dis',[]),a=annUnread().filter(function(x){return dis.indexOf(x.id)<0;})[0];if(!a)return '';
   return '<div class="annb'+(a.level==='important'?' imp':'')+'"><button class="ao" data-act="an:open:'+esc(a.id)+'"><b>'+ANN_CATS[annCat(a)][0]+' '+esc(a.title)+'</b>'+(a.body?'<span>'+esc(a.body)+'</span>':'')+'</button><button class="ax" aria-label="關閉公告" data-act="an:x:'+esc(a.id)+'">×</button></div>';}
-var ANN_CAT='all',ANN_CTY='';
+var ANN_CAT='system',ANN_CTY='';
 var ANN_CATS={system:['🛠️','系統更新','#1E88E5','#E3F2FD'],travel:['🧳','旅遊資訊','#2E7D32','#E8F5E9'],special:['⚠️','特殊公告','#E65100','#FFF3E0']};
 function annCat(a){return ANN_CATS[a.cat]?a.cat:(a.level==='important'?'special':'system');}
 function annBadge(a){var c=ANN_CATS[annCat(a)];return '<span class="acb" style="color:'+c[2]+';background:'+c[3]+'">'+c[0]+' '+c[1]+(a.cat==='travel'&&a.country?'・'+esc(a.country):'')+'</span>';}
@@ -582,7 +602,7 @@ function annView(){var L=anns(),U=annUnread().map(function(a){return a.id;});ann
   var newIn=function(f){return L.some(function(a){return f(a)&&ANN_NEW[a.id];});};
   var tabs=[['all','全部']].concat(['system','travel','special'].map(function(k){return [k,ANN_CATS[k][1]];})).map(function(t){var n=L.filter(function(a){return t[0]==='all'||annCat(a)===t[0];}).length;
     return '<button class="actab'+(ANN_CAT===t[0]?' on':'')+'" data-act="an:cat:'+t[0]+'">'+t[1]+' <small>'+n+'</small>'+(newIn(function(a){return t[0]==='all'||annCat(a)===t[0];})?'<i class="adot"></i>':'')+'</button>';}).join('');
-  if(ANN_HL&&L.some(function(a){return a.id===ANN_HL&&((ANN_CAT!=='all'&&annCat(a)!==ANN_CAT)||(ANN_CTY&&a.country!==ANN_CTY));})){ANN_CAT='all';ANN_CTY='';}
+  if(ANN_HL&&L.some(function(a){return a.id===ANN_HL&&((ANN_CAT!=='all'&&annCat(a)!==ANN_CAT)||(ANN_CTY&&a.country!==ANN_CTY));})){ANN_CAT=annCat(L.filter(function(a){return a.id===ANN_HL;})[0]);ANN_CTY='';}
   var V=L.filter(function(a){return ANN_CAT==='all'||annCat(a)===ANN_CAT;}),ch='';
   if(ANN_CAT==='travel'){var cs=[];V.forEach(function(a){if(a.country&&cs.indexOf(a.country)<0)cs.push(a.country);});if(ANN_CTY&&cs.indexOf(ANN_CTY)<0)ANN_CTY='';
     if(cs.length)ch='<div class="chips" style="margin:0 0 10px">'+[''].concat(cs).map(function(c){return '<button class="chip'+(ANN_CTY===c?' on':'')+'" data-act="an:cty:'+esc(c)+'">'+(c?esc(c):'全部國家')+(c&&newIn(function(a){return a.cat==='travel'&&a.country===c;})?'<i class="adot"></i>':'')+'</button>';}).join('')+'</div>';
@@ -610,7 +630,7 @@ document.addEventListener('click',function(e){if(e.target&&e.target.id==='upd'&&
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('an:x:')===0){e.stopPropagation();var d=lsg('fs_ann_dis',[]);d.push(v.slice(5));lss('fs_ann_dis',d.slice(-100));LAST_HTML=null;render();}
   else if(v.indexOf('an:open:')===0){e.stopPropagation();ANN_HL=v.slice(8);annGo();render();annHl();}
-  else if(v==='an:list'){e.stopPropagation();if(tab==='announce'){tab=ANN_PREV;}else{ANN_HL='';annGo();}render();if(!D)load(render);}
+  else if(v==='an:list'){e.stopPropagation();if(tab==='announce'){tab=ANN_PREV;}else{ANN_HL='';ANN_CAT='system';ANN_CTY='';annGo();}render();if(!D)load(render);}
   else if(v==='nf:open'){e.stopPropagation();if(tab==='notify'){tab=NFY_PREV||'search';render();}else{NFY_PREV=tab;tab='notify';NFY_HL='';render();load(render);}}
   else if(v==='nf:back'){e.stopPropagation();tab=NFY_PREV||'search';render();}
   else if(v.indexOf('an:cat:')===0){e.stopPropagation();ANN_CAT=v.slice(7);ANN_CTY='';LAST_HTML=null;render();}
@@ -620,7 +640,21 @@ var MYF=lsg('fs_myflights',[]);
 function flNorm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
 function flLinks(f){var n=f.no,g='https://www.google.com/search?q='+encodeURIComponent(n+' flight status'+(f.date?' '+f.date:''));
   return '<div class="links small"><a class="pri" href="'+esc(g)+'" target="_blank" rel="noopener">Google</a><a href="https://www.flightaware.com/live/flight/'+esc(n)+'" target="_blank" rel="noopener">FlightAware</a><a href="https://www.flightradar24.com/data/flights/'+esc(n.toLowerCase())+'" target="_blank" rel="noopener">Flightradar24</a></div>';}
-var FLS={},FLT=0;
+var FLS={},FLT=0,FLR=lsg('fs_flroute',{}),FL_EDIT=-1;
+function flRoute(f){var no=f.no;if(f.dest)return {code:f.dest,city:f.destCity||'',src:'manual'};var c=FLR[no];if(c&&c.code)return c;
+  if(c&&(c.loading||Date.now()-c.t<1800e3))return c;FLR[no]={loading:true,t:Date.now()};
+  var tb=FL_TBL[no.replace(/^([A-Z0-9]{2})0*/,'$1')];if(tb)FLR[no]={code:tb,city:'',src:'table',t:Date.now()};
+  post('webFlightRoute',[no],{action:'webFlightRoute',no:no},function(r){if(r&&r.ok&&r.code){FLR[no]={code:r.code,city:r.city||'',dir:r.dir||'D',src:r.src,t:Date.now()};lss('fs_flroute',FLR);}else if(!tb)FLR[no]={code:'',t:Date.now()};if(tab==='flights'){LAST_HTML=null;render();}});
+  return FLR[no];}
+var FL_TBL={BR198:'NRT',BR184:'NRT',BR106:'KIX',BR130:'KIX',BR102:'FUK',BR112:'OKA',BR116:'CTS',BR170:'ICN',BR160:'ICN',BR867:'HKG',BR805:'MFM',BR211:'BKK',BR225:'SIN',BR391:'SGN',BR383:'HAN',CI100:'NRT',CI220:'HND',CI152:'KIX',CI110:'FUK',CI120:'OKA',CI130:'CTS',CI160:'ICN',CI601:'HKG',CI835:'BKK',CI751:'SIN',CI781:'SGN',JX800:'NRT',JX802:'NRT',JX820:'KIX',JX840:'FUK',JX850:'CTS',JX870:'OKA',JX890:'ICN',JX201:'MFM',JX231:'HKG',JX741:'BKK',JX751:'SIN',JX701:'SGN',IT200:'NRT',IT210:'KIX',IT220:'NGO',IT230:'OKA',IT240:'FUK',IT252:'CTS',IT600:'ICN',IT507:'BKK',MM620:'KIX',MM626:'NRT',CX465:'HKG',UO113:'HKG',NX621:'MFM'};
+var FL_PICK=[['NRT','東京成田'],['HND','東京羽田'],['KIX','大阪'],['NGO','名古屋'],['FUK','福岡'],['OKA','沖繩'],['CTS','札幌'],['ICN','首爾'],['PUS','釜山'],['CJU','濟州'],['HKG','香港'],['MFM','澳門'],['BKK','曼谷'],['SGN','胡志明市'],['HAN','河內'],['DAD','峴港'],['SIN','新加坡'],['KUL','吉隆坡'],['MNL','馬尼拉'],['CEB','宿霧'],['DPS','峇里島'],['PVG','上海'],['GUM','關島'],['LAX','洛杉磯'],['SFO','舊金山'],['LHR','倫敦']];
+function flApName(c){for(var i=0;i<FL_PICK.length;i++)if(FL_PICK[i][0]===c)return FL_PICK[i][1];return c;}
+function flDestBlock(f,i){var R=flRoute(f),code=R&&R.code,ed=FL_EDIT===i;
+  var pick='<div class="chips" style="margin-top:6px;flex-wrap:wrap">'+FL_PICK.map(function(p){return chip(p[1],'mf:dest:'+i+':'+p[0]);}).join('')+(f.dest?chip('↺ 自動判斷','mf:dest:'+i+':'):'')+'</div>';
+  if(!code){if(R&&R.loading)return '<div class="fwx"><span class="fwl">目的地</span>⏳ 判斷目的地中…</div>';
+    return '<div class="fwx"><span class="fwl">查不到 '+esc(f.no)+' 的目的地，選一個就能看當地天氣：</span>'+pick+'</div>';}
+  var x={dir:R.dir==='A'?'A':'D',cityCode:code,city:R.city?flApName(code)===code?R.city:flApName(code):flApName(code),schedDate:f.date||''};
+  return wxBlock(x).replace(/<\/div>$/,'<div style="font-size:12px;color:#888;margin-top:4px">'+(R.src==='manual'?'目的地為手動設定':'目的地依航班號碼判斷（'+esc(code)+'），不對可修改')+' <a href="#" data-act="mf:edit:'+i+'">✏️ 修改</a></div></div>')+(ed?pick:'');}
 function flKey(f){return f.no+'|'+(f.date||'');}
 function flFetch(force){var now=Date.now();MYF.forEach(function(f){var k=flKey(f),c=FLS[k];if(c&&c.loading)return;if(c&&!force&&now-c.t<300e3)return;
   FLS[k]={loading:true,t:now,r:c&&c.r};post('webFlight',[f.no,f.date||''],{action:'webFlight',no:f.no,date:f.date||''},function(r){FLS[k]={t:Date.now(),r:r||{ok:false}};if(tab==='flights'){LAST_HTML=null;render();}});});
@@ -643,7 +677,20 @@ PVG:[31.14,121.81],SHA:[31.20,121.34],PEK:[40.08,116.58],PKX:[39.51,116.41],CAN:
 GUM:[13.48,144.80],SPN:[15.12,145.73],ROR:[7.37,134.54],DEL:[28.56,77.10],BOM:[19.09,72.87],DXB:[25.25,55.36],DOH:[25.27,51.61],IST:[41.26,28.74],LHR:[51.47,-0.45],CDG:[49.01,2.55],AMS:[52.31,4.76],FRA:[50.04,8.56],MUC:[48.35,11.79],VIE:[48.11,16.57],PRG:[50.10,14.26],FCO:[41.80,12.25],MXP:[45.63,8.72],MAD:[40.47,-3.56],BCN:[41.30,2.08],ZRH:[47.46,8.55],
 LAX:[33.94,-118.41],SFO:[37.62,-122.38],SEA:[47.45,-122.31],JFK:[40.64,-73.78],EWR:[40.69,-74.17],ORD:[41.97,-87.91],IAH:[29.98,-95.34],DFW:[32.90,-97.04],ONT:[34.06,-117.60],HNL:[21.32,-157.92],YVR:[49.19,-123.18],YYZ:[43.68,-79.63],SYD:[-33.94,151.18],MEL:[-37.67,144.84],BNE:[-27.38,153.12],AKL:[-37.01,174.79]};
 var WX_C={0:['☀️','晴'],1:['🌤️','大致晴'],2:['⛅','多雲'],3:['☁️','陰'],45:['🌫️','霧'],48:['🌫️','霧淞'],51:['🌦️','毛毛雨'],53:['🌦️','毛毛雨'],55:['🌧️','濃毛毛雨'],56:['🌧️','凍毛毛雨'],57:['🌧️','凍毛毛雨'],61:['🌦️','小雨'],63:['🌧️','中雨'],65:['🌧️','大雨'],66:['🌧️','凍雨'],67:['🌧️','凍雨'],71:['🌨️','小雪'],73:['🌨️','中雪'],75:['❄️','大雪'],77:['🌨️','雪粒'],80:['🌦️','陣雨'],81:['🌧️','強陣雨'],82:['⛈️','豪雨'],85:['🌨️','陣雪'],86:['❄️','強陣雪'],95:['⛈️','雷雨'],96:['⛈️','雷雨夾冰雹'],99:['⛈️','強雷雨夾冰雹']};
-var WX={};
+var WX={},WX_T=(location.search.match(/[?&]wxtest=(\w+)/)||[])[1]||'';
+function wxKind(c,night){c=+c;if(c===0||c===1)return night?'night':'clear';if(c===2||c===3)return 'cloud';if(c===45||c===48)return 'fog';if(c>=95)return 'storm';if((c>=71&&c<=77)||c===85||c===86)return 'snow';return 'rain';}
+function wxFx(k){var h='',i,rn=function(a,b){return (a+Math.random()*(b-a)).toFixed(1);};
+  if(k==='clear')h='<i class="wsun"></i>';
+  if(k==='night'){h='<i class="wmoon"></i>';for(i=0;i<7;i++)h+='<i class="wstar" style="left:'+rn(40,95)+'%;top:'+rn(8,80)+'%;animation-delay:'+rn(0,2.5)+'s"></i>';}
+  if(k==='cloud'||k==='rain'||k==='storm')for(i=0;i<3;i++)h+='<i class="wcl" style="top:'+(18+i*26)+'px;animation-duration:'+(16+i*6)+'s;animation-delay:-'+rn(0,18)+'s;opacity:'+(0.9-i*0.2)+'"></i>';
+  if(k==='rain'||k==='storm')for(i=0;i<22;i++)h+='<i class="wdrop" style="left:'+rn(0,100)+'%;animation-delay:-'+rn(0,0.8)+'s;animation-duration:'+rn(0.6,1)+'s"></i>';
+  if(k==='storm')h+='<i class="wfl"></i>';
+  if(k==='snow')for(i=0;i<16;i++)h+='<i class="wflk" style="left:'+rn(0,100)+'%;animation-delay:-'+rn(0,5)+'s;animation-duration:'+rn(4,7)+'s;transform:scale('+rn(.5,1)+')"></i>';
+  if(k==='fog')for(i=0;i<3;i++)h+='<i class="wmist" style="top:'+(12+i*28)+'px;animation-delay:-'+(i*2.3)+'s"></i>';
+  return '<div class="wfx" aria-hidden="true">'+h+'</div>';}
+var WX_IO=window.IntersectionObserver?new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('off',!e.isIntersecting);});}):null;
+function wxObs(){if(WX_IO)setTimeout(function(){document.querySelectorAll('.fwx.wa').forEach(function(el){WX_IO.observe(el);});},0);}
+var WX_TC={clear:0,night:0,cloud:3,rain:63,storm:95,snow:73,fog:45};
 function wxc(c){return WX_C[c]||['🌡️','—'];}
 function wxGet(code,name,cb){var k=code||name;if(!k)return;var c=WX[k];if(c&&(c.loading||Date.now()-c.t<1800e3))return;WX[k]={loading:true,t:Date.now(),r:c&&c.r};
   var done=function(r){WX[k]={t:Date.now(),r:r};cb&&cb();};
@@ -658,20 +705,21 @@ function wxBlock(x){var dep=x.dir==='D',code=String(x.cityCode||'').toUpperCase(
   var c=WX[k];if(!c||(!c.loading&&Date.now()-c.t>=1800e3))wxGet(code,x.city,function(){if(tab==='flights'){LAST_HTML=null;render();}});
   var who=(dep?'目的地':'出發地')+' '+esc(x.city||code);
   if(!c||!c.r)return '<div class="fwx"><span class="fwl">'+who+'天氣</span>'+(c&&!c.loading?'暫時讀不到天氣':'⏳ 讀取天氣中…')+'</div>';
-  var j=c.r,cu=wxc(j.current.weather_code),off=j.utc_offset_seconds||0,tz=off/3600,h='<div class="fwx"><span class="fwl">'+who+'・當地時間 '+wxLocal(off)+'（UTC'+(tz>=0?'+':'')+tz+'）</span>'+
+  var j=c.r,wc=WX_T&&WX_TC[WX_T]!=null?WX_TC[WX_T]:j.current.weather_code,cu=wxc(wc),off=j.utc_offset_seconds||0,tz=off/3600,lh=new Date(Date.now()+off*1e3).getUTCHours(),night=WX_T?WX_T==='night':(lh<6||lh>=18),wk=wxKind(wc,night);if(wk==='night'&&cu[0]==='☀️')cu=['🌙',cu[1]];wxObs();var h='<div class="fwx wa w-'+wk+'">'+wxFx(wk)+'<span class="fwl">'+who+'・當地時間 '+wxLocal(off)+'（UTC'+(tz>=0?'+':'')+tz+'）</span>'+
     '<div class="fwn"><b>'+cu[0]+' '+Math.round(j.current.temperature_2m)+'°C</b> '+cu[1]+'</div>';
   var dd=x.schedDate,i=j.daily&&j.daily.time?j.daily.time.indexOf(dd):-1;
   if(i>=0){var dc=wxc(j.daily.weather_code[i]),p=j.daily.precipitation_probability_max[i];h+='<div class="fwd">'+md(dd)+' 預報：'+dc[0]+' '+dc[1]+'・'+Math.round(j.daily.temperature_2m_min[i])+'～'+Math.round(j.daily.temperature_2m_max[i])+'°C'+(p!=null?'・降雨 '+p+'%':'')+'</div>';}
   else if(dd&&dd>(j.daily&&j.daily.time?j.daily.time[j.daily.time.length-1]:''))h+='<div class="fwd" style="color:#888">'+md(dd)+' 還超過 16 天，接近時才有預報</div>';
   return h+'</div>';}
 function flightsView(){
-  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">只支援<b>桃園（TPE）、高雄（KHH）</b>出發或抵達的航班，資料來自兩座機場官方即時航班，約可查前天到後天（高雄只有今天），每 5 分鐘自動更新，並顯示目的地當地時間與天氣（Open-Meteo）。其他機場請點下方連結查看。資料只存在這台裝置。</p></div>';
+  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料只存在這台裝置。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
   setTimeout(function(){flFetch(false);},0);
   return h+MYF.map(function(f,i){var c=FLS[flKey(f)],r=c&&c.r,b;
-    if(!r)b='<div class="info">⏳ 讀取航班資料中…</div>';
+    if(!r)b='<div class="info">⏳ 讀取航班資料中…</div>';else if(r.ok&&r.flights.length&&r.flights[0].cityCode&&!FLR[f.no])FLR[f.no]={code:r.flights[0].cityCode,city:r.flights[0].city,dir:r.flights[0].dir,src:'fids',t:Date.now()};
     else if(!r.ok)b='<div class="info" style="color:var(--tip)">讀取失敗，稍後會自動重試。</div>';
-    else if(!r.flights.length)b='<div class="info" style="color:var(--tip)">桃園／高雄機場目前查不到這個航班'+(f.date?'（'+md(f.date)+'）':'')+'。可能日期太遠、不是從這兩座機場起降，或是共掛航班號碼，請用下方連結查。</div>';
+    else if(!r.flights.length)b='<div class="info" style="color:var(--tip)">機場即時資料還沒有這個航班'+(f.date?'（'+md(f.date)+'）':'')+'（通常前一兩天才會出現），航廈、登機門屆時會自動顯示。</div>';
+    if(!r||!r.ok||!r.flights.length)b=flDestBlock(f,i)+b;
     else b=r.flights.map(flCard).join('')+'<div class="info" style="font-size:12px;color:#888">更新於 '+new Date(c.t+8*3600e3).toISOString().slice(11,16)+(c.loading?'・更新中…':'')+'</div>';
     return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+(r&&r.flights&&r.flights[0]?' <small style="font-size:14px;color:#777">'+esc(r.flights[0].airline)+'</small>':'')+'</div>'+b+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('↻ 重新整理','mf:ref')+chip('刪除','mf:del:'+i)+'</div></div>';}).join('');
 }
@@ -681,6 +729,8 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
   else if(v.indexOf('go:')===0){e.stopPropagation();tab=v.slice(3);render();if(tab==='mine')load(render);}
   else if(v==='mf:add'){e.stopPropagation();var no=flNorm($('mfno').value),dt=$('mfdt').value;if(!/^[A-Z0-9]{2}[0-9]{1,4}[A-Z]?$/.test(no)){toast('請輸入正確的航班號碼，例如 BR198');return;}
     MYF=MYF.filter(function(f){return !(f.no===no&&f.date===dt);});MYF.unshift({no:no,date:dt||''});MYF=MYF.slice(0,20);lss('fs_myflights',MYF);toast('✅ 已加入 '+no);LAST_HTML=null;render();}
+  else if(v.indexOf('mf:dest:')===0){e.preventDefault();e.stopPropagation();var pp=v.split(':'),fi=MYF[+pp[2]];if(fi){if(pp[3]){fi.dest=pp[3];fi.destCity=flApName(pp[3]);}else{delete fi.dest;delete fi.destCity;}lss('fs_myflights',MYF);}FL_EDIT=-1;LAST_HTML=null;render();}
+  else if(v.indexOf('mf:edit:')===0){e.preventDefault();e.stopPropagation();FL_EDIT=FL_EDIT===+v.slice(8)?-1:+v.slice(8);LAST_HTML=null;render();}
   else if(v==='mf:ref'){e.stopPropagation();flFetch(true);toast('更新中…');}
   else if(v.indexOf('mf:del:')===0){e.stopPropagation();MYF.splice(+v.slice(7),1);lss('fs_myflights',MYF);LAST_HTML=null;render();}},true);
 var MODE_ICON={cp:'🏆',exact:'📅'};
