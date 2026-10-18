@@ -245,6 +245,23 @@ html.dark [style*="color:#C0392B"]{color:#FF8A80!important}
 html.dark .myqc{background:#14301F;border-color:#2E6B45;color:#E6EAE8}html.dark .myqc *{color:inherit}
 html.dark .mopt,html.dark .mopt b,html.dark .tile,html.dark .card,html.dark .annc h3,html.dark h2,html.dark h3,html.dark .dest{color:#E6EAE8}html.dark .mopt .tx span,html.dark .mopt span{color:#A9B4AE}html.dark .mopt .rec{color:#7BE0A3}html.dark .step{color:#A9B4AE}
 html.dark .note,html.dark .info{color:#B5BFBA}
+.flx{margin-top:8px}.flx summary{list-style:none;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#7a8590;cursor:pointer;padding:6px 2px;min-height:32px;-webkit-user-select:none;user-select:none}.flx summary::-webkit-details-marker{display:none}.flx summary::after{content:'▾';font-size:11px;transition:transform .2s}.flx[open] summary::after{transform:rotate(180deg)}.flx .links{margin-top:4px}
+html.dark .flx summary{color:#9AA39E}
+html.dark .annb .ax,html.dark .mopt .ar{color:#8A948F}html.dark .actab{border-color:#2C3530}
+html.dark .help p,html.dark .help li,html.dark .help h3,html.dark .help b,html.dark .help td,html.dark .help th{color:#DDE3E0}
+html.dark footer{color:#A0AAA5}html.dark footer a{color:#6FCF97}html.dark footer .copy{color:#7C8681}
+html.dark .bagl,html.dark .card .lhs,html.dark .ghead,html.dark .sel,html.dark .summary{color:#DDE3E0}html.dark .bagl.inc{color:#7BE0A3}
+html.dark .bagnote,html.dark .card .taxl,html.dark .sortc span,html.dark .empty,html.dark .card .meta .alt{color:#A0AAA5}html.dark .card .info{color:#B5BFBA}
+html.dark .card .lhw{color:#F5B06B}html.dark .hint,html.dark .card .meta .seller{color:#FFB060}
+html.dark .best{background:#3D1B18;color:#FF8A80}html.dark .links a.del{border-color:#7A3A34;color:#FF8A80}
+html.dark .links a{border-color:#3DDC84;color:#3DDC84}html.dark .links a.pri{background:#06B04C;border-color:#06B04C;color:#fff}
+html.dark .mopt .rec,html.dark .cal-head button{background:#17402A;color:#7BE0A3}
+html.dark .tile{border-color:#2C3530}html.dark .tile.on{border-color:#3DDC84;background:#17402A;color:#7BE0A3}
+html.dark .grid .d{color:#E6EAE8}html.dark .grid .d:disabled{color:#4A524E}html.dark .grid .d.end{color:#fff}
+html.dark .loader p{color:#B5BFBA}html.dark .toast{background:#E6EAE8;color:#111}
+html.dark .wpick{color:#E6EAE8}
+html.dark [style*="background:#FDEDEC"]{background:#3D1B18!important;color:#FF8A80!important}html.dark [style*="border:2px solid #E6B0AA"]{border-color:#7A3A34!important}
+
 </style>
 </head>
 <body>
@@ -645,7 +662,7 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 var MYF=lsg('fs_myflights',[]);
 function flNorm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
 function flLinks(f){var n=f.no,g='https://www.google.com/search?q='+encodeURIComponent(n+' flight status'+(f.date?' '+f.date:''));
-  return '<div class="links small"><a class="pri" href="'+esc(g)+'" target="_blank" rel="noopener">Google</a><a href="https://www.flightaware.com/live/flight/'+esc(n)+'" target="_blank" rel="noopener">FlightAware</a><a href="https://www.flightradar24.com/data/flights/'+esc(n.toLowerCase())+'" target="_blank" rel="noopener">Flightradar24</a></div>';}
+  return '<details class="flx"><summary>外部網站查詢</summary><div class="links small"><a class="pri" href="'+esc(g)+'" target="_blank" rel="noopener">Google</a><a href="https://www.flightaware.com/live/flight/'+esc(n)+'" target="_blank" rel="noopener">FlightAware</a><a href="https://www.flightradar24.com/data/flights/'+esc(n.toLowerCase())+'" target="_blank" rel="noopener">Flightradar24</a></div></details>';}
 var FLS={},FLT=0,FLR=lsg('fs_flroute',{}),FL_EDIT=-1;
 function flRoute(f){var no=f.no;if(f.dest)return {code:f.dest,city:f.destCity||'',src:'manual'};var c=FLR[no];if(c&&c.code)return c;
   if(c&&(c.loading||Date.now()-c.t<1800e3))return c;FLR[no]={loading:true,t:Date.now()};
