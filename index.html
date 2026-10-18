@@ -69,6 +69,7 @@ nav button.on{color:var(--g);font-weight:700}
 .grid .d.end{background:var(--g);color:#fff;font-weight:800}
 .sel{font-size:14px;margin:10px 0 0;color:#333}
 .btn{display:block;width:100%;border:0;background:var(--g);color:#fff;font-size:16px;font-weight:800;border-radius:24px;padding:12px;margin-top:12px;font-family:inherit}
+.pendc .btn{flex:1;margin-top:4px}.btn.ghost{background:transparent;color:var(--g);border:2px solid var(--g)}
 .btn:disabled{background:#bfe9cf}
 .summary{font-size:13px;color:#444;margin:4px 2px 10px;white-space:pre-line}
 .card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -443,10 +444,19 @@ function crumbs(){
   return a.length?'<p class="step">'+esc(a.join('｜'))+'</p>':'';
 }
 function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';return h+'</div>';}
-function search(){
+// v28.15：日期查詢要選好城市並按「確認儲存」才存；也可以先選城市再選日期
+function pendCard(){if(!(st.pend&&st.dep&&st.ret&&st.mode&&st.mode!=='nodate'))return '';
+  var w=st.city&&st.city!=='全部'?(cityName(st.city)):st.country&&st.country!=='全部'?st.country:st.region&&st.region!=='全部'?st.region:'全部目的地';
+  return '<div class="panel pendc"><p class="step">💾 要儲存這組查詢嗎？</p><p>📅 '+md(st.dep)+'–'+md(st.ret)+'・'+esc(MODE[st.mode]||'')+'・📍 '+esc(w)+'</p><p style="font-size:13px;opacity:.75">儲存後，下一輪查價（07:00／15:00／23:00）會查這組日期，結果會出現在「我的查詢」。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pend:ok">✅ 確認儲存</button><button class="btn ghost" data-act="pend:no">取消</button></div></div>';}
+function cityName(c){try{var d=dsList().filter(function(o){return o.code===c;})[0];if(d)return d.dest;}catch(e){}return (typeof RQ_CITY!=='undefined'&&RQ_CITY[c]||c).split(' ')[0];}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="pend:"]');if(!a)return;e.preventDefault();e.stopPropagation();
+  if(a.dataset.act==='pend:ok'){st.pend=false;a.disabled=true;saveDate(st.dep,st.ret,st.mode,function(){render();});render();}
+  else{st.pend=false;toast('已取消，這組日期沒有儲存');render();}},true);
+function search(){if(st.step==='result'&&st.cf&&!(st.dep&&st.ret)&&st.mode!=='nodate')st.step='cal';var h=search0();return st.step==='result'?pendCard()+h:h;}
+function search0(){
   var back = st.step!=='mode' ? '<button class="back" data-act="back">‹ 上一步</button>' : '';
   if(st.step==='mode') return homeWx()+pushCard()+annBanner()+myqCard()+'<div class="panel">'+bar(1,3)+'<p class="step">查機票 1/3・要怎麼查？</p>'+
-    modeOpt('cp','🏆','CP值最高','前後挪 1～2 天，找最划算的組合',true)+modeOpt('exact','📅','只查指定日期','只看你選的兩天，列出每個班次')+modeOpt('nodate','💰','不指定日期','直接看最近最便宜的行程')+'</div>';
+    modeOpt('cp','🏆','CP值最高','前後挪 1～2 天，找最划算的組合',true)+modeOpt('exact','📅','只查指定日期','只看你選的兩天，列出每個班次')+modeOpt('nodate','💰','不指定日期','直接看最近最便宜的行程')+modeOpt('city','📍','先選城市再選日期','先決定去哪，再挑日期並儲存查詢')+'</div>';
   if(st.step==='cal') return back+'<div class="panel">'+bar(2,3)+crumbs()+'<p class="step">查機票 2/3・選去程和回程日期</p>'+calendar()+'</div>';
   if(st.step==='origin') st.step='region';   // v23：出發地步驟併入地區頁（舊連結相容）
   if(st.step==='region') return back+'<div class="panel">'+(st.mode==='nodate'?bar(2,2):bar(3,3))+crumbs()+'<p class="step">查機票 '+(st.mode==='nodate'?'2/2':'3/3')+'・想去哪裡？</p>'+orgBar()+dsBox()+'<div class="rgrid" id="dsgrid"'+(DSQ.trim()||(FT==='cn'&&cnAll().length)?' style="display:none"':'')+'>'+
@@ -940,7 +950,7 @@ function notifyView(){
   var now=Date.now(), o=st.origin||'ALL', ns=((D&&D.notify)||[]).filter(function(x){return orgOk(x.origin)&&(!x.expires||new Date(String(x.expires).length===10?x.expires+'T00:00:00+08:00':x.expires).getTime()>now)&&(!x.checkedAt||now-new Date(x.checkedAt).getTime()<26*3600e3);});
   ns.sort(function(a,b){return new Date(b.notifiedAt)-new Date(a.notifiedAt)||a.price-b.price;});
   if(!D)return '<div class="panel"><p class="step">🔔 通知</p><div class="empty">載入中…</div></div>';
-  if(!ns.length)return orgBar()+'<div class="panel"><p class="step">🔔 通知</p><div class="empty">'+(ORG.length===1?'這個出發地':'目前')+'沒有特價通知。<br>有新的特價時會推播通知你，並列在這裡。</div></div>';
+  if(!ns.length)return orgBar()+'<div class="panel"><p class="step">🔔 通知</p><div class="empty">'+(ORG.length===1?'這個出發地':'目前')+'沒有特價通知。<br>開啟特價通知後，有新特價會推播給你，並列在這裡。</div></div>';
   function tm(t){var d=new Date(t);if(isNaN(d))return '';var x=new Date(d.getTime()+8*3600e3);return (x.getUTCMonth()+1)+'/'+x.getUTCDate()+' '+('0'+x.getUTCHours()).slice(-2)+':'+('0'+x.getUTCMinutes()).slice(-2);}
   var ON={TPE:'台北',TSA:'台北',KHH:'高雄'};
   return '<p class="summary">🔔 特價通知（'+ns.length+' 筆，最新在前）</p>'+orgBar()+ns.map(function(x){
@@ -959,7 +969,7 @@ function notifyView(){
 }
 function promos(){
   var ps=((D&&D.promos)||[]).filter(function(x){return orgOk(x.origin);});
-  if(!ps.length)return orgBar()+'<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷會更新在這裡，開啟網頁特價通知就不會錯過。</div></div>';
+  if(!ps.length)return orgBar()+'<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷會第一時間出現在這裡。</div></div>';
   return '<p class="summary">🔥 最新優惠</p>'+orgBar()+ps.map(function(x){
     return '<div class="card">'+(x.origin?'<div class="grp">〔'+(ORIGIN[x.origin]||x.origin)+'出發〕</div>':'')+'<div class="dest" style="font-size:17px">🔥 '+esc(x.title)+'</div>'+
       (x.price?'<div class="price"><small>約 </small>NT$'+num(x.price)+'</div>'+taxDiv(x,true):'')+(x.deadline?'<div class="tip">⏰ '+esc(x.deadline)+'</div>':'')+
@@ -1045,18 +1055,19 @@ document.addEventListener('click',function(e){
   if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();st.region='全部';st.country=null;st.city=null;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除這支手機存起來的所有日期？（不影響其他人）'))clearDates();return;}
-  if(k==='m'){st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}
+  if(k==='m'){st.pend=false;st.cf=x==='city';if(st.cf){st.mode='cp';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
   else if(k==='cm')st.month=x;
   else if(k==='cd'){if(!st.dep||st.ret||x<=st.dep){st.dep=x;st.ret=null;}else st.ret=x;st.month=x.slice(0,7);}
-  else if(k==='calok'){orgSync();st.step='region';saveDate(st.dep,st.ret,st.mode);}
+  else if(k==='calok'){orgSync();st.pend=true;st.step=st.cf?'result':'region';}
   else if(k==='o'){st.origin=x;st.step='region';try{localStorage.setItem('tb_st',JSON.stringify({origin:x}));}catch(err){}}
   else if(k==='r'){st.region=x;st.country=null;st.lhSub=null;st.city=null;if(x==='東南亞')st.step='country';else if(x==='遠程')st.step='lhsub';else if(x==='全部'||!D)st.step='result';else goCity();}
   else if(k==='ls'){st.lhSub=x;st.step='result';}
   else if(k==='lk'){LHK=x==='nonstop'?'nonstop':'connect';try{localStorage.setItem('tb_lhk',LHK);}catch(err){}}
   else if(k==='c'){st.country=x;st.city=null;if(x==='全部'||!D)st.step='result';else goCity();}
   else if(k==='ci'){st.city=x;st.step='result';}
+  else if(k==='back'&&st.step==='cal'&&st.cf){st.step='region';st.city=null;st.dep=st.ret=null;st.pend=false;}
   else if(k==='back'){st.step=st.step==='result'&&st.city?'city':st.step==='city'?(st.region==='東南亞'?'country':'region'):st.step==='result'&&st.region==='東南亞'?'country':st.step==='result'&&st.region==='遠程'?'lhsub':BACK[st.step]||'mode';if(st.step==='cal'&&st.mode==='nodate')st.step='mode';}
-  else if(k==='again'){st.step=x;st.city=null;if(x==='mode'){st.mode=null;st.dep=st.ret=null;}}
+  else if(k==='again'){st.step=x;st.city=null;if(x==='mode'){st.mode=null;st.dep=st.ret=null;st.pend=false;st.cf=false;}}
   render();
   if(st.step==='result')load(render);
 });
@@ -1108,29 +1119,32 @@ function nativePushOn(){if(!PN)return;
   PN.addListener('registrationError',function(){pushFail('通知註冊失敗，請稍後再試');});
     PN.createChannel&&PN.createChannel({id:'deals',name:'特價通知',importance:4}).catch(function(){});
   PN.requestPermissions().then(function(r){if(r.receive==='granted')PN.register();else pushFail('請到手機「設定 → 通知」允許飛省');});}
-function webPushOn(){
+function webPushOn(silent){
+  var fin=false,dog=setTimeout(function(){if(fin)return;fin=true;if(silent)return;pushFail('通知開啟逾時（超過 20 秒沒有回應），請重新整理後再按一次');},20000);
+  var ok2=function(v){if(fin)return;fin=true;clearTimeout(dog);pushOk(v);},bad2=function(e){if(fin)return;fin=true;clearTimeout(dog);console.warn('webPushOn',e);if(silent){if(PTOK){PUSH='on';render();}return;}pushFail('通知開啟失敗：'+((e&&e.message)||e));};
   if(/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone){pushFail('iPhone 要先「分享 → 加入主畫面」，從主畫面打開才能收通知（iOS 16.4 以上）');return;}
-  Promise.resolve(Notification.requestPermission()).then(function(p){
+  withTimeout(Promise.resolve(Notification.permission==='granted'?'granted':Notification.requestPermission()),15000,'通知詢問沒有回應（可能被 Chrome 安靜模式擋下）：請點網址列左邊的圖示 →「通知」改成「允許」').then(function(p){
     if(p==='denied')throw new Error('瀏覽器封鎖了通知：請點網址列左邊的圖示 →「通知」改成「允許」，再按一次');
     if(p!=='granted')throw new Error('沒有允許通知（通知詢問被關掉或被 Chrome 自動擋下）：請點網址列左邊的圖示 →「通知」改成「允許」，再按一次');
     return withTimeout(new Promise(function(ok,no){loadFb(ok);setTimeout(function(){no(new Error('通知元件載入失敗'));},15000);}),16000,'通知元件載入失敗');})
   .then(function(){return withTimeout(navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready;}),15000,'背景服務沒有啟動，請重新整理再試');})
-  .then(function(reg){return withTimeout(firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg}),20000,'拿不到通知憑證');})
-  .then(function(t){return pushSave(t);})
-  .then(pushOk,function(e){console.warn('webPushOn',e);pushFail('通知開啟失敗：'+((e&&e.message)||e));});}
+  .then(function(reg){return withTimeout(firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg}),15000,'拿不到通知憑證（推播服務沒有回應）');})
+  .then(function(t){return withTimeout(pushSave(t),15000,'伺服器沒有回應，請稍後再試');})
+  .then(ok2,bad2);}
 function loadFb(cb){if(window.firebase&&firebase.messaging){if(!firebase.apps.length)firebase.initializeApp(FB_CFG);return cb();}var n=0,src=['https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js'];
   (function nx(){if(n>=src.length){if(!firebase.apps.length)firebase.initializeApp(FB_CFG);return cb();}var sc=document.createElement('script');sc.src=src[n++];sc.onload=nx;document.head.appendChild(sc);})();}
 // v28.12：首頁「🔔 開啟特價通知」卡：支援推播且還沒訂閱才顯示；按 ✕ 隱藏 14 天；iPhone 沒加入主畫面先教加入
 function isIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
 function iosNoHome(){return isIOS()&&!navigator.standalone&&!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);}
-function pushCard(){if(NAT||GAS||PUSH==='on')return '';if(Date.now()-(+lsg('fs_pc_x',0)||0)<14*864e5)return '';
+function pushCard(){if(NAT||GAS||PUSH==='on')return '';if(lsg('fs_pc_x',0))return '';   // v28.15：按 ✕ 就永久不顯示
+  if(WEBPUSH&&Notification.permission==='granted'&&(PTOK||PUSH==='wait'))return '';   // 已允許＋已有憑證 → 背景重新同步，不顯示卡片
   var x='<button class="px" data-act="pc:x" aria-label="關閉">✕</button>';
   if(iosNoHome())return '<div class="pcard"><span class="pi">🔔</span><div><b>想收到特價通知？</b><p>iPhone 要先把飛省加入主畫面：點 Safari 下方的「分享 <span aria-hidden="true">⎋</span>」→「加入主畫面」，再從主畫面打開飛省，就能開啟通知（iOS 16.4 以上）。</p></div>'+x+'</div>';
   if(!WEBPUSH||Notification.permission==='denied')return '';
   return '<div class="pcard"><span class="pi">🔔</span><div><b>開啟特價通知</b><p>有特價或比平常便宜 10% 以上時，直接通知你。</p><button class="pbtn" data-act="push:on"'+(PUSH==='wait'?' disabled':'')+'>'+(PUSH==='wait'?'⏳ 開啟中…':'🔔 開啟特價通知')+'</button>'+(PMSG&&PUSH!=='wait'&&/⚠️/.test(PMSG)?'<p class="pmsg">'+esc(PMSG)+'</p>':'')+'</div>'+x+'</div>';}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act="pc:x"]');if(!a)return;e.preventDefault();e.stopPropagation();lss('fs_pc_x',Date.now());toast('之後可以在右上角 🔔 開啟通知');render();},true);
 function pushOn(){if(PUSH==='wait')return;PUSH='wait';PMSG='⏳ 正在開啟通知…';if(NAT)nativePushOn();else if(WEBPUSH)webPushOn();else pushFail('這個瀏覽器不支援推播通知');}
-function pushOff(){PUSH='off';lss('fs_push','off');pushDrop();if(PN)PN.unregister&&PN.unregister().catch(function(){});PMSG='已關閉特價通知';}
+function pushOff(){PUSH='off';lss('fs_push','off');pushDrop();PTOK='';lss('fs_ptok','');lss('fs_pc_x',Date.now());if(PN)PN.unregister&&PN.unregister().catch(function(){});PMSG='已關閉特價通知';}
 // 航班提醒：App 用本機通知（起飛前 3 小時）；網頁只在頁面開著時提醒（盡力而為），需頁面開著。
 var FLTS=lsg('fs_flights',[]);
 var TPE_T={JX:'第一航廈',IT:'第一航廈',TR:'第一航廈',MM:'第一航廈',CX:'第一航廈',UO:'第一航廈',BR:'第二航廈',CI:'第二航廈（部分航班第一航廈）',AE:'第二航廈',NH:'第二航廈',JL:'第二航廈'};
@@ -1160,7 +1174,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('[data-act]
 // 通知點擊監聽要在啟動時馬上註冊（冷啟動時 Capacitor 會保留這個事件直到有人接收）
 if(PN)PN.addListener('pushNotificationActionPerformed',function(a){var d=(a.notification&&a.notification.data)||{};openLink(d.route?'':d.link,d);});
 if(NAT&&PUSH!=='off'){PUSH='wait';setTimeout(nativePushOn,1500);}
-if(WEBPUSH&&PUSH!=='off'){if(Notification.permission==='granted'){PUSH='wait';setTimeout(webPushOn,2500);}else{PUSH='off';lss('fs_push','off');}}  // 每次打開都重新確認伺服器有存到；權限沒了就顯示「關」
+if(WEBPUSH){if(Notification.permission==='granted'&&(PUSH!=='off'||PTOK)){PUSH='on';setTimeout(function(){webPushOn(true);},2500);}else if(Notification.permission!=='granted'&&PUSH!=='off'){PUSH='off';lss('fs_push','off');}}   // v28.15：已允許就靜默重新同步（不顯示「開啟中」）  // 每次打開都重新確認伺服器有存到；權限沒了就顯示「關」
 if(FLTS.length)setTimeout(flSchedule,2000);
 if(!NAT&&WEBPUSH)navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&(e.data.link||e.data.route))openLink(e.data.link,e.data);});
 document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.btn');if(!b||b.disabled)return;b.classList.remove('press');void b.offsetWidth;b.classList.add('press');});
