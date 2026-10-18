@@ -1,5 +1,5 @@
 // 旅遊小助手 service worker: app shell offline; deals always from network (falls back to last copy).
-const C='flysave-v40', SHELL=['./','index.html','manifest.json','icon-96.png','icon-192.png','apple-touch-icon.png'];
+const C='flysave-v41', SHELL=['./','index.html','manifest.json','icon-96.png','icon-192.png','apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{

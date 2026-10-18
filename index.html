@@ -466,7 +466,30 @@ Object.assign(EN_NAME,{LAX:'los angeles',SFO:'san francisco',SEA:'seattle',JFK:'
 var CTRY_EN={'日本':'japan','韓國':'korea south korea','泰國':'thailand','越南':'vietnam','菲律賓':'philippines','馬來西亞':'malaysia','新加坡':'singapore','印尼':'indonesia','柬埔寨':'cambodia','緬甸':'myanmar','寮國':'laos','汶萊':'brunei','香港':'hong kong','澳門':'macau','中國大陸':'china'};
 var DSQ='';
 function dsList(){var m={};all('short').concat(all('long'),all('custom')).forEach(function(x){if(!x.code||!orgOk(x.origin))return;var c=String(x.code).toUpperCase();if(m[c])return;var r=regOf(x),ct=r==='東南亞'?(x.country||''):r==='遠程'?(x.country||'遠程'):r;m[c]={code:c,dest:x.dest||c,region:r,country:x.country||'',label:ct,icon:r==='東南亞'?(COUNTRY_ICON[x.country]||'🌴'):(REGION_ICON[r]||'🌏')};});lhAll().forEach(function(x){if(!x.code||!orgOk(x.origin))return;var c=String(x.code).toUpperCase();if(m[c])return;m[c]={code:c,dest:x.dest||c,region:'遠程',sub:x.sub||'',country:x.sub||'',label:'遠程・'+(x.sub||''),icon:LH_ICON[x.sub]||'🌍'};});return Object.keys(m).map(function(k){return m[k];});}
-function dsMatch(q){q=String(q||'').trim().toLowerCase();if(!q)return null;var n=q.replace(/\s+/g,' ');return dsList().map(function(d){var en=EN_NAME[d.code]||'',ce=CTRY_EN[d.label]||CTRY_EN[d.country]||'',sc=d.code.toLowerCase()===n?0:d.dest.indexOf(q)===0?1:d.dest.indexOf(q)>=0?2:(' '+en).indexOf(' '+n)>=0?3:d.code.toLowerCase().indexOf(n)===0?4:(d.label.indexOf(q)>=0||d.country.indexOf(q)>=0||(d.region||'').indexOf(q)>=0)?5:(' '+ce).indexOf(' '+n)>=0?6:en.indexOf(n)>=0?7:99;return {d:d,s:sc};}).filter(function(o){return o.s<99;}).sort(function(a,b){return a.s-b.s;}).map(function(o){return o.d;});}
+// v28.14：目的地搜尋強化（正規化＋別名＋雙向比對＋英文拼字容錯）
+var CITY_ALIAS={HKT:'普吉島 布吉 布吉島 普吉府 phuket',BKK:'曼谷 素萬那普 盤谷 bangkok',DMK:'曼谷 廊曼 don mueang',NRT:'東京 成田 tokyo narita',HND:'東京 羽田 tokyo haneda',KIX:'大阪 關西 关西 osaka kansai',ITM:'大阪 伊丹',ICN:'首爾 漢城 仁川 首尔 seoul incheon',GMP:'首爾 金浦 seoul gimpo',CTS:'札幌 新千歲 千歲 北海道 sapporo chitose hokkaido',DPS:'峇里島 巴里島 峇厘島 巴厘島 峇里 巴里 登巴薩 bali denpasar',SGN:'胡志明 胡志明市 西貢 saigon ho chi minh hcm',MFM:'澳門 澳门 macau macao',HKG:'香港 hong kong hk',PUS:'釜山 金海 busan pusan gimhae',OKA:'沖繩 冲绳 那霸 琉球 okinawa naha',FUK:'福岡 博多 fukuoka hakata',NGO:'名古屋 中部 nagoya chubu',CNX:'清邁 清迈 chiang mai chiangmai',HAN:'河內 河内 hanoi',DAD:'峴港 岘港 danang da nang',CXR:'芽莊 金蘭 nha trang',PQC:'富國島 富国岛 phu quoc',MNL:'馬尼拉 manila',CEB:'宿霧 宿务 cebu',KLO:'長灘島 卡利博 boracay',KUL:'吉隆坡 kuala lumpur kl',PEN:'檳城 槟城 penang',BKI:'亞庇 沙巴 kota kinabalu sabah',SIN:'新加坡 星加坡 singapore',CGK:'雅加達 jakarta',CJU:'濟州 济州 jeju',REP:'暹粒 吳哥窟 siem reap angkor',SAI:'暹粒 吳哥窟 siem reap',PNH:'金邊 phnom penh',KTI:'金邊 德崇 phnom penh',GUM:'關島 关岛 guam',ROR:'帛琉 palau',SPN:'塞班 saipan',PVG:'上海 浦東 shanghai pudong',SHA:'上海 虹橋 shanghai hongqiao',PEK:'北京 首都 beijing',PKX:'北京 大興 beijing daxing',LAX:'洛杉磯 洛杉矶 la los angeles',SFO:'舊金山 三藩市 旧金山 san francisco sf',SEA:'西雅圖 seattle',JFK:'紐約 纽约 new york nyc',YVR:'溫哥華 vancouver',YYZ:'多倫多 toronto',CDG:'巴黎 戴高樂 paris',PRG:'布拉格 prague praha',BNE:'布里斯本 布里斯班 brisbane',MLE:'馬爾地夫 馬爾代夫 馬列 maldives male',LHR:'倫敦 伦敦 london',SYD:'雪梨 悉尼 sydney',MEL:'墨爾本 melbourne',AMS:'阿姆斯特丹 amsterdam',FRA:'法蘭克福 frankfurt',VIE:'維也納 vienna wien',MUC:'慕尼黑 munich',MXP:'米蘭 milan',FCO:'羅馬 rome',IST:'伊斯坦堡 istanbul',DXB:'杜拜 迪拜 dubai',AKL:'奧克蘭 auckland',IAD:'華盛頓 washington',IAH:'休士頓 休斯頓 houston',DFW:'達拉斯 dallas',ORD:'芝加哥 chicago',ONT:'安大略 ontario',PHX:'鳳凰城 phoenix',MMY:'宮古島 宮古 miyako',ISG:'石垣島 石垣 ishigaki',HKD:'函館 hakodate',KOJ:'鹿兒島 kagoshima',SZX:'深圳 shenzhen',CAN:'廣州 guangzhou'};
+function dsNorm(q){q=String(q||'');try{q=q.normalize('NFKC');}catch(e){q=q.replace(/[\uff01-\uff5e]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xfee0);}).replace(/\u3000/g,' ');}
+  q=q.toLowerCase().replace(/[臺]/g,'台').replace(/[\s·・\-_,.()（）]+/g,' ').trim();
+  var c=q,m=c.match(/^(.+?)\s*(國際機場|国际机场|國際空港|機場|机场|空港|international airport|airport|特別行政區|市|縣|县|府)$/);if(m&&m[1].length>=2)c=m[1];
+  if(/[島岛]$/.test(c)&&c.length>=3)c=c.slice(0,-1);
+  return c||q;}
+function dsLev(a,b,mx){if(Math.abs(a.length-b.length)>mx)return mx+1;var p=[],i,j;for(j=0;j<=b.length;j++)p[j]=j;for(i=1;i<=a.length;i++){var c=[i],m=i;for(j=1;j<=b.length;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));if(c[j]<m)m=c[j];}if(m>mx)return mx+1;p=c;}return p[b.length];}
+var DS_KEYS={};
+function dsKeys(code,dest){var k=code+'|'+(dest||'');if(DS_KEYS[k])return DS_KEYS[k];var zh=[],en=[];
+  [dest,(typeof RQ_CITY!=='undefined'&&RQ_CITY[code])||'',CITY_ALIAS[code]||'',(typeof FL_APX!=='undefined'&&FL_APX[code]&&FL_APX[code][0])||''].join(' ').split(/[\s\/()（）]+/).forEach(function(w){if(!w)return;var n=dsNorm(w);if(!n)return;(/[a-z]/.test(n)?en:zh).push(n);});
+  var e=EN_NAME[code]||'';if(e){en.push(e);e.split(' ').forEach(function(w){en.push(w);});}
+  (CITY_ALIAS[code]||'').replace(/[^a-z ]/gi,' ').trim().split(/\s+/);var ae=(CITY_ALIAS[code]||'').match(/[a-z][a-z ]*[a-z]/gi);if(ae)ae.forEach(function(x){en.push(x.toLowerCase());});
+  return DS_KEYS[k]={zh:zh.filter(Boolean),en:en.filter(Boolean)};}
+// 分數越小越好；99 = 不符合
+function dsScore(code,dest,q){if(!q)return 99;var raw=q,n=dsNorm(q),lc=code.toLowerCase(),K=dsKeys(code,dest),i,w,best=99;
+  if(lc===raw||lc===n)return 0;
+  for(i=0;i<K.zh.length;i++){w=K.zh[i];if(w===n)return 1;if(w.indexOf(n)===0)best=Math.min(best,2);else if(w.indexOf(n)>=0)best=Math.min(best,3);else if(n.length>=2&&w.length>=2&&n.indexOf(w)>=0)best=Math.min(best,3);}
+  var nq=n.replace(/ /g,'');
+  for(i=0;i<K.en.length;i++){w=K.en[i];var wq=w.replace(/ /g,'');if(wq===nq)return Math.min(best,1);if(nq.length>=2&&wq.indexOf(nq)===0)best=Math.min(best,2);else if(nq.length>=3&&wq.indexOf(nq)>=0)best=Math.min(best,4);else if(nq.length>=4&&nq.indexOf(wq)>=0&&wq.length>=4)best=Math.min(best,4);}
+  if(best===99&&/^[a-z ]{4,}$/.test(nq)){var mx=nq.length>=8?2:1;for(i=0;i<K.en.length;i++){w=K.en[i].replace(/ /g,'');if(w.length<4)continue;if(dsLev(nq,w,mx)<=mx||(w.length>nq.length&&dsLev(nq,w.slice(0,nq.length),1)<=1&&nq.length>=5)){best=8;break;}}}
+  if(best===99&&nq.length===3&&lc.indexOf(nq)===0)best=5;
+  return best;}
+function dsMatch(q){q=String(q||'').trim();if(!q)return null;var raw=q.toLowerCase(),n=dsNorm(q);return dsList().map(function(d){var sc=dsScore(d.code,d.dest,raw);if(sc===99){var ce=CTRY_EN[d.label]||CTRY_EN[d.country]||'';if(d.label.indexOf(n)>=0||d.country.indexOf(n)>=0||(d.region||'').indexOf(n)>=0)sc=6;else if(n.length>=3&&(' '+ce).indexOf(' '+n)>=0)sc=7;}return {d:d,s:sc};}).filter(function(o){return o.s<99;}).sort(function(a,b){return a.s-b.s;}).map(function(o){return o.d;});}
 function dsRes(){var r=dsMatch(DSQ);if(r===null)return '';if(!D)return '<p class="dsno">⏳ 讀取航點中…</p>';if(!r.length)return rqBox(DSQ);
   if(DSQ.trim().length>=2)r.slice(0,6).forEach(function(d){if(rqOf(d.code))setTimeout(function(){rqTouch(d.code);},0);});
   return '<div class="dschips">'+r.slice(0,24).map(function(d){return '<button class="dschip" data-act="ds:'+esc(d.code)+'">'+(CITY_ICON[d.code]||d.icon)+' <b>'+esc(d.dest)+'</b> <small>'+esc(d.label)+'・'+esc(d.code)+'</small></button>';}).join('')+'</div>';}
@@ -482,11 +505,11 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 // v28.9：搜尋不到 → ➕ 加入查價（下一輪 07:00／15:00／23:00 一起查）
 var RQ_CITY={NRT:'東京 成田',HND:'東京 羽田',KIX:'大阪 關西',NGO:'名古屋',FUK:'福岡',OKA:'沖繩 那霸',CTS:'札幌 北海道 新千歲',KOJ:'鹿兒島',KMJ:'熊本',SDJ:'仙台',HKD:'函館',KMQ:'小松 金澤',TAK:'高松',OKJ:'岡山',HIJ:'廣島',UKB:'神戶',FSZ:'靜岡',IBR:'茨城',KIJ:'新潟',MYJ:'松山 愛媛',AOJ:'青森',ISG:'石垣',MMY:'宮古島',TOY:'富山',ICN:'首爾 仁川',GMP:'首爾 金浦',PUS:'釜山',CJU:'濟州',TAE:'大邱',CJJ:'清州',BKK:'曼谷',DMK:'曼谷 廊曼',CNX:'清邁',HKT:'普吉',SGN:'胡志明市 胡志明 西貢',HAN:'河內',DAD:'峴港',CXR:'芽莊',PQC:'富國島',HPH:'海防',MNL:'馬尼拉',CEB:'宿霧',CRK:'克拉克',KLO:'長灘島 卡利博',KUL:'吉隆坡',PEN:'檳城',BKI:'亞庇 沙巴',SIN:'新加坡',CGK:'雅加達',DPS:'峇里島 巴里島 峇厘島',SUB:'泗水',PNH:'金邊',REP:'暹粒 吳哥窟',SAI:'暹粒',RGN:'仰光',VTE:'永珍',BWN:'汶萊',HKG:'香港',MFM:'澳門',PVG:'上海 浦東',SHA:'上海 虹橋',PEK:'北京',PKX:'北京 大興',CAN:'廣州',SZX:'深圳',XMN:'廈門',CTU:'成都',TFU:'成都 天府',HGH:'杭州',NKG:'南京',FOC:'福州',WUH:'武漢',CKG:'重慶',TAO:'青島',GUM:'關島',SPN:'塞班',ROR:'帛琉',LAX:'洛杉磯',SFO:'舊金山',SEA:'西雅圖',JFK:'紐約',YVR:'溫哥華',YYZ:'多倫多',ONT:'安大略',IAH:'休士頓',DFW:'達拉斯',ORD:'芝加哥',CDG:'巴黎',PRG:'布拉格',LHR:'倫敦',AMS:'阿姆斯特丹',FRA:'法蘭克福',VIE:'維也納',MUC:'慕尼黑',MXP:'米蘭',FCO:'羅馬',IST:'伊斯坦堡',DXB:'杜拜',BNE:'布里斯本',SYD:'雪梨',MEL:'墨爾本',AKL:'奧克蘭',MLE:'馬爾地夫',DEL:'德里 新德里',BOM:'孟買',ULN:'烏蘭巴托 蒙古'};
 var RQ_LOCAL=(function(){try{return JSON.parse(localStorage.getItem('fs_rq'))||[];}catch(e){return [];}})();
-function rqResolve(q){q=String(q||'').trim();if(!q)return null;var u=q.toUpperCase(),l=q.toLowerCase();
+function rqResolve(q){q=String(q||'').trim();if(!q)return null;var u=dsNorm(q).toUpperCase().replace(/ /g,'');
   if(/^[A-Z]{3}$/.test(u)&&(RQ_CITY[u]||EN_NAME[u]))return {code:u,name:(RQ_CITY[u]||u).split(' ')[0]};
-  var best=null;Object.keys(RQ_CITY).forEach(function(c){if(best)return;var ns=RQ_CITY[c].split(' ');if(ns.indexOf(q)>=0||ns[0].indexOf(q)===0&&q.length>=2)best={code:c,name:ns[0]};});
-  if(!best&&l.length>=3)Object.keys(EN_NAME).forEach(function(c){if(!best&&(' '+EN_NAME[c]).indexOf(' '+l)>=0)best={code:c,name:(RQ_CITY[c]||c).split(' ')[0]};});
-  if(!best&&/^[A-Z]{3}$/.test(u))best={code:u,name:u,raw:true};return best;}
+  var best=null,bs=99,codes={};Object.keys(RQ_CITY).concat(Object.keys(EN_NAME),Object.keys(CITY_ALIAS)).forEach(function(c){if(codes[c])return;codes[c]=1;var s=dsScore(c,(RQ_CITY[c]||'').split(' ')[0],q.toLowerCase());if(s<bs){bs=s;best={code:c,name:((RQ_CITY[c]||'').split(' ')[0])||(CITY_ALIAS[c]||c).split(' ')[0]};}});
+  if(best&&bs<99)return best;
+  if(/^[A-Z]{3}$/.test(u))return {code:u,name:u,raw:true};return null;}
 function rqList(){return (D&&D.reqCities)||[];}
 // v28.12：有人看／搜尋加入的城市 → 後台更新最後看過時間（14 天沒人看就移除）；同一城市每台裝置 1 小時最多送一次
 var RQ_TOUCHED=lsg('fs_rqt',{});
@@ -559,7 +582,7 @@ function cnCard(x){var via=(x.via||[]).filter(Boolean);
   '<div class="info" style="font-size:13px">🔁 '+(x.stops||1)+' 次轉機'+(via.length?'・經 '+esc(via.join('、')):'')+(x.duration?'・總時間 '+esc(x.duration):'')+'</div>'+
   links(x.link,x.trip)+'</div>';}
 function cnCards(L){return L.length?L.map(cnCard).join(''):'<p class="dsno">目前沒有轉機結果</p>';}
-function cnMatch(q){q=String(q||'').trim().toLowerCase();var L=cnAll();if(!q)return L;return L.filter(function(x){var c=String(x.code).toLowerCase();return c===q||(x.dest||'').indexOf(q)>=0||(RQ_CITY[x.code]||'').indexOf(q)>=0||(' '+(EN_NAME[x.code]||'')).indexOf(' '+q)>=0||(x.country||'').indexOf(q)>=0;});}
+function cnMatch(q){q=String(q||'').trim();var L=cnAll();if(!q)return L;var n=dsNorm(q);return L.filter(function(x){return dsScore(String(x.code).toUpperCase(),x.dest||'',q.toLowerCase())<99||(x.country||'').indexOf(n)>=0;});}
 function dsBody(){if(FT==='cn'&&cnAll().length)return cnCards(cnMatch(DSQ));return DSQ.trim()?dsRes():rqChips();}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="ft:"]');if(!a)return;e.preventDefault();e.stopPropagation();FT=a.dataset.act.slice(3);if($('dsres'))dsUpd();else render();},true);
 var CITY_ICON={NRT:'🗼',HND:'🗼',KIX:'🏯',FUK:'🍜',OKA:'🏝️',CTS:'❄️',NGO:'🏯',ICN:'🏙️',PUS:'🌊',CJU:'🍊',BKK:'🛕',CNX:'🐘',SGN:'🛵',HAN:'🏮',DAD:'🏖️'};
