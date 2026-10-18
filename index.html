@@ -108,6 +108,7 @@ nav button.on{color:var(--g);font-weight:700}
 .yt video{object-fit:contain}
 .sugg summary{cursor:pointer;font-weight:700;padding:4px 0}.sugg[open] summary{margin-bottom:10px}
 .shiftc{margin:8px 0;padding:8px 10px;border-radius:10px;background:rgba(6,199,85,.08);font-size:14px;line-height:1.6}.shiftc .save{display:inline-block;background:var(--g);color:#fff;border-radius:999px;padding:0 8px;font-size:12px;font-weight:800}
+.rqbadge{display:inline-block;font-size:11px;font-weight:700;background:rgba(255,160,0,.18);color:#b36b00;border-radius:999px;padding:1px 7px;margin-left:4px}
 .cnote{font-size:12px;color:var(--sub,#777);background:rgba(127,127,127,.12);border-radius:10px;padding:6px 10px;margin:0 0 10px;text-align:center}
 .yt .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,0,0,.9);color:#fff;font-size:28px;line-height:64px;text-align:center;padding-left:4px;box-sizing:border-box}
 footer{text-align:center;font-size:12px;color:#777;line-height:1.9;padding:10px 0 4px}
@@ -492,6 +493,7 @@ function search0(){
     countries().map(function(c){return tile(COUNTRY_ICON[c],c,'c:'+c,st.country===c);}).join('')+tile('🌴','東南亞全部','c:全部',st.country==='全部')+'</div></div>';
   if(st.step==='city'){var cs=cities(),t=st.mode==='nodate'?3:4;return back+'<div class="panel">'+bar(t,t)+crumbs()+'<p class="step">查機票 '+t+'/'+t+'・'+esc(st.region==='東南亞'?st.country:st.region)+'想去哪個城市？</p><div class="rgrid">'+
     cs.map(function(c){return tile(CITY_ICON[c.code]||'📍',c.dest,'ci:'+c.code,st.city===c.code);}).join('')+tile(st.region==='東南亞'?(COUNTRY_ICON[st.country]||'🌴'):(REGION_ICON[st.region]||'🌏'),'全部','ci:全部',st.city==='全部')+'</div></div>';}
+  if(st.rq)return back+rqResult();
   return back+result();
 }
 
@@ -525,7 +527,13 @@ function dsScore(code,dest,q){if(!q)return 99;var raw=q,n=dsNorm(q),lc=code.toLo
   if(best===99&&nq.length===3&&lc.indexOf(nq)===0)best=5;
   return best;}
 function dsMatch(q){q=String(q||'').trim();if(!q)return null;var raw=q.toLowerCase(),n=dsNorm(q);return dsList().map(function(d){var sc=dsScore(d.code,d.dest,raw);if(sc===99){var ce=CTRY_EN[d.label]||CTRY_EN[d.country]||'';if(d.label.indexOf(n)>=0||d.country.indexOf(n)>=0||(d.region||'').indexOf(n)>=0)sc=6;else if(n.length>=3&&(' '+ce).indexOf(' '+n)>=0)sc=7;}return {d:d,s:sc};}).filter(function(o){return o.s<99;}).sort(function(a,b){return a.s-b.s;}).map(function(o){return o.d;});}
-function dsRes(){var r=dsMatch(DSQ);if(r===null)return '';if(!D)return '<p class="dsno">⏳ 讀取航點中…</p>';if(!r.length)return rqBox(DSQ);
+function rqMatches(q){var have={};dsList().forEach(function(d){have[d.code]=1;});return rqList().filter(function(x){return !have[x.code]&&x.status!=='active'&&dsScore(x.code,x.name||'',String(q).toLowerCase())<99;});}
+function rqBadge(x){return x.status==='none'?(rqHasCn(x.code)?'🔁 有轉機票':'無直飛・'+nextRun().replace('今天 ','')+' 更新'):'待查・'+nextRun().replace('今天 ','')+' 更新';}
+function rqChip(x){return '<button class="dschip rqc" data-act="rqci:'+esc(x.code)+'">'+(x.status==='none'?'🔁':'⏳')+' <b>'+esc(x.name||x.code)+'</b> <small>'+esc(x.code)+'</small> <span class="rqbadge">'+esc(rqBadge(x))+'</span></button>';}
+function dsRes(){var r=dsMatch(DSQ);if(r===null)return '';if(!D)return '<p class="dsno">⏳ 讀取航點中…</p>';var rqm=rqMatches(DSQ);
+  if(!r.length&&rqm.length)return '<div class="dschips">'+rqm.map(rqChip).join('')+'</div>';
+  if(!r.length)return rqBox(DSQ);
+  if(rqm.length)return '<div class="dschips">'+r.slice(0,24).map(function(d){return '<button class="dschip" data-act="ds:'+esc(d.code)+'">'+(CITY_ICON[d.code]||d.icon)+' <b>'+esc(d.dest)+'</b> <small>'+esc(d.label)+'・'+esc(d.code)+'</small></button>';}).join('')+rqm.map(rqChip).join('')+'</div>';
   if(DSQ.trim().length>=2)r.slice(0,6).forEach(function(d){if(rqOf(d.code))setTimeout(function(){rqTouch(d.code);},0);});
   return '<div class="dschips">'+r.slice(0,24).map(function(d){return '<button class="dschip" data-act="ds:'+esc(d.code)+'">'+(CITY_ICON[d.code]||d.icon)+' <b>'+esc(d.dest)+'</b> <small>'+esc(d.label)+'・'+esc(d.code)+'</small></button>';}).join('')+'</div>';}
 function dsBox(){return '<div class="dsbox"><div class="dsin"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="dsq" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="搜尋城市、國家或機場代碼（大阪、曼谷、KIX）" value="'+esc(DSQ)+'" aria-label="搜尋目的地"><button class="dsx" data-act="dsx" aria-label="清除"'+(DSQ?'':' hidden')+'>×</button></div><div id="dsft">'+ftBar()+'</div><div id="dsres">'+dsBody()+'</div></div>';}
@@ -534,9 +542,18 @@ document.addEventListener('input',function(e){if(e.target&&e.target.id==='dsq'){
 document.addEventListener('keydown',function(e){if(e.target&&e.target.id==='dsq'&&e.key==='Enter'){e.preventDefault();var b=document.querySelector('.dschip');if(b)b.click();else e.target.blur();}});
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v==='dsx'){e.stopPropagation();e.preventDefault();DSQ='';var i=$('dsq');if(i){i.value='';i.focus();}dsUpd();return;}
-  if(v.indexOf('ds:')===0){e.stopPropagation();e.preventDefault();var c=v.slice(3),d=dsList().filter(function(o){return o.code===c;})[0];if(!d)return;
+  if(v.indexOf('ds:')===0){e.stopPropagation();e.preventDefault();st.rq=null;var c=v.slice(3),d=dsList().filter(function(o){return o.code===c;})[0];if(!d)return;
     if(d.region==='遠程'){st.region='遠程';st.country=null;st.lhSub=d.sub||'全部';st.city=c;st.step='result';DSQ='';if(document.activeElement)document.activeElement.blur();render();return;}
     st.region=d.region==='港澳'?'港澳':d.region;st.country=d.region==='東南亞'?d.country:null;st.lhSub=null;st.city=c;st.step='result';DSQ='';if(document.activeElement)document.activeElement.blur();render();if(typeof load==='function'&&!D)load(render);}},true);
+// v28.18：加入查價中／無直飛的城市也能點進結果頁
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rqci:"]');if(!a)return;e.preventDefault();e.stopPropagation();
+  var c=a.dataset.act.slice(5);st.rq=c;st.city=c;st.region='全部';st.country=null;st.step='result';DSQ='';rqTouch(c);if(document.activeElement)document.activeElement.blur();render();},true);
+function rqResult(){var x=rqOf(st.rq)||{code:st.rq,name:st.rq,status:'pending'},nm=esc(x.name||x.code)+'（'+esc(x.code)+'）',og0=(x.origins||['TPE']).map(function(o){return o==='KHH'?'高雄':'台北';}).join('／');
+  var L=cnAll().filter(function(y){return y.code===x.code;}),nr=nextRun();
+  var h='<p class="summary">📍 '+nm+'｜🛫 '+og0+'出發</p><div class="chips sortc"><span>調整</span>'+chip('換城市','again:region')+chip('重新查','again:mode')+'</div>';
+  if(x.status==='none'){h+='<div class="panel"><b>目前沒有'+og0+'直飛來回</b><p style="font-size:14px;margin:6px 0 0">'+(L.length?'下面是轉機票（在搜尋框切到「轉機」也看得到）。':'⏳ '+nr+' 會查轉機票，查到後就會顯示在這裡（也可以在「轉機」篩選看到）。')+'</p><p style="font-size:12px;opacity:.7;margin:6px 0 0">查完轉機後，這個城市會從「待查清單」移除，轉機結果仍會保留在網站上。</p></div>';}
+  else h+='<div class="panel"><b>⏳ 待查價</b><p style="font-size:14px;margin:6px 0 0">'+nr+' 會一起查'+og0+'出發的直飛來回；沒有直飛的話，下一輪再查轉機票。</p></div>';
+  return h+(L.length?L.map(cnCard).join(''):'');}
 // v28.9：搜尋不到 → ➕ 加入查價（下一輪 07:00／15:00／23:00 一起查）
 var RQ_CITY={NRT:'東京 成田',HND:'東京 羽田',KIX:'大阪 關西',NGO:'名古屋',FUK:'福岡',OKA:'沖繩 那霸',CTS:'札幌 北海道 新千歲',KOJ:'鹿兒島',KMJ:'熊本',SDJ:'仙台',HKD:'函館',KMQ:'小松 金澤',TAK:'高松',OKJ:'岡山',HIJ:'廣島',UKB:'神戶',FSZ:'靜岡',IBR:'茨城',KIJ:'新潟',MYJ:'松山 愛媛',AOJ:'青森',ISG:'石垣',MMY:'宮古島',TOY:'富山',ICN:'首爾 仁川',GMP:'首爾 金浦',PUS:'釜山',CJU:'濟州',TAE:'大邱',CJJ:'清州',BKK:'曼谷',DMK:'曼谷 廊曼',CNX:'清邁',HKT:'普吉',SGN:'胡志明市 胡志明 西貢',HAN:'河內',DAD:'峴港',CXR:'芽莊',PQC:'富國島',HPH:'海防',MNL:'馬尼拉',CEB:'宿霧',CRK:'克拉克',KLO:'長灘島 卡利博',KUL:'吉隆坡',PEN:'檳城',BKI:'亞庇 沙巴',SIN:'新加坡',CGK:'雅加達',DPS:'峇里島 巴里島 峇厘島',SUB:'泗水',PNH:'金邊',REP:'暹粒 吳哥窟',SAI:'暹粒',RGN:'仰光',VTE:'永珍',BWN:'汶萊',HKG:'香港',MFM:'澳門',PVG:'上海 浦東',SHA:'上海 虹橋',PEK:'北京',PKX:'北京 大興',CAN:'廣州',SZX:'深圳',XMN:'廈門',CTU:'成都',TFU:'成都 天府',HGH:'杭州',NKG:'南京',FOC:'福州',WUH:'武漢',CKG:'重慶',TAO:'青島',GUM:'關島',SPN:'塞班',ROR:'帛琉',LAX:'洛杉磯',SFO:'舊金山',SEA:'西雅圖',JFK:'紐約',YVR:'溫哥華',YYZ:'多倫多',ONT:'安大略',IAH:'休士頓',DFW:'達拉斯',ORD:'芝加哥',CDG:'巴黎',PRG:'布拉格',LHR:'倫敦',AMS:'阿姆斯特丹',FRA:'法蘭克福',VIE:'維也納',MUC:'慕尼黑',MXP:'米蘭',FCO:'羅馬',IST:'伊斯坦堡',DXB:'杜拜',BNE:'布里斯本',SYD:'雪梨',MEL:'墨爾本',AKL:'奧克蘭',MLE:'馬爾地夫',DEL:'德里 新德里',BOM:'孟買',ULN:'烏蘭巴托 蒙古'};
 var RQ_LOCAL=(function(){try{return JSON.parse(localStorage.getItem('fs_rq'))||[];}catch(e){return [];}})();
@@ -1097,20 +1114,21 @@ document.addEventListener('click',function(e){
   if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();st.region='全部';st.country=null;st.city=null;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除這支手機存起來的所有日期？（不影響其他人）'))clearDates();return;}
-  if(k==='m'){st.pend=false;st.cf=x==='city';if(st.cf){st.mode='exact';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
+  if(k==='m'){st.pend=false;st.rq=null;st.cf=x==='city';if(st.cf){st.mode='exact';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
   else if(k==='cfm')st.mode=x==='cp'?'cp':'exact';
   else if(k==='cm')st.month=x;
   else if(k==='cd'){if(!st.dep||st.ret||x<=st.dep){st.dep=x;st.ret=null;}else st.ret=x;st.month=x.slice(0,7);}
   else if(k==='calok'){orgSync();st.pend=true;st.step=st.cf?'result':'region';}
   else if(k==='o'){st.origin=x;st.step='region';try{localStorage.setItem('tb_st',JSON.stringify({origin:x}));}catch(err){}}
-  else if(k==='r'){st.region=x;st.country=null;st.lhSub=null;st.city=null;if(x==='東南亞')st.step='country';else if(x==='遠程')st.step='lhsub';else if(x==='全部'||!D)st.step='result';else goCity();}
+  else if(k==='r'){st.rq=null;st.region=x;st.country=null;st.lhSub=null;st.city=null;if(x==='東南亞')st.step='country';else if(x==='遠程')st.step='lhsub';else if(x==='全部'||!D)st.step='result';else goCity();}
   else if(k==='ls'){st.lhSub=x;st.step='result';}
   else if(k==='lk'){LHK=x==='nonstop'?'nonstop':'connect';try{localStorage.setItem('tb_lhk',LHK);}catch(err){}}
   else if(k==='c'){st.country=x;st.city=null;if(x==='全部'||!D)st.step='result';else goCity();}
-  else if(k==='ci'){st.city=x;st.step='result';}
+  else if(k==='ci'){st.rq=null;st.city=x;st.step='result';}
+  else if(k==='back'&&st.rq){st.rq=null;st.city=null;st.step='region';}
   else if(k==='back'&&st.step==='cal'&&st.cf){st.step='region';st.city=null;st.dep=st.ret=null;st.pend=false;}
   else if(k==='back'){st.step=st.step==='result'&&st.city?'city':st.step==='city'?(st.region==='東南亞'?'country':'region'):st.step==='result'&&st.region==='東南亞'?'country':st.step==='result'&&st.region==='遠程'?'lhsub':BACK[st.step]||'mode';if(st.step==='cal'&&st.mode==='nodate')st.step='mode';}
-  else if(k==='again'){st.step=x;st.city=null;if(x==='mode'){st.mode=null;st.dep=st.ret=null;st.pend=false;st.cf=false;}}
+  else if(k==='again'){st.step=x;st.city=null;st.rq=null;if(x==='mode'){st.mode=null;st.dep=st.ret=null;st.pend=false;st.cf=false;}}
   render();
   if(st.step==='result')load(render);
 });
