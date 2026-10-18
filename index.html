@@ -10,7 +10,9 @@
 <script>/* v28 主題：首繪前套用 */(function(){var m;try{m=localStorage.getItem('fs_theme')||'auto';}catch(e){m='auto';}window.THEME=m;window.themeApply=function(){var mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)'),d=THEME==='dark'||(THEME==='auto'&&mq&&mq.matches);document.documentElement.classList.toggle('dark',!!d);var t=document.querySelector('meta[name=theme-color]');if(t)t.setAttribute('content',d?'#0B3D22':'#06C755');try{var SB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.StatusBar;if(SB){SB.setBackgroundColor({color:d?'#0B3D22':'#06C755'});SB.setStyle({style:'DARK'});}}catch(e){}};themeApply();var mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');if(mq&&mq.addEventListener)mq.addEventListener('change',function(){if(THEME==='auto')themeApply();});})();</script>
 <title>飛省 FlySave</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="icon" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>if("serviceWorker" in navigator){var _swr=false,_had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener("controllerchange",function(){if(_swr||!_had)return;_swr=true;location.reload();});addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(function(r){if(!r)return;r.update();document.addEventListener("visibilitychange",function(){if(!document.hidden)r.update();});});});}</script>
 <style>
