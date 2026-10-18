@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script>if("serviceWorker" in navigator){var _swr=false,_had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener("controllerchange",function(){if(_swr||!_had)return;_swr=true;location.reload();});addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(function(r){r.update();document.addEventListener("visibilitychange",function(){if(!document.hidden)r.update();});});});}</script>
+<script>if("serviceWorker" in navigator){var _swr=false,_had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener("controllerchange",function(){if(_swr||!_had)return;_swr=true;location.reload();});addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(function(r){if(!r)return;r.update();document.addEventListener("visibilitychange",function(){if(!document.hidden)r.update();});});});}</script>
 <style>
 .annb{display:flex;align-items:center;gap:8px;background:#EAF7FF;border:1px solid #BFE3FA;border-radius:14px;margin:0 0 10px;padding:4px 4px 4px 12px}
 .annb.imp{background:var(--tipbg);border-color:#F3C58C}
