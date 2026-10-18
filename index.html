@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});</script>
+<script>if("serviceWorker" in navigator){var _swr=false,_had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener("controllerchange",function(){if(_swr||!_had)return;_swr=true;location.reload();});addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(function(r){r.update();document.addEventListener("visibilitychange",function(){if(!document.hidden)r.update();});});});}</script>
 <style>
 .annb{display:flex;align-items:center;gap:8px;background:#EAF7FF;border:1px solid #BFE3FA;border-radius:14px;margin:0 0 10px;padding:4px 4px 4px 12px}
 .annb.imp{background:var(--tipbg);border-color:#F3C58C}
@@ -1060,7 +1060,7 @@ setTimeout(viewsLoad,1500);
 function footer(){
   var sp='<div class="sprow">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>';
   return '<footer>'+sp+viewsTag()+'<div class="flinks"><a data-act="tab:about">關於我們</a>｜<a data-act="tab:privacy">隱私權政策</a>｜<a data-act="tab:terms">服務條款</a></div>'+
-    '<div>聯絡我們：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></div><div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示</div></footer>';
+    '<div>聯絡我們：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></div><div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.19</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
