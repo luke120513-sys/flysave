@@ -698,7 +698,7 @@ function feedbackView(){
   return '<div class="panel fbf"><p class="step">💬 意見回饋</p><p class="note" style="margin:0 0 8px">有想要的功能、遇到問題，都可以跟我們說，每一則我們都會看。</p>'+
     '<div class="chips">'+['功能建議','問題回報','其他'].map(function(c){return chip(c,'fbc:'+c,FB_CAT===c);}).join('')+'</div>'+
     '<textarea id="fbtx" maxlength="2000" placeholder="'+(FB_CAT==='問題回報'?'哪一頁、做了什麼、看到什麼問題？':'想說的話…')+'"></textarea>'+
-    '<input id="fbct" maxlength="200" placeholder="聯絡方式（選填，Email 或 LINE ID，想要我們回覆再填）">'+
+    '<input id="fbct" maxlength="200" placeholder="聯絡方式（選填，Email，想要我們回覆再填）">'+
     '<button class="btn" data-act="fb:send"'+(FB_BUSY?' disabled':'')+'>'+(FB_BUSY?'送出中…':'送出')+'</button>'+
     (wait?'<p class="note" style="margin-top:6px">剛送出過，'+wait+' 秒後可以再送</p>':'')+'<p class="note" style="margin-top:6px">會一起送出：App 版本與這支手機的匿名代碼，方便我們找問題。</p></div>';
 }
@@ -710,7 +710,7 @@ function fbSend(){
   FB_BUSY=true;LAST_HTML=null;render();$('fbtx').value=tx;$('fbct').value=ct;
   post('webFeedback',[body],body,function(r){FB_BUSY=false;
     if(r&&r.ok){try{localStorage.setItem('fs_fb_t',String(Date.now()));}catch(e){}LAST_HTML=null;$('main').innerHTML='<div class="panel" style="text-align:center"><p style="font-size:44px;margin:8px 0">🙏</p><p class="step">謝謝你的回饋！</p><p class="note">我們收到了'+(ct?'，需要時會用你留的聯絡方式回覆你':'')+'。</p><button class="btn" data-act="tomore">回到其他</button></div>'+footer();LAST_HTML='fbdone';}
-    else{LAST_HTML=null;render();$('fbtx').value=tx;$('fbct').value=ct;toast((r&&r.error)||'目前送不出去（伺服器還沒更新），請稍後再試或到 LINE @750yoqzz 留言');}});
+    else{LAST_HTML=null;render();$('fbtx').value=tx;$('fbct').value=ct;toast((r&&r.error)||'目前送不出去（伺服器還沒更新），請稍後再試或來信 '+CONTACT+'');}});
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('fbc:')===0){e.stopPropagation();var t=$('fbtx')&&$('fbtx').value,c=$('fbct')&&$('fbct').value;FB_CAT=v.slice(4);LAST_HTML=null;render();if(t)$('fbtx').value=t;if(c)$('fbct').value=c;}
@@ -935,7 +935,7 @@ function notifyView(){
 }
 function promos(){
   var ps=((D&&D.promos)||[]).filter(function(x){return orgOk(x.origin);});
-  if(!ps.length)return orgBar()+'<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷時，LINE 也會通知你。</div></div>';
+  if(!ps.length)return orgBar()+'<div class="panel"><p class="step">🔥 最新優惠</p><div class="empty">目前沒有進行中的特別優惠。<br>有新的促銷會更新在這裡，開啟網頁特價通知就不會錯過。</div></div>';
   return '<p class="summary">🔥 最新優惠</p>'+orgBar()+ps.map(function(x){
     return '<div class="card">'+(x.origin?'<div class="grp">〔'+(ORIGIN[x.origin]||x.origin)+'出發〕</div>':'')+'<div class="dest" style="font-size:17px">🔥 '+esc(x.title)+'</div>'+
       (x.price?'<div class="price"><small>約 </small>NT$'+num(x.price)+'</div>'+taxDiv(x,true):'')+(x.deadline?'<div class="tip">⏰ '+esc(x.deadline)+'</div>':'')+
@@ -970,7 +970,6 @@ function about(){return page('✈️ 關於我們／服務說明',
   '<li>可以依日期、出發地、地區比較，也可以存下想去的日期（最多 5 組），下次查詢後就會有結果。</li>'+
   '<li>我們不賣機票、不代訂、不收款。按「Google 訂票」或「Trip.com 訂票」會前往該網站，訂位與付款都在該網站完成。</li>'+
   '<li>票價隨時會變，訂票網站也可能另加手續費，實際金額以訂票頁面為準。</li></ul>'+
-  '<p>也可以在 LINE 使用同一個服務（飛省 FlySave LINE 機器人），另外提供航班起飛前提醒。</p>'+
   '<p>有任何問題或建議，歡迎來信：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></p>');}
 function privacy(){return page('🔒 隱私權政策',
   '<p>最後更新：2026 年 10 月 10 日</p>'+
@@ -987,6 +986,7 @@ function terms(){return page('📄 服務條款',
   '<li>請勿以自動化程式大量存取、干擾或濫用本服務。</li>'+
   '<li>本服務可能隨時調整內容或暫停，條款更新會公布在本頁。</li>'+
   '<li>如有問題請來信：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></li></ol>');}
+// 教學影片：換新影片只要改 YT_ID（YouTube 影片／Shorts ID）
 var YT_ID='z5pa6EZhs1c', YT_URL='https://youtube.com/shorts/'+YT_ID;
 function video(){                          // App（Capacitor WebView）：縮圖→外部 YouTube；網頁：內嵌播放器＋備用連結
   var thumb='<a class="yt" href="'+YT_URL+'" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/'+YT_ID+'/hqdefault.jpg" alt="使用教學影片"><span class="play">▶</span></a>';
@@ -994,9 +994,9 @@ function video(){                          // App（Capacitor WebView）：縮�
   return '<div class="panel"><p class="step">🎬 使用教學影片（1 分鐘看懂）</p>'+body+'<p style="text-align:center;margin:8px 0 0;font-size:13px"><a href="'+YT_URL+'" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">'+(window.Capacitor?'在 YouTube 打開':'播不出來？在 YouTube 打開')+'</a></p></div>';
 }
 function help(){
-  return video()+'<div class="sprow" style="margin:0 0 12px">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>'+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>和 LINE 機器人用同一份票價資料，每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
+  return video()+'<div class="sprow" style="margin:0 0 12px">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>'+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
     '<h3>🔎 查機票</h3><ul><li>🏆 CP值最高：前後挪 1～2 天找最划算的</li><li>📅 只查指定日期：只看你選的那兩天，列出每個班次</li><li>💰 不指定日期：最近最便宜的 5～7 天行程</li></ul>'+
-    '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機（和每個 LINE 帳號）各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
+    '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
     '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「最新優惠」和右上角 🔔 特價通知頁上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
@@ -1101,7 +1101,7 @@ function pushCard(){if(NAT||GAS||PUSH==='on')return '';if(Date.now()-(+lsg('fs_p
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act="pc:x"]');if(!a)return;e.preventDefault();e.stopPropagation();lss('fs_pc_x',Date.now());toast('之後可以在右上角 🔔 開啟通知');render();},true);
 function pushOn(){if(PUSH==='wait')return;PUSH='wait';PMSG='⏳ 正在開啟通知…';if(NAT)nativePushOn();else if(WEBPUSH)webPushOn();else pushFail('這個瀏覽器不支援推播通知');}
 function pushOff(){PUSH='off';lss('fs_push','off');pushDrop();if(PN)PN.unregister&&PN.unregister().catch(function(){});PMSG='已關閉特價通知';}
-// 航班提醒：App 用本機通知（起飛前 3 小時）；網頁只在頁面開著時提醒（盡力而為），完整提醒請用 LINE。
+// 航班提醒：App 用本機通知（起飛前 3 小時）；網頁只在頁面開著時提醒（盡力而為），需頁面開著。
 var FLTS=lsg('fs_flights',[]);
 var TPE_T={JX:'第一航廈',IT:'第一航廈',TR:'第一航廈',MM:'第一航廈',CX:'第一航廈',UO:'第一航廈',BR:'第二航廈',CI:'第二航廈（部分航班第一航廈）',AE:'第二航廈',NH:'第二航廈',JL:'第二航廈'};
 function flInfo(f){var al=f.no.slice(0,2);return f.from==='TPE'&&TPE_T[al]?'桃園機場'+TPE_T[al]+'，櫃台請看機場看板':(f.from==='KHH'?'高雄小港機場國際線航廈':'航廈與報到櫃台請以機場公告為準');}
@@ -1111,15 +1111,14 @@ function flSchedule(){FLTS=FLTS.filter(function(f){return Date.parse(f.at)>Date.
   else FLTS.forEach(function(f){var ms=Date.parse(f.at)-3*3600e3-Date.now();if(ms>0&&ms<864e5)setTimeout(function(){if(Notification&&Notification.permission==='granted')navigator.serviceWorker.ready.then(function(r){r.showNotification('✈️ '+f.no+' 3 小時後起飛',{body:flInfo(f),icon:'icon-192.png'});});},ms);});}
 function notifyPanel(){
   var can=NAT||WEBPUSH, h='<h3>🔔 特價通知</h3>';
-  if(!can)h+='<p>'+(GAS?'這個網頁版沒辦法收推播，請改用 <a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省網站</a> 或 Android App，或加 LINE @750yoqzz。':'這個瀏覽器不支援推播通知，可以改用 Android App 或 LINE @750yoqzz。')+'</p>';
-  else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':PUSH==='wait'?'⏳ 開啟中…':'🔕 特價通知：關',PUSH==='on'?'push:off':PUSH==='wait'?'push:wait':'push:on',PUSH==='on')+'</div>';
+  if(!can)h+='<p>'+(GAS?'這個網頁版沒辦法收推播，請改用 <a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省網站</a>。':'這個瀏覽器不支援推播通知，請改用 Chrome、Edge 或 Safari（iPhone 請先加入主畫面，iOS 16.4 以上）。')+'</p>';
+  else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。網頁推播需開啟通知；iPhone 請先把網站加入主畫面。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':PUSH==='wait'?'⏳ 開啟中…':'🔕 特價通知：關',PUSH==='on'?'push:off':PUSH==='wait'?'push:wait':'push:on',PUSH==='on')+'</div>';
     if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+chip('台北出發','pt:TPE',ORG.indexOf('TPE')>=0)+chip('高雄出發','pt:KHH',ORG.indexOf('KHH')>=0)+'<span style="font-size:12px;color:#999">（和畫面上的出發地篩選同步）</span>'+'</div>';}
   if(PMSG)h+='<p class="hint">'+esc(PMSG)+'</p>';
   h+='<h3>🛫 航班提醒</h3>';
-  if(NAT||WEBPUSH){h+='<p>'+(NAT?'起飛前 3 小時用手機通知提醒你航廈和報到櫃台。':'網頁版只有在飛省頁面開著時才會提醒，想確定收到請用 App 或 LINE。')+'</p>'+
+  if(NAT||WEBPUSH){h+='<p>'+(NAT?'起飛前 3 小時用手機通知提醒你航廈和報到櫃台。':'網頁版只有在飛省頁面開著時才會提醒（起飛前 3 小時），請記得自行留意航班時間。')+'</p>'+
     '<div class="flform"><input id="flno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="fldt" type="datetime-local"> <select id="flfrom"><option value="TPE">桃園</option><option value="KHH">高雄</option><option value="">其他</option></select> <button class="chip" data-act="fl:add">＋ 新增提醒</button></div>';
     FLTS.forEach(function(f,i){h+='<div class="card q"><b>'+esc(f.no)+'</b> '+md(f.at.slice(0,10))+' '+f.at.slice(11,16)+'<br><small>'+esc(flInfo(f))+'</small> <button class="chip" data-act="fl:del:'+i+'">刪除</button></div>';});}
-  h+='<p>也可以在 LINE 輸入「航班 BR198 12/20 08:30」。</p>';
   return h;}
 document.addEventListener('click',function(e){var a=e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v==='push:on'){pushOn();render();}else if(v==='push:off'){pushOff();render();}
