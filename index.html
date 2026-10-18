@@ -211,6 +211,10 @@ html.dark .wcl{background:rgba(160,175,195,.35)}.w-rain .wcl,.w-storm .wcl{backg
 @keyframes wspin{to{transform:rotate(360deg)}}@keyframes wglow{50%{filter:brightness(1.15);transform:scale(1.05)}}@keyframes wtw{50%{opacity:.2}}
 @keyframes wdrift{from{transform:translateX(-90px)}to{transform:translateX(420px)}}@keyframes wfall{to{transform:translate(-8px,140px)}}@keyframes wsnow{to{transform:translate(14px,140px) rotate(180deg)}}
 @keyframes wflash{0%,90%,94%,100%{opacity:0}91%,93%{opacity:.55}}@keyframes wmist{0%,100%{transform:translateX(0);opacity:.35}50%{transform:translateX(12%);opacity:.85}}
+.hwx{margin:0 0 10px;padding:8px 12px}.hwask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:13px;color:#667}html.dark .hwask{color:#AAB}.hwr{display:flex;align-items:center;gap:8px;justify-content:space-between}.hwm{min-width:0}.hwhl{font-size:13px;opacity:.85;margin-left:4px}.hwch{display:flex;gap:4px;flex-shrink:0}
+.hwc{border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.6);color:#333;border-radius:12px;font-size:12px;padding:2px 8px;cursor:pointer;min-height:26px}.hwc.on{background:#2E7D32;color:#fff;border-color:#2E7D32}
+html.dark .hwc{background:rgba(0,0,0,.3);color:#DDE;border-color:rgba(255,255,255,.2)}html.dark .hwc.on{background:#43A047;color:#fff}.w-night .hwc:not(.on),.w-storm .hwc:not(.on){background:rgba(0,0,0,.25);color:#EEF;border-color:rgba(255,255,255,.3)}
+html.dark .chip.mfdel{color:#FF8A80;border-color:#E57373}.chip.mfdel{color:#C62828}
 .fwx.off .wfx *,.fwx.off .wfx *:before{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.wfx *,.wfx *:before{animation:none!important}.wdrop,.wflk,.wfl{display:none}}
 .wdst{position:relative;display:inline-flex;align-items:center;gap:4px;margin:0 1px;padding:1px 7px 1px 8px;border:0;border-radius:999px;font:inherit;font-weight:600;color:inherit;background:rgba(255,255,255,.45);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent;vertical-align:baseline}
@@ -431,7 +435,7 @@ function crumbs(){
 function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';return h+'</div>';}
 function search(){
   var back = st.step!=='mode' ? '<button class="back" data-act="back">‹ 上一步</button>' : '';
-  if(st.step==='mode') return annBanner()+myqCard()+'<div class="panel">'+bar(1,3)+'<p class="step">查機票 1/3・要怎麼查？</p>'+
+  if(st.step==='mode') return homeWx()+annBanner()+myqCard()+'<div class="panel">'+bar(1,3)+'<p class="step">查機票 1/3・要怎麼查？</p>'+
     modeOpt('cp','🏆','CP值最高','前後挪 1～2 天，找最划算的組合',true)+modeOpt('exact','📅','只查指定日期','只看你選的兩天，列出每個班次')+modeOpt('nodate','💰','不指定日期','直接看最近最便宜的行程')+'</div>';
   if(st.step==='cal') return back+'<div class="panel">'+bar(2,3)+crumbs()+'<p class="step">查機票 2/3・選去程和回程日期</p>'+calendar()+'</div>';
   if(st.step==='origin') st.step='region';   // v23：出發地步驟併入地區頁（舊連結相容）
@@ -735,6 +739,28 @@ function wxBlock(x){var dep=x.dir==='D',code=String(x.cityCode||'').toUpperCase(
   if(i>=0){var dc=wxc(j.daily.weather_code[i]),p=j.daily.precipitation_probability_max[i];h+='<div class="fwd">'+md(dd)+' 預報：'+dc[0]+' '+dc[1]+'・'+Math.round(j.daily.temperature_2m_min[i])+'～'+Math.round(j.daily.temperature_2m_max[i])+'°C'+(p!=null?'・降雨 '+p+'%':'')+'</div>';}
   else if(dd&&dd>(j.daily&&j.daily.time?j.daily.time[j.daily.time.length-1]:''))h+='<div class="fwd" style="color:#888">'+md(dd)+' 還超過 16 天，接近時才有預報</div>';
   return h+'</div>';}
+// v28.5：首頁目前所在地天氣卡
+var HW_CITIES=[['台北',25.04,121.56],['新北',25.01,121.46],['基隆',25.13,121.74],['桃園',24.99,121.30],['新竹',24.80,120.97],['苗栗',24.56,120.82],['台中',24.15,120.67],['彰化',24.08,120.54],['南投',23.91,120.68],['雲林',23.71,120.43],['嘉義',23.48,120.45],['台南',22.99,120.21],['高雄',22.63,120.30],['屏東',22.67,120.49],['宜蘭',24.75,121.75],['花蓮',23.99,121.60],['台東',22.76,121.14],['澎湖',23.57,119.58],['金門',24.43,118.32],['馬祖',26.16,119.95],['香港',22.32,114.17],['澳門',22.20,113.55],['東京',35.68,139.69],['大阪',34.69,135.50],['首爾',37.57,126.98],['釜山',35.18,129.08],['曼谷',13.76,100.50],['新加坡',1.35,103.82]];
+var HW_FX={},HW_BUSY=false;
+function hwNear(la,lo){var b=null,bd=1e9;HW_CITIES.forEach(function(c){var d=Math.pow(c[1]-la,2)+Math.pow((c[2]-lo)*Math.cos(la*Math.PI/180),2);if(d<bd){bd=d;b=c;}});return Math.sqrt(bd)*111<60?b[0]:'目前位置';}
+function hwLoc(){var g=lsg('fs_hw_geo',null);return lsg('fs_hw_mode','')==='geo'&&g?{name:g.n,la:g.la,lo:g.lo}:null;}
+function hwRe(){if(tab==='search'&&st.step==='mode'){LAST_HTML=null;render();}}
+function hwGeo(){if(!navigator.geolocation){lss('fs_hw_mode','denied');hwRe();return;}HW_BUSY=false;
+  navigator.geolocation.getCurrentPosition(function(p){var la=+p.coords.latitude.toFixed(3),lo=+p.coords.longitude.toFixed(3);lss('fs_hw_geo',{la:la,lo:lo,n:hwNear(la,lo),t:Date.now()});lss('fs_hw_mode','geo');hwFetch(true);hwRe();},
+    function(){lss('fs_hw_mode','denied');hwRe();},{timeout:10000,maximumAge:1800e3});}
+function hwFetch(force){var L=hwLoc();if(!L||HW_BUSY)return;var k=L.la+','+L.lo,c=lsg('fs_hw_wx',null);if(!force&&c&&c.k===k&&Date.now()-c.t<1800e3)return;HW_BUSY=true;
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+L.la+'&longitude='+L.lo+'&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1')
+   .then(function(x){return x.json();}).then(function(j){HW_BUSY=false;if(j&&j.current){lss('fs_hw_wx',{k:k,t:Date.now(),j:j});hwRe();}}).catch(function(){HW_BUSY=false;});}
+var HW_GEO_REFRESH=false;
+function homeWx(){try{var m=lsg('fs_hw_mode','');
+  if(m==='denied')return '<div class="hwask"><span>📍 需開啟定位權限才能顯示當地天氣</span><button class="hwc" data-act="hw:geo">再試一次</button></div>';
+  var L=hwLoc();if(!L)return '<div class="hwask"><button class="hwc" data-act="hw:geo">📍 顯示當地天氣</button></div>';
+  if(!HW_GEO_REFRESH&&navigator.geolocation){HW_GEO_REFRESH=true;navigator.geolocation.getCurrentPosition(function(p){var la=+p.coords.latitude.toFixed(3),lo=+p.coords.longitude.toFixed(3),g=lsg('fs_hw_geo',{});if(g.la!==la||g.lo!==lo){lss('fs_hw_geo',{la:la,lo:lo,n:hwNear(la,lo),t:Date.now()});hwFetch(false);}},function(){},{timeout:10000,maximumAge:1800e3});}
+  var k=L.la+','+L.lo,c=lsg('fs_hw_wx',null);if(!c||c.k!==k||Date.now()-c.t>=1800e3)setTimeout(function(){hwFetch(false);},0);
+  if(!c||c.k!==k)return '<div class="hwask"><span>📍 讀取當地天氣中…</span></div>';var j=c.j,wc=WX_T&&WX_TC[WX_T]!=null?WX_TC[WX_T]:j.current.weather_code,cu=wxc(wc),night=WX_T?WX_T==='night':j.current.is_day===0,wk=wxKind(wc,night);if(wk==='night'&&/☀️|🌤️/.test(cu[0]))cu=['🌙',cu[1]];
+  var fx=HW_FX[wk]||(HW_FX[wk]=wxFx(wk)),d=j.daily||{},hl=d.temperature_2m_max?'・'+Math.round(d.temperature_2m_min[0])+'～'+Math.round(d.temperature_2m_max[0])+'°':'',p=d.precipitation_probability_max&&d.precipitation_probability_max[0]!=null?'・☔'+d.precipitation_probability_max[0]+'%':'';wxObs();
+  return '<div class="fwx wa hwx w-'+wk+'">'+fx+'<span class="fwl">📍 '+esc(L.name)+'・現在天氣</span><div class="fwn"><b>'+cu[0]+' '+Math.round(j.current.temperature_2m)+'°C</b> '+cu[1]+'<span class="hwhl">'+hl+p+'</span></div></div>';}catch(e){return '';}}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act^="hw:"]');if(!b)return;e.stopPropagation();e.preventDefault();hwGeo();},true);
 function flightsView(){
   var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料只存在這台裝置。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
@@ -745,7 +771,7 @@ function flightsView(){
     else if(!r.flights.length)b='<div class="info" style="color:var(--tip)">機場即時資料還沒有這個航班'+(f.date?'（'+md(f.date)+'）':'')+'（通常前一兩天才會出現），航廈、登機門屆時會自動顯示。</div>';
     if(!r||!r.ok||!r.flights.length)b=flDestBlock(f,i)+b;
     else b=r.flights.map(flCard).join('')+'<div class="info" style="font-size:12px;color:#888">更新於 '+new Date(c.t+8*3600e3).toISOString().slice(11,16)+(c.loading?'・更新中…':'')+'</div>';
-    return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+(r&&r.flights&&r.flights[0]?' <small style="font-size:14px;color:#777">'+esc(r.flights[0].airline)+'</small>':'')+'</div>'+b+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('↻ 重新整理','mf:ref')+chip('刪除','mf:del:'+i)+'</div></div>';}).join('');
+    return '<div class="card"><div class="dest">✈️ '+esc(f.no)+(f.date?' <small style="font-size:14px;color:#777">'+md(f.date)+'</small>':'')+(r&&r.flights&&r.flights[0]?' <small style="font-size:14px;color:#777">'+esc(r.flights[0].airline)+'</small>':'')+'</div>'+b+flLinks(f)+'<div class="chips" style="margin-top:8px">'+chip('↻ 重新整理','mf:ref')+chip('刪除','mf:del:'+i).replace('class="chip"','class="chip mfdel"')+'</div></div>';}).join('');
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('theme:')===0){e.stopPropagation();THEME=v.slice(6);try{localStorage.setItem('fs_theme',THEME);}catch(x){}themeApply();LAST_HTML=null;render();}
