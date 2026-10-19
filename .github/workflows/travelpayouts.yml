@@ -1,0 +1,37 @@
+# Supplementary Travelpayouts prices. Does not touch deals.json or Google Flights prices.
+# Secret: TRAVELPAYOUTS_TOKEN (header X-Access-Token). 06:00 and 18:00 Asia/Taipei.
+name: travelpayouts
+
+on:
+  schedule:
+    - cron: "0 22 * * *" # 06:00 Asia/Taipei
+    - cron: "0 10 * * *" # 18:00 Asia/Taipei
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: travelpayouts
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch reference prices
+        env:
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+        run: python3 scripts/fetch_travelpayouts.py
+      - name: Commit tp_prices.json if it changed
+        run: |
+          git add tp_prices.json
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update Travelpayouts reference prices"
+          git push
