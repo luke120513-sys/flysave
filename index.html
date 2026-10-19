@@ -394,9 +394,9 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.12';
+var APPVER='v28.33';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
-function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){}}
+function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
 function PD(){return !!(D&&D.perDevice);}            // 後端 v22 以上＝每支手機一份；舊後端只用本機清單
 var HEALED={};
@@ -482,9 +482,9 @@ function post(fn,args,body,cb){            // google.script.run（Apps Script �
   else cb({ok:true,dates:[]});
 }
 function setDates(r){if(PD()&&r&&r.ok&&r.dates){var h={};MYQ.forEach(function(q){h[q.from+'|'+q.to+'|'+q.mode]=1;});r.dates.forEach(function(x){if(!h[x.from+'|'+x.to+'|'+x.mode])MYQ.push(qx({from:x.from,to:x.to,mode:x.mode},x));});myqSave();}if(D)D.dates=myDates();}
-function delDate(x){MYQ=MYQ.filter(function(q){return !(q.from===x.from&&q.to===x.to&&q.mode===x.mode);});myqSave();if(D)D.dates=myDates();post('webDeleteDate',[x.from,x.to,x.mode,DEV],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode,dev:DEV},function(r){setDates(r);toast(r&&r.ok||!PD()?'🗑️ 已刪除 '+md(x.from)+'–'+md(x.to):(r&&r.error)||'刪除失敗');render();});}
+function delDate(x){bkTomb('q',x.from+'|'+x.to+'|'+x.mode);MYQ=MYQ.filter(function(q){return !(q.from===x.from&&q.to===x.to&&q.mode===x.mode);});myqSave();if(D)D.dates=myDates();post('webDeleteDate',[x.from,x.to,x.mode,DEV],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode,dev:DEV},function(r){setDates(r);toast(r&&r.ok||!PD()?'🗑️ 已刪除 '+md(x.from)+'–'+md(x.to):(r&&r.error)||'刪除失敗');render();});}
 function clearDates(){
-  var mineList=myDates();MYQ=[];myqSave();if(D)D.dates=[];
+  var mineList=myDates();mineList.forEach(function(q){bkTomb('q',q.from+'|'+q.to+'|'+q.mode);});MYQ=[];myqSave();if(D)D.dates=[];
   if(PD())post('webClearDates',[DEV],{action:'webClearDates',dev:DEV},function(r){setDates(r);toast(r&&r.ok?'🗑️ 已清除你的日期（不影響其他人）':'清除失敗');render();});
   else{mineList.forEach(function(x){post('webDeleteDate',[x.from,x.to,x.mode],{action:'webDeleteDate',from:x.from,to:x.to,mode:x.mode},function(){});});toast('🗑️ 已清除你的日期（不影響其他人）');render();}   // 舊後端：只刪自己存的，絕不呼叫全部清除
 }
@@ -492,8 +492,8 @@ var QF=['city','cityName','origin','region','country','rq'];
 function qx(q,src){QF.forEach(function(k){if(src&&src[k])q[k]=src[k];});return q;}
 function saveDate(from,to,mode,cb,quiet,ex){ex=ex||{};
   var ex0=MYQ.filter(function(q){return q.from===from&&q.to===to&&q.mode===mode;})[0];
-  if(ex0){if(ex.city||ex.region){QF.forEach(function(k){delete ex0[k];});qx(ex0,ex);}myqSave();}
-  else{MYQ.push(qx({from:from,to:to,mode:mode},ex));while(myDates().length>5)MYQ.splice(MYQ.indexOf(myDates()[0]),1);myqSave();}
+  if(ex0){if(ex.city||ex.region){QF.forEach(function(k){delete ex0[k];});qx(ex0,ex);}ex0.savedAt=Date.now();myqSave();}
+  else{MYQ.push(qx({from:from,to:to,mode:mode,savedAt:Date.now()},ex));while(myDates().length>5)MYQ.splice(MYQ.indexOf(myDates()[0]),1);myqSave();}
   if(!ex.city&&!ex.region&&ex0)ex=qx({},ex0);
   var done=function(r){setDates(r);if(quiet){cb&&cb(r);return;}if(r&&r.ok)toast('✅ 已存 '+md(from)+'–'+md(to)+'，下一次查詢（07:00／15:00／23:00）後就會有結果'+(r.note?'\n'+r.note:''));else toast((r&&r.error)||'存檔失敗');cb&&cb(r);};
   if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(done).withFailureHandler(function(){done(null);}).webSaveDate(from,to,mode,DEV,ex);
@@ -685,7 +685,7 @@ function rqChips(){var L=rqList().filter(function(x){return x.mine||RQ_LOCAL.ind
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rq:"]');if(!a)return;e.preventDefault();e.stopPropagation();
   var v=a.dataset.act.slice(3).split('|'),code=v[0],name=v[1],og=v[2];a.disabled=true;a.textContent='送出中…';
   post('webRequestCity',[{code:code,name:name,origin:og,dev:DEV}],{action:'requestCity',code:code,name:name,origin:og,dev:DEV},function(r){
-    if(r&&r.ok){if(RQ_LOCAL.indexOf(code)<0){RQ_LOCAL.push(code);try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL.slice(-20)));}catch(_){}}rqMetaSet(code,{name:name,og:og,t:Date.now()});
+    if(r&&r.ok){if(RQ_LOCAL.indexOf(code)<0){RQ_LOCAL.push(code);try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL.slice(-20)));}catch(_){}}rqMetaSet(code,{name:name,og:og,t:Date.now()});bkSchedule();
       if(D){D.reqCities=(D.reqCities||[]).filter(function(x){return x.code!==code;});var c=r.city||{code:code,name:name,status:'pending'};c.mine=true;D.reqCities.push(c);}
       toast(r.city&&r.city.status==='none'?'🚫 '+name+' 目前查無直飛':'✅ 已加入，下一輪查價會一起查');
       var box=a.parentNode;if(box)box.innerHTML='<p>✅ 已加入，下一輪查價（每天 07:00、15:00、23:00）會一起查，有直飛票就會出現。</p><div class="rqst"><span class="rqchip">⏳ '+esc(name)+' 待查價</span></div>';}
@@ -693,7 +693,7 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 
 // v28.11：我的查詢 →「我加入的城市」（這台裝置自己的 requestCity 登記；可移除）
 function rqMeta(){try{return JSON.parse(localStorage.getItem('fly_rqm'))||{};}catch(e){return {};}}
-function rqMetaSet(c,v){var m=rqMeta();if(v)m[c]=v;else delete m[c];try{localStorage.setItem('fly_rqm',JSON.stringify(m));}catch(e){}}
+function rqMetaSet(c,v){var m=rqMeta();if(v)m[c]=v;else delete m[c];try{localStorage.setItem('fly_rqm',JSON.stringify(m));}catch(e){} bkSchedule();}
 function rqHasNs(c){try{return dsList().some(function(o){return o.code===c;});}catch(e){return false;}}
 function rqHasCn(c){return ((D&&D.reqConn)||[]).some(function(x){return x.code===c&&+x.price>0&&(!x.expires||Date.parse(x.expires)>Date.now());});}
 function myCities(){var m=rqMeta(),out=[],seen={};
@@ -719,7 +719,7 @@ function rqExpChip(x){if(!x.srv||!x.lv)return '';var age=(Date.now()-x.lv)/864e5
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rqseen:"]');if(!a)return;e.preventDefault();e.stopPropagation();var c=a.dataset.act.slice(7);RQ_TOUCHED[c]=0;rqTouch(c);toast('✅ 已保留，14 天內有人看就不會移除');render();},true);
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rqgo:"],[data-act^="rqdel:"]');if(!a)return;e.preventDefault();e.stopPropagation();var v=a.dataset.act;
   if(v.indexOf('rqdel:')===0){var c=v.slice(6),x=myCities().filter(function(o){return o.code===c;})[0],nm=x?x.name:c;if(!confirm('移除「'+nm+'」？之後不會再幫你查這個城市。'))return;
-    var done=function(){RQ_LOCAL=RQ_LOCAL.filter(function(k){return k!==c;});try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL));}catch(_){}rqMetaSet(c,null);
+    var done=function(){bkTomb('c',c);RQ_LOCAL=RQ_LOCAL.filter(function(k){return k!==c;});try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL));}catch(_){}rqMetaSet(c,null);
       if(D)D.reqCities=(D.reqCities||[]).filter(function(o){return !(o.code===c&&o.n<=1);}).map(function(o){if(o.code===c){o=Object.assign({},o);delete o.mine;}return o;});toast('🗑️ 已移除 '+nm);render();};
     if(x&&!x.srv){done();return;}a.disabled=true;
     post('webUnrequestCity',[{code:c,dev:DEV}],{action:'unrequestCity',code:c,dev:DEV},function(r){if(r&&r.ok)done();else{a.disabled=false;toast((r&&r.error)||'移除失敗，請稍後再試');}});return;}
@@ -751,7 +751,7 @@ function cities(){            // v24：這個地區／國家實際有資料的�
 function goCity(){st.city=null;if(cities().length>=2)st.step='city';else st.step='result';}
 function qWhere(x){var w=x.city?(x.cityName||cityName(x.city))+' '+x.city:x.country||x.region||'所有城市';return w+(x.origin?'・'+(x.origin==='KHH'?'高雄':'台北')+'出發':'');}
 function myqCard(){var ds=myDates();
-  return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選日期查一次就會出現在這裡')+(function(){var L=myCities();if(!L.length)return '';var cn=L.filter(function(x){return x.st==='conn'||x.st==='active';}).length;return '<br>📍 加入的城市：'+L.slice(0,3).map(function(x){return esc(x.name);}).join('、')+(L.length>3?' 等 '+L.length+' 個':'')+(cn?'・'+cn+' 個有結果':'');})()+'</span></span><span class="ar">›</span></button>';}
+  return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選完後按「確認並儲存」才會出現在這裡')+(function(){var L=myCities();if(!L.length)return '';var cn=L.filter(function(x){return x.st==='conn'||x.st==='active';}).length;return '<br>📍 加入的城市：'+L.slice(0,3).map(function(x){return esc(x.name);}).join('、')+(L.length>3?' 等 '+L.length+' 個':'')+(cn?'・'+cn+' 個有結果':'');})()+'</span></span><span class="ar">›</span></button>';}
 function calendar(){
   var min=addDays(today(),1), max=addDays(today(),180), m=st.month||min.slice(0,7);
   if(st.dep&&!st.ret&&addDays(st.dep,30)>max)max=addDays(st.dep,30);
@@ -927,11 +927,91 @@ function lhResult(){
   if(!p.length)return h+'<div class="empty">'+(all.length?'這個範圍目前沒有'+(LHK==='nonstop'?'直飛票價，按「🔁 可轉機」看看。':'票價，換個地區看看。'):'遠程票價還在建立中，每天 23:00 查詢後就會有。')+'</div>';
   return h+p.map(function(x,i){return lhCard(x,(x.sub||'遠程')+'・'+(i+1),LHK,st.origin==='ALL');}).join('');
 }
+/* ---------- v28.33：選用備份。不登入＝只存在這台裝置；登入才寫入自己的 Firestore 文件 ---------- */
+var BK_USER=null,BK_OFF='',BK_BUSY=false,BK_MSG='',BK_APPLYING=false,BK_SYNCED=false,BK_T=0,BK_WATCHED=false;
+var BK_TOMB=(function(){try{var v=JSON.parse(localStorage.getItem('fly_bk_tomb')||'');if(v&&typeof v==='object')return {q:v.q||{},f:v.f||{},c:v.c||{}};}catch(e){}return {q:{},f:{},c:{}};})();
+function bkTombSave(){try{localStorage.setItem('fly_bk_tomb',JSON.stringify(BK_TOMB));}catch(e){}}
+function bkTomb(kind,key){if(!key||BK_APPLYING)return;BK_TOMB[kind]=BK_TOMB[kind]||{};BK_TOMB[kind][key]=Date.now();
+  var ks=Object.keys(BK_TOMB[kind]);if(ks.length>80){ks.sort(function(a,b){return (BK_TOMB[kind][a]||0)-(BK_TOMB[kind][b]||0);});ks.slice(0,ks.length-80).forEach(function(k){delete BK_TOMB[kind][k];});}
+  bkTombSave();bkSchedule();}
+function bkSchedule(){if(BK_APPLYING||!BK_USER||!BK_SYNCED)return;clearTimeout(BK_T);BK_T=setTimeout(bkPush,800);}
+function bkNormQ(q){if(!q||!/^\d{4}-\d{2}-\d{2}$/.test(q.from||'')||!/^\d{4}-\d{2}-\d{2}$/.test(q.to||'')||(q.mode!=='exact'&&q.mode!=='cp')||q.to<q.from)return null;
+  var o={from:q.from,to:q.to,mode:q.mode};if(+q.savedAt)o.savedAt=+q.savedAt;return qx(o,q);}
+function bkNormF(f){if(!f)return null;var no=String(f.no||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!flValid(no))return null;
+  var o={no:no,date:/^\d{4}-\d{2}-\d{2}$/.test(f.date||'')?f.date:''};if(f.dest&&/^[A-Z]{3}$/.test(f.dest)){o.dest=f.dest;o.destCity=String(f.destCity||'').slice(0,40);}if(+f.savedAt)o.savedAt=+f.savedAt;return o;}
+function bkCities(){var meta={},raw=rqMeta();RQ_LOCAL.forEach(function(c){c=String(c||'').toUpperCase();if(!/^[A-Z]{3}$/.test(c))return;var m=raw[c]||{};meta[c]={name:String(m.name||c).slice(0,40),og:m.og||'',t:+m.t||0};});
+  return {codes:Object.keys(meta).slice(0,20),meta:meta};}
+function bkPayload(){var c=bkCities();return {app:'flysave',v:1,exportedAt:new Date().toISOString(),queries:MYQ.map(bkNormQ).filter(Boolean).slice(0,30),flights:MYF.map(bkNormF).filter(Boolean).slice(0,20),cities:c,tomb:{q:BK_TOMB.q||{},f:BK_TOMB.f||{},c:BK_TOMB.c||{}}};}
+function bkAbsorbTomb(t){if(!t)return;['q','f','c'].forEach(function(kind){var src=t[kind]||{};BK_TOMB[kind]=BK_TOMB[kind]||{};Object.keys(src).forEach(function(k){var n=+src[k]||0;if(n>(BK_TOMB[kind][k]||0))BK_TOMB[kind][k]=n;});});bkTombSave();}
+function bkDead(kind,key,born){var d=+(BK_TOMB[kind]&&BK_TOMB[kind][key]||0);return !!(d&&d>=(born||0));}
+function bkApply(cloud){cloud=cloud||{};BK_APPLYING=true;try{
+  bkAbsorbTomb(cloud.tomb);
+  var qm={},order=[];
+  function putQ(q){q=bkNormQ(q);if(!q)return;var k=q.from+'|'+q.to+'|'+q.mode;if(bkDead('q',k,q.savedAt||0))return;var p=qm[k];
+    if(!p){qm[k]=q;order.push(k);}else{if((q.savedAt||0)>=(p.savedAt||0)){var keep=p.city;QF.forEach(function(f){delete p[f];});qx(p,q);if(!q.city&&keep)p.city=keep;p.savedAt=Math.max(p.savedAt||0,q.savedAt||0);}else if(!p.city&&q.city)qx(p,q);}}
+  MYQ.forEach(putQ);(cloud.queries||[]).forEach(putQ);
+  var list=order.map(function(k){return qm[k];});
+  var future=list.filter(function(q){return q.to>=today();});
+  if(future.length>5){var rank=future.map(function(q,i){return {q:q,i:i};});rank.sort(function(a,b){var d=(a.q.savedAt||0)-(b.q.savedAt||0);return d||(b.i-a.i);});
+    var drop={};rank.slice(0,future.length-5).forEach(function(x){drop[x.q.from+'|'+x.q.to+'|'+x.q.mode]=1;});list=list.filter(function(q){return q.to<today()||!drop[q.from+'|'+q.to+'|'+q.mode];});}
+  MYQ=list.filter(function(q){return q.to>=today();}).slice(0,5);myqSave();if(D)D.dates=myDates();
+  var seen={},out=[];
+  function putF(f){f=bkNormF(f);if(!f)return;var k=f.no+'|'+(f.date||'');if(bkDead('f',k,f.savedAt||0))return;var p=seen[k];
+    if(p){if(!p.dest&&f.dest){p.dest=f.dest;p.destCity=f.destCity;}if((f.savedAt||0)>(p.savedAt||0))p.savedAt=f.savedAt;return;}seen[k]=f;out.push(f);}
+  MYF.forEach(putF);(cloud.flights||[]).forEach(putF);MYF=out.slice(0,20);lss('fly_myflights',MYF);
+  var codes={},meta={},local=rqMeta(),cc=cloud.cities||{};
+  function putC(c,m){c=String(c||'').toUpperCase();if(!/^[A-Z]{3}$/.test(c))return;var born=m&&+m.t||0;if(bkDead('c',c,born))return;codes[c]=1;
+    var prev=meta[c]||{};if(!meta[c]||born>=(+prev.t||0))meta[c]={name:String((m&&m.name)||prev.name||c).slice(0,40),og:(m&&m.og)||prev.og||'',t:Math.max(born,+prev.t||0)};}
+  RQ_LOCAL.forEach(function(c){putC(c,local[c]);});(cc.codes||[]).forEach(function(c){putC(c,(cc.meta||{})[c]);});
+  RQ_LOCAL=Object.keys(codes).slice(0,20);try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL));localStorage.setItem('fly_rqm',JSON.stringify(meta));}catch(e){}
+}finally{BK_APPLYING=false;}}
+function bkPush(){if(!BK_USER||!BK_SYNCED||BK_APPLYING||!window.firebase||!firebase.firestore)return;var data=bkPayload();data.updatedAt=Date.now();
+  firebase.firestore().collection('users').doc(BK_USER.uid).set(data).then(function(){BK_MSG='已備份';var el=$('bkmsg');if(el)el.textContent=BK_MSG;}).catch(bkStoreFail);}
+function bkPull(){if(!BK_USER||!firebase.firestore)return;firebase.firestore().collection('users').doc(BK_USER.uid).get().then(function(snap){
+  if(snap&&snap.exists)bkApply(snap.data()||{});BK_SYNCED=true;BK_MSG=snap&&snap.exists?'已從雲端合併回來':'已開啟備份';bkPush();
+  if(tab==='more'||tab==='mine'||tab==='flights'){LAST_HTML=null;render();}}).catch(function(e){bkStoreFail(e);if(tab==='more'){LAST_HTML=null;render();}});}
+function bkAuthFail(e){var c=e&&e.code||'';BK_BUSY=false;try{localStorage.removeItem('fly_bk_pending');}catch(_){}
+  if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request'){toast('已取消登入');return;}
+  if(c==='auth/unauthorized-domain'||c==='auth/operation-not-allowed'||c==='auth/configuration-not-found'||c==='auth/invalid-api-key'){BK_OFF='雲端備份尚未開通，不影響使用。你可以先匯出或匯入備份檔。';BK_MSG=BK_OFF;toast(BK_OFF);if(tab==='more'){LAST_HTML=null;render();}return;}
+  toast('登入沒有完成，資料仍在這台裝置');}
+function bkStoreFail(e){var c=e&&e.code||'';BK_MSG=(c==='permission-denied'||c==='unavailable'||c==='not-found'||c==='failed-precondition')?'雲端資料庫尚未開通，資料仍在這台裝置':'這次沒有備份成功，資料仍在這台裝置';toast(BK_MSG);var el=$('bkmsg');if(el)el.textContent=BK_MSG;}
+function bkLoadScript(src,cb){var s=document.createElement('script');s.src=src;s.async=true;s.onload=function(){cb();};s.onerror=function(){cb(new Error('script'));};document.head.appendChild(s);}
+function bkEnsure(cb){var base=[];if(!window.firebase)base.push('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+  function seq(list,done){if(!list.length){done();return;}bkLoadScript(list[0],function(err){if(err){done(err);return;}seq(list.slice(1),done);});}
+  seq(base,function(err){if(err||!window.firebase){cb(err||new Error('script'));return;}
+    var more=[];if(!firebase.auth)more.push('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js');if(!firebase.firestore)more.push('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
+    seq(more,function(err2){if(err2||!firebase.auth||!firebase.firestore){cb(err2||new Error('script'));return;}try{if(!firebase.apps.length)firebase.initializeApp(FB_CFG);bkWatch();cb();}catch(e){cb(e);}});});}
+function bkWatch(){if(BK_WATCHED)return;BK_WATCHED=true;try{firebase.auth().languageCode='zh-TW';}catch(e){}
+  firebase.auth().getRedirectResult().then(function(){firebase.auth().onAuthStateChanged(function(user){
+    if(user){BK_USER=user;BK_OFF='';try{localStorage.setItem('fly_bk_uid',user.uid);localStorage.removeItem('fly_bk_pending');}catch(e){}bkPull();}
+    else{var was=BK_USER;BK_USER=null;BK_SYNCED=false;BK_BUSY=false;try{localStorage.removeItem('fly_bk_uid');localStorage.removeItem('fly_bk_pending');}catch(e){}if(was&&tab==='more'){LAST_HTML=null;render();}}
+  });}).catch(bkAuthFail);}
+function bkLogin(){if(BK_BUSY||BK_OFF||BK_USER)return;BK_BUSY=true;if(tab==='more'){LAST_HTML=null;render();}
+  bkEnsure(function(err){if(err){BK_BUSY=false;BK_OFF='雲端備份尚未開通，不影響使用。你可以先匯出或匯入備份檔。';toast(BK_OFF);if(tab==='more'){LAST_HTML=null;render();}return;}
+    var prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});try{localStorage.setItem('fly_bk_pending','1');}catch(e){}
+    firebase.auth().signInWithRedirect(prov).catch(bkAuthFail);});}
+function bkLogout(){if(!window.firebase||!firebase.auth){BK_USER=null;return;}firebase.auth().signOut().then(function(){toast('已登出，這台裝置上的資料都還在');}).catch(function(){toast('登出沒有完成');});}
+function bkExport(){var blob=new Blob([JSON.stringify(bkPayload(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='flysave-backup.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);toast('已匯出備份檔');}
+function bkImport(file){if(!file)return;var rd=new FileReader();rd.onload=function(){var data;try{data=JSON.parse(String(rd.result||''));}catch(e){toast('這個檔案讀不起來');return;}
+  if(!data||data.app!=='flysave'||data.v!==1||!Array.isArray(data.queries)||!Array.isArray(data.flights)){toast('這不是飛省的備份檔');return;}
+  if(!confirm('匯入後會和這台裝置現有的查詢、航班合併，不會先清空。要繼續嗎？'))return;
+  bkApply(data);toast('已匯入備份檔');LAST_HTML=null;render();if(BK_USER&&BK_SYNCED)bkPush();};rd.readAsText(file);}
+function bkPanel(){var login;
+  if(BK_OFF)login='<p class="note">'+esc(BK_OFF)+'</p>';
+  else if(BK_USER)login='<p>已用 Google 登入'+(BK_USER.email?'：'+esc(BK_USER.email):'')+'</p><p class="note" id="bkmsg">'+(esc(BK_MSG)||'變更會自動備份')+'</p><button class="btn ghost" data-act="bk:out">登出</button>';
+  else login='<button class="btn" data-act="bk:in"'+(BK_BUSY?' disabled':'')+'>'+(BK_BUSY?'登入中…':'用 Google 帳號備份')+'</button><p class="note">不登入也能用，日期和航班都還在這台裝置。登入只是多一份雲端備份，換手機用同一個 Google 帳號會合併回來。</p>';
+  return '<div class="panel" id="bkpanel"><p class="step">☁️ 備份（選用）</p>'+login+
+    '<button class="btn ghost" data-act="bk:exp">匯出備份檔</button><button class="btn ghost" data-act="bk:imp">匯入備份檔</button>'+
+    '<input id="bkfile" type="file" accept="application/json,.json" hidden><p class="note">檔案只含「我的查詢」（含加入的城市）和「我的航班」，存在你自己的裝置，不需要登入。</p></div>';}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="bk:"]');if(!a||a.disabled)return;e.preventDefault();e.stopPropagation();var v=a.dataset.act;
+  if(v==='bk:in')bkLogin();else if(v==='bk:out')bkLogout();else if(v==='bk:exp')bkExport();else if(v==='bk:imp'){var inp=$('bkfile');if(inp)inp.click();}},true);
+document.addEventListener('change',function(e){if(!e.target||e.target.id!=='bkfile')return;var f=e.target.files&&e.target.files[0];e.target.value='';bkImport(f);});
+setTimeout(function(){try{if(localStorage.getItem('fly_bk_pending')||localStorage.getItem('fly_bk_uid'))bkEnsure(function(){});}catch(e){}},600);
 /* ---------- v23：其他／我的航班 ---------- */
 function moreView(){
   function row(t,ic,ti,d){return '<button class="mopt" data-act="go:'+t+'"><span class="ic">'+ic+'</span><span class="tx"><b>'+ti+'</b><span>'+d+'</span></span><span class="ar">›</span></button>';}
   var th='<div class="panel"><p class="step">🎨 外觀</p><div class="chips">'+[['auto','跟隨系統'],['light','淺色'],['dark','深色']].map(function(t){return chip(t[1],'theme:'+t[0],THEME===t[0]);}).join('')+'</div></div>';
-  return th+'<div class="panel"><p class="step">☰ 其他</p>'+row('feedback','💬','意見回饋','功能建議、問題回報，我們都會看')+row('help','💡','說明','按鈕說明、特價通知、起飛前提醒')+row('about','✈️','關於我們','服務說明')+row('privacy','🔒','隱私權政策','')+row('terms','📄','服務條款','')+'<a class="mopt" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><span class="ic"><i class="si si-hotel-fan"></i></span><span class="tx"><b>飯省 FanSave</b><span>姊妹站：找 CP 值最高的飯店</span></span><span class="ar">›</span></a></div>';
+  return th+bkPanel()+'<div class="panel"><p class="step">☰ 其他</p>'+row('feedback','💬','意見回饋','功能建議、問題回報，我們都會看')+row('help','💡','說明','按鈕說明、特價通知、起飛前提醒')+row('about','✈️','關於我們','服務說明')+row('privacy','🔒','隱私權政策','')+row('terms','📄','服務條款','')+'<a class="mopt" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><span class="ic"><i class="si si-hotel-fan"></i></span><span class="tx"><b>飯省 FanSave</b><span>姊妹站：找 CP 值最高的飯店</span></span><span class="ar">›</span></a></div>';
 }
 /* ---------- v24：意見回饋 ---------- */
 var FB_CAT='功能建議', FB_BUSY=false;
@@ -1189,7 +1269,7 @@ function flAddTrip(i){var f=MYF[i];if(!f)return;var key=flTripKey(f),d=flTripDat
   if(TRIPADDED[key]){tripToast('已在旅伴行程',d);return;}
   addToTrip('flight',d);TRIPADDED[key]=Date.now();lss('fly_tripadded',TRIPADDED);tripToast('已加入旅伴行程',d);LAST_HTML=null;render();}
 function flightsView(){
-  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選，回程可選桃園、松山、高雄等台灣機場）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料只存在這台裝置。</p></div>';
+  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選，回程可選桃園、松山、高雄等台灣機場）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料存在這台裝置；到「其他」可以匯出備份，登入後也會自動備份。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
   setTimeout(function(){flFetch(false);},0);
   return h+MYF.map(function(f,i){var c=FLS[flKey(f)],r=c&&c.r,b;
@@ -1213,16 +1293,16 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
   else if(v==='tomore'){e.stopPropagation();tab='more';render();}
   else if(v.indexOf('go:')===0){e.stopPropagation();tab=v.slice(3);render();if(tab==='mine')load(render);}
   else if(v==='mf:add'){e.stopPropagation();var no=flNorm($('mfno').value),dt=$('mfdt').value;if(!flValid(no)){toast('請輸入正確的航班號碼，例如 BR198');return;}
-    if(FLR[no]&&FLR[no].err)delete FLR[no];MYF=MYF.filter(function(f){return !(f.no===no&&f.date===dt);});MYF.unshift({no:no,date:dt||''});MYF=MYF.slice(0,20);lss('fly_myflights',MYF);toast('✅ 已加入 '+no);LAST_HTML=null;render();}
-  else if(v.indexOf('mf:dest:')===0){e.preventDefault();e.stopPropagation();var pp=v.split(':'),fi=MYF[+pp[2]];if(fi){if(pp[3]){fi.dest=pp[3];fi.destCity=flApName(pp[3]);}else{delete fi.dest;delete fi.destCity;}lss('fly_myflights',MYF);}FL_EDIT=-1;LAST_HTML=null;render();}
+    if(FLR[no]&&FLR[no].err)delete FLR[no];MYF=MYF.filter(function(f){return !(f.no===no&&f.date===dt);});MYF.unshift({no:no,date:dt||'',savedAt:Date.now()});MYF=MYF.slice(0,20);lss('fly_myflights',MYF);bkSchedule();toast('✅ 已加入 '+no);LAST_HTML=null;render();}
+  else if(v.indexOf('mf:dest:')===0){e.preventDefault();e.stopPropagation();var pp=v.split(':'),fi=MYF[+pp[2]];if(fi){if(pp[3]){fi.dest=pp[3];fi.destCity=flApName(pp[3]);}else{delete fi.dest;delete fi.destCity;}fi.savedAt=Date.now();lss('fly_myflights',MYF);bkSchedule();}FL_EDIT=-1;LAST_HTML=null;render();}
   else if(v.indexOf('mf:edit:')===0){e.preventDefault();e.stopPropagation();FL_EDIT=FL_EDIT===+v.slice(8)?-1:+v.slice(8);LAST_HTML=null;render();}
   else if(v==='mf:ref'){e.stopPropagation();MYF.forEach(function(f){var c=FLR[f.no];if(c&&c.err)delete FLR[f.no];});flFetch(true);toast('更新中…');}
   else if(v.indexOf('mf:trip:')===0){e.preventDefault();e.stopPropagation();flAddTrip(+v.slice(8));}
-  else if(v.indexOf('mf:del:')===0){e.stopPropagation();MYF.splice(+v.slice(7),1);lss('fly_myflights',MYF);LAST_HTML=null;render();}},true);
+  else if(v.indexOf('mf:del:')===0){e.stopPropagation();var fx=MYF[+v.slice(7)];if(fx)bkTomb('f',fx.no+'|'+(fx.date||''));MYF.splice(+v.slice(7),1);lss('fly_myflights',MYF);bkSchedule();LAST_HTML=null;render();}},true);
 var MODE_ICON={cp:'🏆',exact:'📅'};
 function mine(){
   var ds=myDates();
-  if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有查詢過的日期。<br>按「查機票」選日期，查過的日期會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>'+myCitiesView();
+  if(!ds.length)return '<div class="panel"><p class="step">📋 我的查詢</p><div class="empty">還沒有存過日期。<br>按「查機票」選好日期，再按「確認並儲存」，才會存在這裡（最多 5 組）。</div><button class="btn" data-act="tab:search">🔎 查機票</button></div>'+myCitiesView();
   var h='<p class="summary">📋 我的查詢（這支手機自己的，最多 5 組）\n點一組日期就能看結果，每天 07:00／15:00／23:00 更新。</p>'+orgBar();
   ds.forEach(function(x,i){
     var n=all('custom').filter(function(c){var q=c.query||{from:c.depart,to:c.return};return (c.mode==='exact'?'exact':'cp')===x.mode&&q.from===x.from&&q.to===x.to&&orgOk(c.origin)&&(!x.city||c.code===x.city)&&(!x.origin||c.origin===x.origin)&&(x.city||!x.region||regOf(c)===x.region)&&(x.city||!x.country||c.country===x.country);});
@@ -1292,7 +1372,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.32</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.33</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
@@ -1303,8 +1383,9 @@ function about(){return page('✈️ 關於我們／服務說明',
   '<li>票價隨時會變，訂票網站也可能另加手續費，實際金額以訂票頁面為準。</li></ul>'+
   '<p>有任何問題或建議，歡迎來信：<a href="mailto:'+CONTACT+'">'+CONTACT+'</a></p>');}
 function privacy(){return page('🔒 隱私權政策',
-  '<p>最後更新：2026 年 10 月 10 日</p>'+
-  '<p><b>我們蒐集什麼：</b>網站不需要註冊或登入，不蒐集姓名、電話、Email 或付款資料。你在「查機票」選的日期組合與查法（例如 12/20–12/27、CP值最高）會和一組隨機產生的匿名裝置代碼一起存到我們的伺服器（Google Apps Script），讓每支手機只看到自己的查詢；用來在下一次查詢時查這些日期的票價；這些資料不包含任何可以辨識你身分的資訊。你選的出發地會存在你自己裝置的瀏覽器（localStorage）。</p>'+
+  '<p>最後更新：2026 年 10 月 19 日</p>'+
+  '<p><b>我們蒐集什麼：</b>網站不需要註冊或登入，不蒐集姓名、電話或付款資料。你在「查機票」選的日期組合與查法（例如 12/20–12/27、CP值最高）會和一組隨機產生的匿名裝置代碼一起存到我們的伺服器（Google Apps Script），讓每支手機只看到自己的查詢；用來在下一次查詢時查這些日期的票價；這些資料不包含任何可以辨識你身分的資訊。你選的出發地會存在你自己裝置的瀏覽器（localStorage）。</p>'+
+  '<p><b>選用的雲端備份：</b>不登入時，不會把資料上傳到備份。若你在「其他」用 Google 登入，我們只把「我的查詢」和「我的航班」存到你自己的 Firebase 文件，用來在另一台裝置合併回來；這時 Google 會提供你的帳號 Email。你可以隨時登出，登出不會刪除這台裝置上的資料。也可以改用「匯出備份檔」，檔案只留在你自己的裝置。</p>'+
   '<p><b>如何使用：</b>只用來提供票價查詢結果，不出售、不出租，也不提供給第三方做行銷。</p>'+
   '<p><b>第三方網站：</b>票價資料來自 Google Flights 與 Trip.com 的公開頁面。點訂票連結或觀看 YouTube 教學影片時會前往該網站，該網站有自己的隱私權政策與 Cookie，請另行參閱。</p>'+
   '<p><b>刪除資料：</b>你可以在「我的查詢」刪除或清除存起來的日期；也可以清除瀏覽器資料移除裝置上的設定。</p>'+
@@ -1327,7 +1408,7 @@ function video(){                          // v28.15：教學影片放在 GitHub
 function help(){
   return video()+'<div class="sprow" style="margin:0 0 12px">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>'+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
     '<h3>🔎 查機票</h3><ul><li>🏆 CP值最高：前後挪 1～2 天找最划算的</li><li>📅 只查指定日期：只看你選的那兩天，列出每個班次</li><li>💰 不指定日期：最近最便宜的 5～7 天行程</li></ul>'+
-    '<p>選日期後會自動存起來（最多 5 組），下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
+    '<p>選好日期後，要按「確認並儲存」才會存起來（最多 5 組）。下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。到「其他」可以選用 Google 備份，或匯出備份檔；不登入也不影響查詢。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
     '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「最新優惠」和右上角 🔔 特價通知頁上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
