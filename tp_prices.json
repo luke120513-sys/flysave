@@ -45,7 +45,7 @@
         "airline": "AK",
         "date": "2026-11-04",
         "found_at": "",
-        "price_twd": 6723,
+        "price_twd": 6726,
         "return_date": "2026-11-12",
         "transfers": 0
       }
@@ -146,7 +146,7 @@
         "airline": "5J",
         "date": "2026-10-28",
         "found_at": "",
-        "price_twd": 23357,
+        "price_twd": 23365,
         "return_date": "2026-10-29",
         "transfers": 1
       }
@@ -202,7 +202,7 @@
         "airline": "TR",
         "date": "2026-10-23",
         "found_at": "",
-        "price_twd": 12923,
+        "price_twd": 12928,
         "return_date": "2026-10-26",
         "transfers": 1
       },
@@ -265,7 +265,7 @@
         "airline": "AK",
         "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 6657,
+        "price_twd": 6659,
         "return_date": "2026-11-10",
         "transfers": 0
       }
@@ -341,7 +341,7 @@
         "airline": "IT",
         "date": "2026-10-29",
         "found_at": "",
-        "price_twd": 6202,
+        "price_twd": 6204,
         "return_date": "2026-11-12",
         "transfers": 0
       },
@@ -349,7 +349,7 @@
         "airline": "TR",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7793,
+        "price_twd": 7796,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -364,11 +364,11 @@
         "transfers": 0
       },
       {
-        "airline": "IT",
+        "airline": "VZ",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 4771,
-        "return_date": "2026-11-06",
+        "price_twd": 4900,
+        "return_date": "2026-11-07",
         "transfers": 0
       }
     ],
@@ -387,7 +387,7 @@
         "airline": "BX",
         "date": "2026-10-26",
         "found_at": "",
-        "price_twd": 5564,
+        "price_twd": 5566,
         "return_date": "2026-10-31",
         "transfers": 0
       },
@@ -421,16 +421,7 @@
         "transfers": 1
       }
     ],
-    "TPE-SGN": [
-      {
-        "airline": "VN",
-        "date": "2026-11-06",
-        "found_at": "",
-        "price_twd": 7924,
-        "return_date": "2026-11-10",
-        "transfers": 0
-      }
-    ],
+    "TPE-SGN": [],
     "TPE-SYD": [
       {
         "airline": "MF",
@@ -472,5 +463,5 @@
     ],
     "TPE-YYZ": []
   },
-  "updated_at": "2026-10-19T15:57:48Z"
+  "updated_at": "2026-10-19T23:28:49Z"
 }
