@@ -71,7 +71,7 @@ nav button.on{color:var(--g);font-weight:700}
 .grid .d.end{background:var(--g);color:#fff;font-weight:800}
 .sel{font-size:14px;margin:10px 0 0;color:#333}
 .btn{display:block;width:100%;border:0;background:var(--g);color:#fff;font-size:16px;font-weight:800;border-radius:24px;padding:12px;margin-top:12px;font-family:inherit}
-.pendc .btn{flex:1;margin-top:4px}.btn.ghost{background:transparent;color:var(--g);border:2px solid var(--g)}
+.pendc .btn{flex:none;width:100%;margin-top:10px}.pendc .pendok{font-size:18px;padding:16px 18px;border-radius:16px;box-shadow:0 6px 16px rgba(6,199,85,.28)}.btn.ghost{background:transparent;color:var(--g);border:2px solid var(--g)}
 .btn:disabled{background:#bfe9cf}
 .summary{font-size:13px;color:#444;margin:4px 2px 10px;white-space:pre-line}
 .card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -113,6 +113,7 @@ html.dark .tpd.on{background:#24382b;color:#F1EBDD}html.dark .tpd b{color:#8FD3A
 .links.small a{font-size:12px;padding:4px 0;border-width:1.5px}
 .empty{text-align:center;color:#777;font-size:14px;padding:24px 10px}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#333;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:9;max-width:90%}
+.toast.big{font-size:16px;font-weight:800;padding:12px 20px}
 .toast.on{opacity:.95}
 .help h3{font-size:16px;margin:4px 0 6px}
 .help p,.help li{font-size:14px;line-height:1.7;color:#333}
@@ -438,7 +439,7 @@ function addDays(s,n){var t=new Date(s+'T00:00:00Z');t.setUTCDate(t.getUTCDate()
 function md(s){var a=s.split('-');return (+a[1])+'/'+(+a[2]);}
 function days(a,b){return Math.round((new Date(b)-new Date(a))/864e5)+1;}
 function okUrl(u){return typeof u==='string'&&/^https:\/\/\S+$/.test(u);}
-function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},2600);}
+function toast(t,ms){var e=$('toast');e.textContent=t;e.classList.toggle('big',t==='✓ 已儲存');e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},ms||2600);}
 function fresh(x){if(!x.checkedAt)return true;var t=Date.parse(x.checkedAt);return isNaN(t)||Date.now()-t<=STALE;}
 function checked(x){
   var t=x.checkedAt?new Date(Date.parse(x.checkedAt)+8*3600e3):null, w='';
@@ -560,10 +561,22 @@ function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<
 // v28.15：日期查詢要選好城市並按「確認儲存」才存；也可以先選城市再選日期
 function pendCard(){if(!(st.pend&&st.dep&&st.ret&&st.mode&&st.mode!=='nodate'))return '';
   var w=st.city&&st.city!=='全部'?(cityName(st.city)):st.country&&st.country!=='全部'?st.country:st.region&&st.region!=='全部'?st.region:'全部目的地';
-  return '<div class="panel pendc"><p class="step">💾 要儲存這組查詢嗎？</p><p>📅 '+md(st.dep)+'–'+md(st.ret)+'・'+esc(MODE[st.mode]||'')+'・📍 '+esc(w)+'</p><p style="font-size:13px;opacity:.75">儲存後，下一輪查價（07:00／15:00／23:00）會查這組日期，結果會出現在「我的查詢」。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pend:ok">✅ 確認儲存</button><button class="btn ghost" data-act="pend:no">取消</button></div></div>';}
+  return '<div class="panel pendc"><p class="step">💾 要儲存這組查詢嗎？</p><p>📅 '+md(st.dep)+'–'+md(st.ret)+'・'+esc(MODE[st.mode]||'')+'・📍 '+esc(w)+'</p><p style="font-size:13px;opacity:.75">儲存後，下一輪查價（07:00／15:00／23:00）會查這組日期，結果會出現在「我的查詢」。</p><button class="btn pendok" data-act="pend:ok">確認並儲存</button><button class="btn ghost" data-act="pend:no">取消</button></div>';}
 function cityName(c){try{var d=dsList().filter(function(o){return o.code===c;})[0];if(d)return d.dest;}catch(e){}return (typeof RQ_CITY!=='undefined'&&RQ_CITY[c]||c).split(' ')[0];}
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="pend:"]');if(!a)return;e.preventDefault();e.stopPropagation();
-  if(a.dataset.act==='pend:ok'){st.pend=false;a.disabled=true;saveDate(st.dep,st.ret,st.mode,function(){render();},false,{city:st.city&&st.city!=='全部'?st.city:'',cityName:st.city&&st.city!=='全部'?cityName(st.city):'',origin:st.origin!=='ALL'?st.origin:'',region:st.region&&st.region!=='全部'?st.region:'',country:st.country&&st.country!=='全部'?st.country:'',rq:st.rq?1:0});render();}
+var FLOW_FROM=null, ENTER_FROM=null, PEND_LOCK=false;
+function flowBegin(){if(!FLOW_FROM)FLOW_FROM={tab:ENTER_FROM||tab||'search'};ENTER_FROM=null;}
+function flowReturn(){
+  var from=FLOW_FROM&&FLOW_FROM.tab||'search'; FLOW_FROM=null; ENTER_FROM=null; PEND_LOCK=false;
+  st.pend=false; st.cf=false; st.mode=null; st.dep=st.ret=null; st.city=null; st.country=null; st.rq=null; st.region='全部'; st.lhSub=null; st.step='mode';
+  tab=(from==='search'||TABS.concat(MORE_SUB,['notify','announce']).indexOf(from)<0)?'search':from;
+  LAST_HTML=null; render(); if(tab==='mine')load(render); window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="pend:"]');if(!a||a.disabled)return;e.preventDefault();e.stopPropagation();
+  if(a.dataset.act==='pend:ok'){if(PEND_LOCK)return;PEND_LOCK=true;a.disabled=true;a.setAttribute('aria-busy','true');
+    var left=false, ex={city:st.city&&st.city!=='全部'?st.city:'',cityName:st.city&&st.city!=='全部'?cityName(st.city):'',origin:st.origin!=='ALL'?st.origin:'',region:st.region&&st.region!=='全部'?st.region:'',country:st.country&&st.country!=='全部'?st.country:'',rq:st.rq?1:0};
+    var nav=setTimeout(function(){left=true;flowReturn();},1000);
+    saveDate(st.dep,st.ret,st.mode,function(r){if(r&&r.ok)return;clearTimeout(nav);if(!left){PEND_LOCK=false;a.disabled=false;a.removeAttribute('aria-busy');toast((r&&r.error)||'存檔失敗');}else toast((r&&r.error)||'存檔失敗');},true,ex);
+    toast('✓ 已儲存',1000);}
   else{st.pend=false;toast('已取消，這組日期沒有儲存');render();}},true);
 function search(){if(st.step==='result'&&st.cf&&!(st.dep&&st.ret)&&st.mode!=='nodate')st.step='cal';var h=search0();return st.step==='result'?pendCard()+h:h;}
 function wizStep(){   // 有日期共 4 步（怎麼查、日期、地區、城市）；不指定日期少了日期，共 3 步。還沒選查法時用 4，避免地區頁寫 3/3、城市頁又跳成 4/4。
@@ -887,7 +900,7 @@ function result0(){
   h+=NOTE;
   if(mine.length)return h+cardsHtml(mine,st.mode==='exact'?exactCard:fareCard);
   var saved=myDates().some(function(q){return q.from===st.dep&&q.to===st.ret&&q.mode===st.mode;});
-  h+='<div class="panel"><b>⏳ 這組日期下一輪查價（07:00／15:00／23:00）會查</b><p style="font-size:14px;margin:6px 0 0">'+(saved?'已存在「我的查詢」，':'按上方「✅ 確認儲存」後，')+'查完回來就會看到 '+md(st.dep)+'–'+md(st.ret)+(st.mode==='exact'?' 這兩天的班次（只查你選的日期，不會換日期）。':' 的結果。')+'</p></div>';
+  h+='<div class="panel"><b>⏳ 這組日期下一輪查價（07:00／15:00／23:00）會查</b><p style="font-size:14px;margin:6px 0 0">'+(saved?'已存在「我的查詢」，':'按上方「確認並儲存」後，')+'查完回來就會看到 '+md(st.dep)+'–'+md(st.ret)+(st.mode==='exact'?' 這兩天的班次（只查你選的日期，不會換日期）。':' 的結果。')+'</p></div>';
   if(!general.length)return h;
   return h+'<details class="panel sugg"><summary>💡 參考：其他日期的直飛低價（不是你選的日期）</summary>'+cardsHtml(general,fareCard)+'</details>';
 }
@@ -1279,7 +1292,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.31</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.32</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
@@ -1324,16 +1337,16 @@ function help(){
 /* ---------- 操作 ---------- */
 var BACK={cal:'mode',origin:'mode',region:'cal',country:'region',lhsub:'region',result:'region',city:'region'};
 document.addEventListener('click',function(e){
-  var b=e.target.closest('nav button'); if(b){tab=b.dataset.tab;render();if(tab==='mine')load(render);return;}
+  var b=e.target.closest('nav button'); if(b){if(b.dataset.tab==='search'&&tab!=='search')ENTER_FROM=tab;else if(b.dataset.tab!=='search'&&!FLOW_FROM)ENTER_FROM=null;tab=b.dataset.tab;render();if(tab==='mine')load(render);return;}
   var a=e.target.closest('[data-act]'); if(!a||a.disabled)return;
   var v=a.dataset.act, k=v.split(':')[0], x=v.slice(k.length+1);
   var ds=myDates();
-  if(k==='tab'){tab=x;render();if(x==='mine')load(render);return;}
+  if(k==='tab'){if(x==='search'&&tab!=='search')ENTER_FROM=tab;tab=x;render();if(x==='mine')load(render);return;}
   if(k==='sort'){SORT_BAG=x==='bag';try{localStorage.setItem('fly_tb_sort',x);}catch(err){}render();return;}
   if(k==='open'){var q=ds[+x];if(!q)return;tab='search';st.mode=q.mode;st.dep=q.from;st.ret=q.to;orgSync();if(q.origin&&ORG.length!==1)st.origin=q.origin;st.region=q.region||'全部';st.country=q.country||null;st.city=q.city||null;st.rq=q.rq&&q.city?q.city:null;st.cf=false;st.pend=false;st.step='result';render();load(render);return;}
   if(k==='del'){var q2=ds[+x];if(q2&&confirm('刪除 '+md(q2.from)+'–'+md(q2.to)+' '+MODE[q2.mode]+'？'))delDate(q2);return;}
   if(k==='clear'){if(confirm('清除這支手機存起來的所有日期？（不影響其他人）'))clearDates();return;}
-  if(k==='m'){st.pend=false;st.rq=null;st.cf=x==='city';if(st.cf){st.mode='exact';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
+  if(k==='m'){flowBegin();st.pend=false;st.rq=null;st.cf=x==='city';if(st.cf){st.mode='exact';st.dep=st.ret=null;st.region='全部';st.country=null;st.city=null;st.step='region';}else{st.mode=x;st.step=x==='nodate'?'region':'cal';if(x==='nodate'){st.dep=st.ret=null;}}}
   else if(k==='cfm')st.mode=x==='cp'?'cp':'exact';
   else if(k==='cm')st.month=x;
   else if(k==='cd'){if(!st.dep||st.ret||x<=st.dep){st.dep=x;st.ret=null;}else st.ret=x;st.month=x.slice(0,7);}
