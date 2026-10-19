@@ -1070,10 +1070,12 @@ function flTripData(f){var c=FLS[flKey(f)],r=c&&c.r,x=r&&r.ok&&r.flights&&r.flig
 function addToTrip(type,data){var k='shared_tripInbox',a;try{a=JSON.parse(localStorage.getItem(k)||'[]');}catch(e){a=[];}if(!Array.isArray(a))a=[];
   var cur=null;try{cur=JSON.parse(localStorage.getItem('shared_curTrip')||'null');}catch(e){}
   a.push({type:type,tripId:(cur||{}).id,data:data,addedAt:Date.now()});localStorage.setItem(k,JSON.stringify(a));}
-function tripToast(msg){var e=$('toast');e.innerHTML=esc(msg)+(msg.indexOf('已加入')===0||msg.indexOf('已在')===0?' <a href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener" class="tlink">打開旅伴</a>':'');e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},4000);}
-function flAddTrip(i){var f=MYF[i];if(!f)return;var key=flTripKey(f);
-  if(TRIPADDED[key]){tripToast('已在旅伴行程');return;}
-  var d=flTripData(f);addToTrip('flight',d);TRIPADDED[key]=Date.now();lss('fly_tripadded',TRIPADDED);tripToast('已加入旅伴行程');LAST_HTML=null;render();}
+function tripAddUrl(d){var u='https://luke120513-sys.github.io/trip/?from=flysave';if(!d)return u;
+  var j=JSON.stringify({v:1,type:'flight',data:d});u+='&add='+encodeURIComponent(j);if(d.to||d.from)u+='&dest='+encodeURIComponent(d.leg==='return'?(d.from||''):(d.to||''));if(d.date)u+='&dep='+d.date;return u;}
+function tripToast(msg,d){var e=$('toast');e.innerHTML=esc(msg)+' <a class="tlink" href="'+esc(tripAddUrl(d))+'" target="_blank" rel="noopener">打開旅伴</a>';e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},6000);}
+function flAddTrip(i){var f=MYF[i];if(!f)return;var key=flTripKey(f),d=flTripData(f);
+  if(TRIPADDED[key]){tripToast('已在旅伴行程',d);return;}
+  addToTrip('flight',d);TRIPADDED[key]=Date.now();lss('fly_tripadded',TRIPADDED);tripToast('已加入旅伴行程',d);LAST_HTML=null;render();}
 function flightsView(){
   var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料只存在這台裝置。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
@@ -1174,7 +1176,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.26</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.27</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
