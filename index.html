@@ -398,7 +398,7 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.35';
+var APPVER='v28.36';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
@@ -974,16 +974,35 @@ function bkApply(cloud){cloud=cloud||{};BK_APPLYING=true;try{
   RQ_LOCAL.forEach(function(c){putC(c,local[c]);});(cc.codes||[]).forEach(function(c){putC(c,(cc.meta||{})[c]);});
   RQ_LOCAL=Object.keys(codes).slice(0,20);try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL));localStorage.setItem('fly_rqm',JSON.stringify(meta));}catch(e){}
 }finally{BK_APPLYING=false;}}
-function bkPush(){if(!BK_USER||!BK_SYNCED||BK_APPLYING||!window.firebase||!firebase.firestore)return;var data=bkPayload();data.updatedAt=Date.now();
-  firebase.firestore().collection('users').doc(BK_USER.uid).set(data).then(function(){BK_MSG='已備份';var el=$('bkmsg');if(el)el.textContent=BK_MSG;}).catch(bkStoreFail);}
-function bkPull(){if(!BK_USER||!firebase.firestore)return;firebase.firestore().collection('users').doc(BK_USER.uid).get().then(function(snap){
+function bkStr(v,n){return String(v==null?'':v).replace(/[\u0000-\u001f]/g,'').slice(0,n);}
+function bkNum(v){v=+v;return isFinite(v)&&v>0?Math.round(v):0;}
+function bkMap(o){var out={},n=0;Object.keys(o||{}).forEach(function(k){if(n>=80)return;var key=String(k).slice(0,80);if(!key||key.charAt(0)==='_'||/[.~*/[\]]/.test(key))return;var v=bkNum(o[k]);if(!v)return;out[key]=v;n++;});return out;}
+function bkDoc(){var src=bkPayload(),codes=[],seen={},metaIn=(src.cities&&src.cities.meta)||{};
+  (Array.isArray(src.cities&&src.cities.codes)?src.cities.codes:[]).forEach(function(c){c=String(c||'').toUpperCase();if(!/^[A-Z]{3}$/.test(c)||seen[c]||codes.length>=20)return;seen[c]=1;codes.push(c);});
+  var meta={};codes.forEach(function(c){var m=metaIn[c]||{};meta[c]={name:bkStr(m.name||c,40)||c,og:bkStr(m.og,40),t:bkNum(m.t)};});
+  var queries=(Array.isArray(src.queries)?src.queries:[]).map(function(q){q=bkNormQ(q);if(!q)return null;var o={from:q.from,to:q.to,mode:q.mode};if(bkNum(q.savedAt))o.savedAt=bkNum(q.savedAt);
+    ['city','cityName','origin','region','country'].forEach(function(k){if(q[k]!=null&&q[k]!=='')o[k]=bkStr(q[k],40);});if(q.rq)o.rq=1;return o;}).filter(Boolean).slice(0,30);
+  var flights=(Array.isArray(src.flights)?src.flights:[]).map(function(f){f=bkNormF(f);if(!f)return null;var o={no:f.no,date:f.date||''};if(f.dest&&/^[A-Z]{3}$/.test(f.dest)){o.dest=f.dest;o.destCity=bkStr(f.destCity,40);}if(bkNum(f.savedAt))o.savedAt=bkNum(f.savedAt);return o;}).filter(Boolean).slice(0,20);
+  var tomb=src.tomb||{};
+  return {app:'flysave',v:1,exportedAt:new Date().toISOString(),queries:queries,flights:flights,cities:{codes:codes,meta:meta},tomb:{q:bkMap(tomb.q),f:bkMap(tomb.f),c:bkMap(tomb.c)},updatedAt:Date.now()};}
+function bkDb(){return firebase.firestore(firebase.app());}
+function bkPush(){if(!BK_USER||!BK_SYNCED||BK_APPLYING||!window.firebase||!firebase.firestore)return;var data=bkDoc();
+  if(!data.cities||!Array.isArray(data.cities.codes)||data.queries.length>30||data.flights.length>20||data.cities.codes.length>20){bkStoreFail({code:'invalid-argument'});return;}
+  bkDb().collection('users').doc(BK_USER.uid).set(data).then(function(){BK_MSG='已備份';var el=$('bkmsg');if(el)el.textContent=BK_MSG;}).catch(bkStoreFail);}
+function bkPull(retry){if(!BK_USER||!firebase.firestore)return;bkDb().collection('users').doc(BK_USER.uid).get().then(function(snap){
   if(snap&&snap.exists)bkApply(snap.data()||{});BK_SYNCED=true;BK_MSG=snap&&snap.exists?'已從雲端合併回來':'已開啟備份';bkPush();
-  if(tab==='more'||tab==='mine'||tab==='flights'){LAST_HTML=null;render();}}).catch(function(e){bkStoreFail(e);if(tab==='more'){LAST_HTML=null;render();}});}
+  if(tab==='more'||tab==='mine'||tab==='flights'){LAST_HTML=null;render();}}).catch(function(e){
+    var c=e&&e.code||'';
+    if(!retry&&(c==='permission-denied'||c==='unauthenticated')&&BK_USER.getIdToken){BK_USER.getIdToken(true).then(function(){bkPull(1);},function(){bkStoreFail(e);if(tab==='more'){LAST_HTML=null;render();}});return;}
+    bkStoreFail(e);if(tab==='more'){LAST_HTML=null;render();}});}
 function bkAuthFail(e){var c=e&&e.code||'';BK_BUSY=false;try{localStorage.removeItem('fly_bk_pending');}catch(_){}
   if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request'){toast('已取消登入');return;}
   if(c==='auth/unauthorized-domain'||c==='auth/operation-not-allowed'||c==='auth/configuration-not-found'||c==='auth/invalid-api-key'){BK_OFF='雲端備份尚未開通，不影響使用。你可以先匯出或匯入備份檔。';BK_MSG=BK_OFF;toast(BK_OFF);if(tab==='more'){LAST_HTML=null;render();}return;}
   toast('登入沒有完成，資料仍在這台裝置');}
-function bkStoreFail(e){var c=e&&e.code||'';BK_MSG=(c==='permission-denied'||c==='unavailable'||c==='not-found'||c==='failed-precondition')?'雲端資料庫尚未開通，資料仍在這台裝置':'這次沒有備份成功，資料仍在這台裝置';toast(BK_MSG);var el=$('bkmsg');if(el)el.textContent=BK_MSG;}
+function bkStoreFail(e){var c=e&&e.code||'';
+  var msg=c==='permission-denied'?'雲端拒絕讀寫（權限規則不符），資料仍在這台裝置':c==='not-found'?'找不到雲端資料庫，資料仍在這台裝置':c==='failed-precondition'?'雲端資料庫尚未就緒，資料仍在這台裝置':c==='unavailable'?'雲端暫時連不上，資料仍在這台裝置':c==='unauthenticated'?'登入狀態沒有送到雲端，請再登入一次。資料仍在這台裝置':c==='invalid-argument'?'備份內容格式不對，資料仍在這台裝置':'這次沒有備份成功，資料仍在這台裝置';
+  try{console.warn('flysave backup',c,e&&e.message);}catch(_){}
+  BK_MSG=msg;toast(msg);var el=$('bkmsg');if(el)el.textContent=BK_MSG;}
 function bkLoadScript(src,cb){var s=document.createElement('script');s.src=src;s.async=true;s.onload=function(){cb();};s.onerror=function(){cb(new Error('script'));};document.head.appendChild(s);}
 function bkEnsure(cb){var base=[];if(!window.firebase)base.push('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
   function seq(list,done){if(!list.length){done();return;}bkLoadScript(list[0],function(err){if(err){done(err);return;}seq(list.slice(1),done);});}
@@ -992,7 +1011,8 @@ function bkEnsure(cb){var base=[];if(!window.firebase)base.push('https://www.gst
     seq(more,function(err2){if(err2||!firebase.auth||!firebase.firestore){cb(err2||new Error('script'));return;}try{if(!firebase.apps.length)firebase.initializeApp(FB_CFG);bkWatch();cb();}catch(e){cb(e);}});});}
 function bkWatch(){if(BK_WATCHED)return;BK_WATCHED=true;try{firebase.auth().languageCode='zh-TW';}catch(e){}
   firebase.auth().getRedirectResult().then(function(){firebase.auth().onAuthStateChanged(function(user){
-    if(user){BK_USER=user;BK_OFF='';try{localStorage.setItem('fly_bk_uid',user.uid);localStorage.removeItem('fly_bk_pending');}catch(e){}bkPull();}
+    if(user){BK_USER=user;BK_OFF='';try{localStorage.setItem('fly_bk_uid',user.uid);localStorage.removeItem('fly_bk_pending');}catch(e){}
+      var go=function(){bkPull();};if(user.getIdToken)user.getIdToken().then(go,go);else go();}
     else{var was=BK_USER;BK_USER=null;BK_SYNCED=false;BK_BUSY=false;try{localStorage.removeItem('fly_bk_uid');localStorage.removeItem('fly_bk_pending');}catch(e){}if(was&&tab==='more'){LAST_HTML=null;render();}}
   });}).catch(bkAuthFail);}
 function bkLogin(){if(BK_BUSY||BK_OFF||BK_USER)return;BK_BUSY=true;if(tab==='more'){LAST_HTML=null;render();}
@@ -1381,7 +1401,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.35</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.36</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
