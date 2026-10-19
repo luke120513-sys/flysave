@@ -150,6 +150,10 @@ footer .views{color:#999;font-size:11px;margin:-4px 0 8px}html.dark footer .view
 .ghead:first-of-type{margin-top:6px}
 .best{display:inline-block;background:#FFE8E5;color:#C0392B;font-size:12px;font-weight:800;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle}
 .note{font-size:12px;color:#888;margin:-4px 2px 12px}
+#bkpanel .bkwho{margin:10px 0 0;font-size:15px;font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+#bkpanel .btn{display:block;width:100%;max-width:100%;box-sizing:border-box;margin:14px 0 0;min-height:48px;padding:12px 16px;border:2px solid transparent;line-height:1.3;white-space:normal}
+#bkpanel .btn.ghost{border-color:var(--g);background:transparent}
+#bkpanel .note{display:block;margin:12px 0 0;line-height:1.55}
 .links a.pri{background:var(--g);color:#fff}
 
 /* ---------- v16 動畫 ---------- */
@@ -394,7 +398,7 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.33';
+var APPVER='v28.34';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
@@ -998,7 +1002,7 @@ function bkImport(file){if(!file)return;var rd=new FileReader();rd.onload=functi
   bkApply(data);toast('已匯入備份檔');LAST_HTML=null;render();if(BK_USER&&BK_SYNCED)bkPush();};rd.readAsText(file);}
 function bkPanel(){var login;
   if(BK_OFF)login='<p class="note">'+esc(BK_OFF)+'</p>';
-  else if(BK_USER)login='<p>已用 Google 登入'+(BK_USER.email?'：'+esc(BK_USER.email):'')+'</p><p class="note" id="bkmsg">'+(esc(BK_MSG)||'變更會自動備份')+'</p><button class="btn ghost" data-act="bk:out">登出</button>';
+  else if(BK_USER)login='<p class="bkwho">已用 Google 登入'+(BK_USER.email?'：'+esc(BK_USER.email):'')+'</p><p class="note" id="bkmsg">'+(esc(BK_MSG)||'變更會自動備份')+'</p><button class="btn ghost" data-act="bk:out">登出</button>';
   else login='<button class="btn" data-act="bk:in"'+(BK_BUSY?' disabled':'')+'>'+(BK_BUSY?'登入中…':'用 Google 帳號備份')+'</button><p class="note">不登入也能用，日期和航班都還在這台裝置。登入只是多一份雲端備份，換手機用同一個 Google 帳號會合併回來。</p>';
   return '<div class="panel" id="bkpanel"><p class="step">☁️ 備份（選用）</p>'+login+
     '<button class="btn ghost" data-act="bk:exp">匯出備份檔</button><button class="btn ghost" data-act="bk:imp">匯入備份檔</button>'+
@@ -1372,7 +1376,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.33</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.34</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
