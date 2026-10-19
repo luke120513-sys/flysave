@@ -427,7 +427,7 @@ function load(cb){
   if(!D){var lg=lgGet();if(lg){D=lg.d;D._lg=1;LG_T=lg.t;syncMyq();render();}}   // 先顯示上次的資料，但不顯示「連線較慢」，等真的失敗才顯示
   // v28.20：先讀 GitHub 上的 deals.json（CDN，很快），Apps Script 慢的時候也有最新票價
   if(!D||D._lg){fetchJ('deals.json?t='+Math.floor(Date.now()/60000),10000).then(function(j){if(D&&!D._lg&&!D._static)return;var mq={};myDates().forEach(function(q){mq[q.from+'|'+q.to+'|'+q.mode]=1;});
-    j.custom=(j.custom||[]).filter(function(x){var q=x.query||{from:x.depart,to:x.return};return mq[q.from+'|'+q.to+'|'+(x.mode==='exact'?'exact':'cp')];});j._static=1;j.dates=myDates();j.perDevice=false;D=j;syncMyq();render();if($('dsres'))dsUpd();}).catch(function(){});}
+    j.custom=(j.custom||[]).filter(function(x){var q=x.query||{from:x.depart,to:x.return};return mq[q.from+'|'+q.to+'|'+(x.mode==='exact'?'exact':'cp')];});j._static=1;j.dates=myDates();j.perDevice=false;D=j;syncMyq();if(window.DEEP&&window.deepApply)deepApply();render();if($('dsres'))dsUpd();}).catch(function(){});}
   var seq=++LOAD_SEQ,q='action=deals&dev='+encodeURIComponent(DEV),urls=[API,API,API_WEB],wait=[0,1500,4000],n=0;
   (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;LG_T=0;var fb=u===API_WEB;if(!fb)lgPut(d);got(d,fb);},function(e){
     if(seq!==LOAD_SEQ)return;console.warn('load',n,e&&e.message);n++;if(D&&!CACHED&&LG_T&&n>=1&&!staticFresh()){CACHED=LG_T;render();}
