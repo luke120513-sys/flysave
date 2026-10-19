@@ -398,7 +398,7 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.34';
+var APPVER='v28.35';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
@@ -460,18 +460,23 @@ function lgPut(d){try{localStorage.setItem('fly_deals_lg',JSON.stringify({t:Date
 function fetchJ(u,ms){return new Promise(function(ok,no){var ac=window.AbortController?new AbortController():null,t=setTimeout(function(){if(ac)ac.abort();no(new Error('timeout'));},ms);
   fetch(u,ac?{signal:ac.signal,cache:'no-store'}:{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(j){clearTimeout(t);if(!j||!j.ok)throw new Error('bad');ok(j);}).catch(function(e){clearTimeout(t);no(e);});});}
 function staticFresh(){return !!(D&&D._static&&D.publishedAt&&Date.now()-Date.parse(D.publishedAt)<9*3600e3);}
+function snapTime(d){if(!d)return 0;var p=Date.parse(d.publishedAt||'');if(!isNaN(p)&&p)return p;var m=String(d.updatedAt||'').match(/^(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{2})$/);if(!m)return 0;var n=new Date(),y=new Date(n.getTime()+8*3600e3).getUTCFullYear(),t=Date.UTC(y,m[1]-1,+m[2],+m[3]-8,+m[4]);if(t>n.getTime()+864e5)t=Date.UTC(y-1,m[1]-1,+m[2],+m[3]-8,+m[4]);return t||0;}
+var SNAP_KEYS=['version','updatedAt','publishedAt','short','long','custom','promos','longhaul','notify','ann','tips','reqConn','reqCities'];
+function takeNewerSnap(base,alt){if(!alt||snapTime(alt)<=snapTime(base))return base;SNAP_KEYS.forEach(function(k){if(alt[k]!=null)base[k]=alt[k];});if(alt._static)base._static=1;return base;}
 function cachedNote(){if(!CACHED)return '';var d=new Date(CACHED+8*3600e3);return '<div class="cnote">📶 連線較慢，先顯示 '+(d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+' 的資料，正在重新讀取…</div>';}
 function load(cb){
   LOADING=true; var done=cb; cb=function(){LOADING=false;done&&done();};
   if(tab==='search'&&st.step==='result')render();
-  var got=function(d,fb){var prev=D;if(fb)d._fb=1;if(prev&&prev.custom&&prev.custom.length&&(!d.custom||!d.custom.length)&&myDates().length){d.custom=prev.custom;}D=d;syncMyq();cb&&cb();if($('dsres'))dsUpd();};
+  var got=function(d,fb){var prev=D;if(fb)d._fb=1;if(prev&&snapTime(prev)>snapTime(d))takeNewerSnap(d,prev);else if(prev&&prev.custom&&prev.custom.length&&(!d.custom||!d.custom.length)&&myDates().length)d.custom=prev.custom;D=d;syncMyq();cb&&cb();if($('dsres'))dsUpd();};
   if (window.google && google.script && google.script.run) {
     google.script.run.withSuccessHandler(got).withFailureHandler(function(){LOADING=false;toast('讀取失敗，請稍後再試');render();}).webGetDeals(DEV);return;}
   if (!API) return cb();
   if(!D){var lg=lgGet();if(lg){D=lg.d;D._lg=1;LG_T=lg.t;syncMyq();render();}}   // 先顯示上次的資料，但不顯示「連線較慢」，等真的失敗才顯示
   // v28.20：先讀 GitHub 上的 deals.json（CDN，很快），Apps Script 慢的時候也有最新票價
-  if(!D||D._lg){fetchJ('deals.json?t='+Math.floor(Date.now()/60000),10000).then(function(j){if(D&&!D._lg&&!D._static)return;var mq={};myDates().forEach(function(q){mq[q.from+'|'+q.to+'|'+q.mode]=1;});
-    j.custom=(j.custom||[]).filter(function(x){var q=x.query||{from:x.depart,to:x.return};return mq[q.from+'|'+q.to+'|'+(x.mode==='exact'?'exact':'cp')];});j._static=1;j.dates=myDates();j.perDevice=false;D=j;syncMyq();if(window.DEEP&&window.deepApply)deepApply();render();if($('dsres'))dsUpd();}).catch(function(){});}
+  if(!D||D._lg){fetchJ('deals.json?t='+Math.floor(Date.now()/60000),10000).then(function(j){var mq={};myDates().forEach(function(q){mq[q.from+'|'+q.to+'|'+q.mode]=1;});
+    j.custom=(j.custom||[]).filter(function(x){var q=x.query||{from:x.depart,to:x.return};return mq[q.from+'|'+q.to+'|'+(x.mode==='exact'?'exact':'cp')];});j._static=1;
+    if(D&&!D._lg&&!D._static){if(snapTime(j)<=snapTime(D))return;takeNewerSnap(D,j);syncMyq();if(window.DEEP&&window.deepApply)deepApply();render();if($('dsres'))dsUpd();return;}
+    j.dates=myDates();j.perDevice=false;D=j;syncMyq();if(window.DEEP&&window.deepApply)deepApply();render();if($('dsres'))dsUpd();}).catch(function(){});}
   var seq=++LOAD_SEQ,q='action=deals&dev='+encodeURIComponent(DEV),urls=[API,API,API_WEB],wait=[0,1500,4000],n=0;
   (function go(){if(seq!==LOAD_SEQ)return;var u=urls[n];fetchJ(u+(u.indexOf('?')<0?'?':'&')+q,n<2?25000:30000).then(function(d){if(seq!==LOAD_SEQ)return;CACHED=null;LG_T=0;var fb=u===API_WEB;if(!fb)lgPut(d);got(d,fb);},function(e){
     if(seq!==LOAD_SEQ)return;console.warn('load',n,e&&e.message);n++;if(D&&!CACHED&&LG_T&&n>=1&&!staticFresh()){CACHED=LG_T;render();}
@@ -1376,7 +1381,7 @@ function footer(){
   var sep='<span class="fsep">|</span>';
   return '<footer class="uf">'+row+'<div class="flinks"><a data-act="tab:about">關於我們</a>'+sep+'<a data-act="tab:privacy">隱私權政策</a>'+sep+'<a data-act="tab:terms">服務條款</a>'+sep+'<a href="mailto:'+CONTACT+'">聯絡我們</a></div>'+
     '<div class="fsis"><a class="h" href="'+FAN_URL+'?from=flysave" target="_blank" rel="noopener"><i class="i-hotel"></i>飯省 找飯店</a><a class="t" href="https://luke120513-sys.github.io/trip/?from=flysave" target="_blank" rel="noopener"><i class="i-trip"></i>旅伴 規劃行程</a></div>'+
-    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.34</span></div></footer>';
+    viewsTag()+'<div class="copy">© 2026 飛省 FlySave・票價以新台幣（TWD）顯示・<span class="ver">v28.35</span></div></footer>';
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
