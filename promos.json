@@ -1,12 +1,12 @@
 {
-  "updatedAt": "10/20 14:10",
-  "publishedAt": "2026-10-20T06:10:23Z",
+  "updatedAt": "10/20 15:00",
+  "publishedAt": "2026-10-20T07:15:04Z",
   "promos": [
     {
       "id": "nz-itf-2026",
       "airline": "紐西蘭航空",
       "title": "線上旅展",
-      "discount": "58折起",
+      "discount": "NT$29,500起",
       "fromPrice": 29500,
       "taxIncluded": false,
       "bookFrom": "2026-10-20",
@@ -14,7 +14,7 @@
       "travelFrom": "2026-12-06",
       "travelTo": "2027-02-28",
       "routes": "台北－奧克蘭 AKL，可免費接駁基督城 CHC、威靈頓 WLG",
-      "conditions": "經濟艙最優價適用 2026/12/6–12/31 與 2027/2/9–2/28（1月不在最優價區間）。停留 5–30 天，機位有限。直飛稅費約 NT$3,050（經香港約 NT$4,510）。",
+      "conditions": "官網標示促銷價 NT$29,500，未含稅及附加費用。直飛稅費約 NT$3,050、經香港約 NT$4,510（官網估算，隨匯率浮動）。經濟艙最優價適用 2026/12/6–12/31 與 2027/2/9–2/28（1月不在最優價區間）。停留 5–30 天，機位有限。頁面未寫折扣成數。",
       "url": "https://www.airnewzealand.tw/flight-deals-to-new-zealand",
       "confirmed": true,
       "source": "https://www.airnewzealand.tw/flight-deals-to-new-zealand"
@@ -31,7 +31,7 @@
       "travelFrom": "2026-10-21",
       "travelTo": "2027-06-30",
       "routes": "全航線",
-      "conditions": "官網此頁於 2026/10/20 仍顯示「2026 長榮航空線上旅展已結束，未來活動敬請期待」。78折與日期為媒體預告，尚未在官網更新。稅費是否含在折扣內官網尚未公告。",
+      "conditions": "2026/10/20 15:00 再查，官網仍顯示「2026 長榮航空線上旅展已結束，未來活動敬請期待」。78折與 10/21–11/15 訂票為媒體預告，尚未在官網更新。稅費是否含在折扣內官網尚未公告。",
       "url": "https://flights.evaair.com/zh-tw/online-travel-fair",
       "confirmed": false,
       "source": "https://www.the-frequent-traveler.com.tw/itf-2026-airline-online-travel-fair/"
@@ -47,11 +47,11 @@
       "bookTo": "2026-11-21",
       "travelFrom": null,
       "travelTo": null,
-      "routes": "活動頁未列航點",
-      "conditions": "官網確認購票與登錄抽獎期間為 2026/10/16 00:00–2026/11/21 23:59。頁面文字沒有寫 76 折（僅見高鐵五折乘車券），76折請再核對活動圖與訂票頁。稅費是否包含尚未公告。",
+      "routes": "台北出發東南亞、東北亞、大洋洲、歐洲、北美（新聞稿點名宿霧 CEB、釜山 PUS、雪梨 SYD、布里斯本 BNE）",
+      "conditions": "官網新聞稿（2026/10/19）寫明熱門航線最低 76 折起，購票登錄至 2026/11/21。樣本價標示未稅：台北－宿霧 3,354 元起、釜山 5,994 元起、雪梨 16,188 元起、布里斯本 15,957 元起；未寫明單程或來回，故不列起價。稅費另計，官網未給含稅總額。旅展活動頁正文未重複 76 折。",
       "url": "https://2026itf.china-airlines.com/",
-      "confirmed": false,
-      "source": "https://2026itf.china-airlines.com/"
+      "confirmed": true,
+      "source": "https://www.china-airlines.com/tw/zh/about-china-airlines/media/news/20261019-tw"
     },
     {
       "id": "jx-itf-2026",
@@ -64,11 +64,28 @@
       "bookTo": "2026-11-23",
       "travelFrom": "2026-10-22",
       "travelTo": "2027-06-30",
-      "routes": "台灣出發精選航線（東京、大阪、曼谷、新加坡、洛杉磯、布拉格等）",
-      "conditions": "新聞稿為 2026/10/15 起至 2026/11/23。出發日依航線，多數為 2026/10/22–2027/6/30，部分日期除外。含稅與否依航線。不可與聯名卡 9 折、95 折併用。",
+      "routes": "台灣出發精選航線：東京、大阪、福岡、沖繩、仙台、札幌、釜山、曼谷、清邁、胡志明市、新加坡、香港、澳門、洛杉磯、布拉格等",
+      "conditions": "官網航班頁寫明精選航線 85 折起，訂票至 2026/11/23。出發日依航線，多數為 2026/10/22–2027/6/30，部分日期除外。官網未給統一含稅起價。不可與聯名卡 9 折、95 折併用。",
       "url": "https://www.starlux-airlines.com/flights/zh-tw/flights-from-taiwan",
       "confirmed": true,
       "source": "https://www.starlux-airlines.com/zh-TW/about-us/media-center/news/2026/20261015"
+    },
+    {
+      "id": "jx-ph-2026",
+      "airline": "星宇航空",
+      "title": "菲律賓航線折扣碼",
+      "discount": "每人折 NT$1,000",
+      "fromPrice": null,
+      "taxIncluded": false,
+      "bookFrom": "2026-10-15",
+      "bookTo": "2026-12-31",
+      "travelFrom": "2026-10-15",
+      "travelTo": "2026-12-31",
+      "routes": "台北－宿霧 CEB、馬尼拉 MNL、克拉克 CRK",
+      "conditions": "官網優惠碼 JX2026PDOT，限量 400 份、經濟艙。折扣只適用票價，附加費與機場稅不打折。限來回或不同航點進出，單程不適用。不得與其他優惠併用。未公布含稅總價。",
+      "url": "https://www.starlux-airlines.com/flights/zh-tw/flights-from-taiwan",
+      "confirmed": true,
+      "source": "https://www.starlux-airlines.com/flights/zh-tw/flights-from-taiwan"
     },
     {
       "id": "cx-itf-2026",
@@ -82,7 +99,7 @@
       "travelFrom": "2026-10-16",
       "travelTo": "2027-09-30",
       "routes": "台北／高雄出發，香港、東京、大阪、新加坡、倫敦、洛杉磯、雪梨等 70+ 航點",
-      "conditions": "訂票 2026/10/16–11/13，出發 2026/10/16–2027/9/30。實際折扣依航線與艙等，部分亞洲城市經濟艙 85 折起。2027/2/3–2/7 不適用。會員優惠碼另計。",
+      "conditions": "訂票 2026/10/16–11/13，出發 2026/10/16–2027/9/30。實際折扣依航線與艙等，部分亞洲城市經濟艙 85 折起。2027/2/3–2/7 不適用。8 折為票價折扣，官網未寫明折扣後總價是否含稅。會員優惠碼另計。",
       "url": "https://flights.cathaypacific.com/zh_TW/offers/online-travel-fair-2026-itf.html",
       "confirmed": true,
       "source": "https://flights.cathaypacific.com/zh_TW/offers/online-travel-fair-2026-itf.html"
@@ -98,8 +115,8 @@
       "bookTo": "2026-11-12",
       "travelFrom": "2027-02-10",
       "travelTo": "2027-09-30",
-      "routes": "台灣出發指定航點：新加坡 SIN、峇里島 DPS、雅加達 CGK、泗水 SUB、墨爾本 MEL、雪梨 SYD、倫敦 LHR 等",
-      "conditions": "訂票 2026/10/16–11/12，最高 8 折。表列最低為泗水來回經濟艙 NT$10,618 起（含稅）。出發日依航點，並非 2027/2/10–9/30 每天都適用。",
+      "routes": "台灣出發指定航點：新加坡 SIN、峇里島 DPS、雅加達 CGK、泗水 SUB、棉蘭、馬爾地夫 MLE、墨爾本 MEL、雪梨 SYD、倫敦 LHR 等",
+      "conditions": "訂票 2026/10/16–11/12，最高 8 折。官網表列為每人含稅來回經濟艙，最低為泗水 NT$10,618 起。出發日依航點，並非 2027/2/10–9/30 每天都適用。",
       "url": "https://www.singaporeair.com/zh_TW/tw/plan-travel/local-promotions/tw-local-promotion/",
       "confirmed": true,
       "source": "https://www.singaporeair.com/zh_TW/tw/plan-travel/local-promotions/tw-local-promotion/"
