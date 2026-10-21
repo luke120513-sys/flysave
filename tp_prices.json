@@ -6,7 +6,7 @@
         "airline": "SL",
         "date": "2026-11-08",
         "found_at": "",
-        "price_twd": 5948,
+        "price_twd": 5928,
         "return_date": "2026-11-15",
         "transfers": 0
       }
@@ -17,7 +17,7 @@
         "airline": "UO",
         "date": "2026-11-06",
         "found_at": "",
-        "price_twd": 4940,
+        "price_twd": 4923,
         "return_date": "2026-11-09",
         "transfers": 0
       }
@@ -25,22 +25,14 @@
     "KHH-ICN": [
       {
         "airline": "TW",
-        "date": "2026-11-27",
+        "date": "2026-11-09",
         "found_at": "",
-        "price_twd": 7933,
-        "return_date": "2026-12-01",
+        "price_twd": 10937,
+        "return_date": "2026-11-15",
         "transfers": 0
       }
     ],
     "KHH-KIX": [
-      {
-        "airline": "TW",
-        "date": "2026-10-21",
-        "found_at": "",
-        "price_twd": 12250,
-        "return_date": "2026-10-22",
-        "transfers": 1
-      },
       {
         "airline": "AK",
         "date": "2026-11-04",
@@ -56,7 +48,7 @@
         "airline": "GK",
         "date": "2026-10-28",
         "found_at": "",
-        "price_twd": 8036,
+        "price_twd": 8009,
         "return_date": "2026-11-04",
         "transfers": 0
       },
@@ -72,10 +64,10 @@
     "KHH-OKA": [
       {
         "airline": "IT",
-        "date": "2026-11-17",
+        "date": "2026-11-09",
         "found_at": "",
-        "price_twd": 4850,
-        "return_date": "2026-11-20",
+        "price_twd": 9838,
+        "return_date": "2026-11-14",
         "transfers": 0
       }
     ],
@@ -143,7 +135,7 @@
         "airline": "FD",
         "date": "2026-11-29",
         "found_at": "",
-        "price_twd": 9198,
+        "price_twd": 9167,
         "return_date": "2026-12-03",
         "transfers": 0
       }
@@ -164,7 +156,7 @@
         "airline": "CX",
         "date": "2026-10-22",
         "found_at": "",
-        "price_twd": 31406,
+        "price_twd": 31301,
         "return_date": "2026-10-27",
         "transfers": 1
       },
@@ -172,7 +164,7 @@
         "airline": "VJ",
         "date": "2026-11-03",
         "found_at": "",
-        "price_twd": 22608,
+        "price_twd": 22964,
         "return_date": "2026-11-12",
         "transfers": 2
       }
@@ -182,7 +174,7 @@
         "airline": "IT",
         "date": "2026-11-04",
         "found_at": "",
-        "price_twd": 5835,
+        "price_twd": 5815,
         "return_date": "2026-11-11",
         "transfers": 0
       }
@@ -210,16 +202,16 @@
         "airline": "TR",
         "date": "2026-10-23",
         "found_at": "",
-        "price_twd": 13956,
+        "price_twd": 13909,
         "return_date": "2026-10-26",
         "transfers": 1
       },
       {
         "airline": "AK",
-        "date": "2026-11-25",
+        "date": "2026-11-01",
         "found_at": "",
-        "price_twd": 8177,
-        "return_date": "2026-11-29",
+        "price_twd": 7515,
+        "return_date": "2026-11-11",
         "transfers": 1
       }
     ],
@@ -259,7 +251,16 @@
         "transfers": 2
       }
     ],
-    "TPE-JFK": [],
+    "TPE-JFK": [
+      {
+        "airline": "JX",
+        "date": "2026-10-24",
+        "found_at": "",
+        "price_twd": 36750,
+        "return_date": "2026-10-30",
+        "transfers": 1
+      }
+    ],
     "TPE-KIX": [
       {
         "airline": "GK",
@@ -348,7 +349,7 @@
         "airline": "TR",
         "date": "2026-11-03",
         "found_at": "",
-        "price_twd": 7703,
+        "price_twd": 7677,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -358,7 +359,7 @@
         "airline": "VZ",
         "date": "2026-10-27",
         "found_at": "",
-        "price_twd": 5371,
+        "price_twd": 5353,
         "return_date": "2026-10-31",
         "transfers": 0
       },
@@ -366,7 +367,7 @@
         "airline": "IT",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 4741,
+        "price_twd": 4725,
         "return_date": "2026-11-25",
         "transfers": 0
       }
@@ -471,5 +472,5 @@
     ],
     "TPE-YYZ": []
   },
-  "updated_at": "2026-10-21T07:42:39Z"
+  "updated_at": "2026-10-21T15:33:50Z"
 }
