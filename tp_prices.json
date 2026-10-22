@@ -155,7 +155,7 @@
         "airline": "VJ",
         "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 23419,
+        "price_twd": 22652,
         "return_date": "2026-11-19",
         "transfers": 2
       }
@@ -342,7 +342,7 @@
         "airline": "VZ",
         "date": "2026-10-27",
         "found_at": "",
-        "price_twd": 5354,
+        "price_twd": 5246,
         "return_date": "2026-10-31",
         "transfers": 0
       },
@@ -446,5 +446,5 @@
     ],
     "TPE-YYZ": []
   },
-  "updated_at": "2026-10-21T23:27:04Z"
+  "updated_at": "2026-10-22T07:43:46Z"
 }
