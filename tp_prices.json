@@ -212,7 +212,7 @@
         "airline": "IT",
         "date": "2026-11-07",
         "found_at": "",
-        "price_twd": 7072,
+        "price_twd": 7071,
         "return_date": "2026-11-10",
         "transfers": 0
       }
@@ -258,7 +258,7 @@
         "airline": "VZ",
         "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 6582,
+        "price_twd": 6581,
         "return_date": "2026-11-10",
         "transfers": 0
       }
@@ -334,7 +334,7 @@
         "airline": "IT",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 4498,
+        "price_twd": 4687,
         "return_date": "2026-11-25",
         "transfers": 0
       }
@@ -344,18 +344,18 @@
         "airline": "MU",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 24083,
+        "price_twd": 24080,
         "return_date": "2026-11-29",
         "transfers": 3
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "BX",
-        "date": "2026-10-26",
+        "airline": "ZE",
+        "date": "2026-10-28",
         "found_at": "",
-        "price_twd": 5566,
-        "return_date": "2026-10-31",
+        "price_twd": 4725,
+        "return_date": "2026-11-10",
         "transfers": 0
       },
       {
@@ -372,7 +372,7 @@
         "airline": "FD",
         "date": "2026-11-13",
         "found_at": "",
-        "price_twd": 17752,
+        "price_twd": 17749,
         "return_date": "2026-11-20",
         "transfers": 1
       }
@@ -384,7 +384,7 @@
         "airline": "VJ",
         "date": "2026-10-24",
         "found_at": "",
-        "price_twd": 14202,
+        "price_twd": 14200,
         "return_date": "2026-10-26",
         "transfers": 1
       }
@@ -421,5 +421,5 @@
     ],
     "TPE-YYZ": []
   },
-  "updated_at": "2026-10-23T15:33:25Z"
+  "updated_at": "2026-10-23T23:26:21Z"
 }
