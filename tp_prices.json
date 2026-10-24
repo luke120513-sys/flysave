@@ -39,14 +39,6 @@
         "price_twd": 9298,
         "return_date": "2026-11-01",
         "transfers": 0
-      },
-      {
-        "airline": "TW",
-        "date": "2026-11-09",
-        "found_at": "",
-        "price_twd": 10937,
-        "return_date": "2026-11-15",
-        "transfers": 0
       }
     ],
     "KHH-KIX": [
@@ -71,10 +63,10 @@
       },
       {
         "airline": "FD",
-        "date": "2026-11-05",
+        "date": "2026-11-19",
         "found_at": "",
-        "price_twd": 9428,
-        "return_date": "2026-11-10",
+        "price_twd": 9676,
+        "return_date": "2026-11-26",
         "transfers": 0
       }
     ],
@@ -266,11 +258,11 @@
     "TPE-LAX": [],
     "TPE-LHR": [
       {
-        "airline": "ZH",
-        "date": "2026-11-20",
+        "airline": "MU",
+        "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 36609,
-        "return_date": "2026-12-17",
+        "price_twd": 24700,
+        "return_date": "2026-12-01",
         "transfers": 1
       }
     ],
@@ -314,9 +306,9 @@
       },
       {
         "airline": "TR",
-        "date": "2026-11-02",
+        "date": "2026-11-03",
         "found_at": "",
-        "price_twd": 7796,
+        "price_twd": 7593,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -421,5 +413,5 @@
     ],
     "TPE-YYZ": []
   },
-  "updated_at": "2026-10-23T23:26:21Z"
+  "updated_at": "2026-10-24T07:34:35Z"
 }
