@@ -138,10 +138,10 @@
     "TPE-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-18",
+        "date": "2026-11-07",
         "found_at": "",
-        "price_twd": 4443,
-        "return_date": "2026-11-22",
+        "price_twd": 4439,
+        "return_date": "2026-11-12",
         "transfers": 0
       }
     ],
@@ -210,11 +210,11 @@
         "transfers": 0
       },
       {
-        "airline": "FD",
-        "date": "2026-11-05",
+        "airline": "IT",
+        "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 4749,
-        "return_date": "2026-11-12",
+        "price_twd": 4787,
+        "return_date": "2026-11-25",
         "transfers": 0
       }
     ],
@@ -249,5 +249,5 @@
     "TPE-SGN": [],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-25T15:25:20Z"
+  "updated_at": "2026-10-25T23:22:12Z"
 }
