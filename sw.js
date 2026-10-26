@@ -1,5 +1,5 @@
 // 旅遊小助手 service worker: app shell offline; deals always from network (falls back to last copy).
-const C='flysave-v65', SHELL=['./','index.html','manifest.json','icon-96.png','icon-192.png','apple-touch-icon.png'];
+const C='flysave-v66', SHELL=['./','index.html','manifest.json','icon-96.png','icon-192.png','apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>{const old=ks.filter(k=>k.startsWith('flysave-')&&k!==C);   /* v28.21 同網域還有飯省（fansave-*），只刪飛省自己的舊快取 */return Promise.all(old.map(k=>caches.delete(k))).then(()=>self.clients.claim()).then(()=>old.length?self.clients.matchAll({type:'window'}).then(cs=>Promise.all(cs.map(c=>c.navigate(c.url).catch(()=>{})))):0);}));});   // v28.19：新版啟用後把開著的舊頁面重新載入成新版
 self.addEventListener('fetch',e=>{

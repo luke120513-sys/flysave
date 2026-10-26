@@ -409,7 +409,8 @@ var REGION_ICON = {'日本':'🇯🇵','韓國':'🇰🇷','東南亞':'🌴','�
 var COUNTRY_ORDER = ['泰國','越南','菲律賓','馬來西亞','新加坡','印尼','柬埔寨','緬甸','寮國','汶萊','東帝汶'];
 var COUNTRY_ICON = {'泰國':'🇹🇭','越南':'🇻🇳','菲律賓':'🇵🇭','馬來西亞':'🇲🇾','新加坡':'🇸🇬','印尼':'🇮🇩','柬埔寨':'🇰🇭','緬甸':'🇲🇲','寮國':'🇱🇦','汶萊':'🇧🇳','東帝汶':'🇹🇱'};
 var MODE = {cp:'🏆 CP值最高',exact:'📅 只查指定日期',nodate:'💰 不指定日期'};
-var ORIGIN = {TPE:'台北',KHH:'高雄',ALL:'台北＋高雄'};
+var ORIGINS=['TPE','TSA','KHH','RMQ','TNN'];
+var ORIGIN = {TPE:'桃園',TSA:'松山',KHH:'高雄',RMQ:'台中',TNN:'台南',ALL:'全部'};
 var SRC = {google:'Google',trip:'Trip.com'};
 var STALE = 12*3600e3;
 var D = BOOT, tab = 'search';
@@ -417,8 +418,8 @@ var st = {step:'mode', mode:null, dep:null, ret:null, month:null, origin:null, r
 var LH_SUBS=['北美','歐洲','大洋洲','中東/南亞'], LH_ICON={'北美':'🌎','歐洲':'🇪🇺','大洋洲':'🦘','中東/南亞':'🕌'}, LH_MS=26*3600e3;
 var LHK='connect';try{if(localStorage.getItem('fly_tb_lhk')==='nonstop')LHK='nonstop';}catch(e){}
 try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origin) st.origin = sv.origin; } catch(e){}
-// v21：全域出發地篩選（台北／高雄，可複選；都不選＝全部），存在 localStorage fs_org，套用到 查機票／我的查詢／通知／最新優惠
-var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v;}catch(e){}return st.origin==='TPE'||st.origin==='KHH'?[st.origin]:[];})();
+// v21+：全域出發地篩選（桃園／松山／台中／台南／高雄，可複選；都不選＝全部），存在 localStorage fly_org
+var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v.filter(function(o){return ORIGINS.indexOf(o)>=0;});}catch(e){}return ORIGINS.indexOf(st.origin)>=0?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
 var APPVER='v28.37';
@@ -448,9 +449,10 @@ function syncMyq(){                                 // 讀完資料後對齊本�
 function lsgRaw(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function orgSync(){st.origin=ORG.length===1?ORG[0]:'ALL';}
 orgSync();
-function orgOk(o){if(ORG.length!==1||!o)return true;o=String(o).toUpperCase();return (o==='TSA'?'TPE':o)===ORG[0];}
-function orgBar(){return '<div class="chips sortc orgbar"><span>🛫 出發地</span>'+chip('台北','og:TPE',ORG.indexOf('TPE')>=0)+chip('高雄','og:KHH',ORG.indexOf('KHH')>=0)+'<span style="font-size:12px;color:#999">'+(ORG.length===1?'只看'+ORIGIN[ORG[0]]+'出發':'不選＝台北＋高雄都看')+'</span></div>';}
-function orgToggle(o){var i=ORG.indexOf(o);if(i>=0)ORG.splice(i,1);else ORG.push(o);if(ORG.length===2)ORG=[];try{localStorage.setItem('fly_org',JSON.stringify(ORG));localStorage.setItem('fly_tb_st',JSON.stringify({origin:ORG.length===1?ORG[0]:'ALL'}));}catch(e){}orgSync();
+function orgNorm(o){o=String(o||'').toUpperCase();return o;}
+function orgOk(o){if(!ORG.length||!o)return true;return ORG.indexOf(orgNorm(o))>=0;}
+function orgBar(){return '<div class="chips sortc orgbar"><span>🛫 出發</span>'+ORIGINS.map(function(c){return chip(ORIGIN[c],'og:'+c,ORG.indexOf(c)>=0);}).join('')+'<span style="font-size:12px;color:#999">'+(ORG.length?(ORG.length===1?'只看'+ORIGIN[ORG[0]]:'已選 '+ORG.map(function(c){return ORIGIN[c];}).join('・')):'不選＝五地都看')+'</span></div>';}
+function orgToggle(o){var i=ORG.indexOf(o);if(i>=0)ORG.splice(i,1);else ORG.push(o);if(ORG.length===ORIGINS.length)ORG=[];try{localStorage.setItem('fly_org',JSON.stringify(ORG));localStorage.setItem('fly_tb_st',JSON.stringify({origin:ORG.length===1?ORG[0]:'ALL'}));}catch(e){}orgSync();
   if(typeof PTOP!=='undefined'){PTOP=ORG.slice();try{localStorage.setItem('fly_ptop',JSON.stringify(PTOP));}catch(e){}if(PUSH==='on'&&typeof pushSave==='function')pushSave().catch(function(){});}}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act]');if(!a)return;var v=a.dataset.act;
   if(v.indexOf('og:')===0){e.stopPropagation();orgToggle(v.slice(3));LAST_HTML=null;render();}
@@ -685,7 +687,7 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 // v28.18：加入查價中／無直飛的城市也能點進結果頁
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rqci:"]');if(!a)return;e.preventDefault();e.stopPropagation();
   var c=a.dataset.act.slice(5);st.rq=c;st.city=c;st.region='全部';st.country=null;st.step='result';DSQ='';rqTouch(c);if(document.activeElement)document.activeElement.blur();render();},true);
-function rqResult(){var x=rqOf(st.rq)||{code:st.rq,name:st.rq,status:'pending'},nm=esc(x.name||x.code)+'（'+esc(x.code)+'）',og0=(x.origins||['TPE']).map(function(o){return o==='KHH'?'高雄':'台北';}).join('／');
+function rqResult(){var x=rqOf(st.rq)||{code:st.rq,name:st.rq,status:'pending'},nm=esc(x.name||x.code)+'（'+esc(x.code)+'）',og0=(x.origins||['TPE']).map(function(o){return ORIGIN[o]||o;}).join('／');
   var L=cnAll().filter(function(y){return y.code===x.code;}),nr=nextRun();
   var h='<p class="summary">📍 '+nm+'｜🛫 '+og0+'出發</p><div class="chips sortc"><span>調整</span>'+chip('換城市','again:region')+chip('重新查','again:mode')+'</div>';
   if(x.status==='none'){h+='<div class="panel"><b>目前沒有'+og0+'直飛來回</b><p style="font-size:14px;margin:6px 0 0">'+(L.length?'下面是轉機票（在搜尋框切到「轉機」也看得到）。':'⏳ '+nr+' 會查轉機票，查到後就會顯示在這裡（也可以在「轉機」篩選看到）。')+'</p><p style="font-size:12px;opacity:.7;margin:6px 0 0">查完轉機後，這個城市會從「待查清單」移除，轉機結果仍會保留在網站上。</p></div>';}
@@ -708,15 +710,16 @@ function rqTouch(c){c=String(c||'').toUpperCase();if(!/^[A-Z]{3}$/.test(c)||!rqO
 function rqOf(c){return rqList().filter(function(x){return x.code===c;})[0];}
 function rqWhen(x){var t=x.checkedAt?Date.parse(x.checkedAt):NaN;return isNaN(t)?'':'（'+md(new Date(t+8*3600e3).toISOString().slice(0,10))+' 查過）';}
 function nextRun(){var t=tw(),h=t.getUTCHours()+t.getUTCMinutes()/60,R=[7,15,23];for(var i=0;i<3;i++)if(h<R[i])return '今天 '+('0'+R[i]).slice(-2)+':00';return '明天 07:00';}
-function rqBox(q){var c=rqResolve(q);if(!c||/^(TPE|TSA|KHH|RMQ)$/.test(c.code))return '<p class="dsno">找不到「'+esc(q)+'」。可以輸入城市名稱或 3 碼機場代碼（例如 普吉島、HKT）</p>';
+function rqBox(q){var c=rqResolve(q);if(!c||/^(TPE|TSA|KHH|RMQ|TNN)$/.test(c.code))return '<p class="dsno">找不到「'+esc(q)+'」。可以輸入城市名稱或 3 碼機場代碼（例如 普吉島、HKT）</p>';
   var x=rqOf(c.code),nm=esc(c.name)+'（'+esc(c.code)+'）';if(x){setTimeout(function(){rqTouch(c.code);},0);return '<div class="dschips">'+rqChip(x)+'</div>';}   // v28.19：和搜尋結果同一種卡片，可以點
-  var og=ORG.length===1?ORG[0]:'both',ol=og==='TPE'?'台北出發':og==='KHH'?'高雄出發':'台北和高雄出發';
+  var og=ORG.length===1?ORG[0]:(ORG.length?'multi':'both'),ol=og==='both'||og==='multi'?(ORG.length?ORG.map(function(c){return ORIGIN[c];}).join('・')+'出發':'五地出發'):(ORIGIN[og]||og)+'出發';
   return '<div class="rqbox"><p>目前沒有 <b>'+nm+'</b> 的直飛票價。要加入查價嗎？（'+ol+'）</p><button class="rqadd" data-act="rq:'+esc(c.code)+'|'+esc(c.name)+'|'+og+'">➕ 加入查價</button></div>';}
 function rqChips(){var L=rqList().filter(function(x){return x.mine||RQ_LOCAL.indexOf(x.code)>=0;});if(!L.length)return '';
   return '<div class="rqst">'+L.map(function(x){var n=esc(x.name||x.code);return x.status==='none'?'<span class="rqchip none">🚫 '+n+' 無直飛・下一輪查轉機</span>':x.status==='active'?'<span class="rqchip active">✈️ '+n+' 已加入查價</span>':'<span class="rqchip">⏳ '+n+' 待查價</span>';}).join('')+'</div>';}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-act^="rq:"]');if(!a)return;e.preventDefault();e.stopPropagation();
   var v=a.dataset.act.slice(3).split('|'),code=v[0],name=v[1],og=v[2];a.disabled=true;a.textContent='送出中…';
-  post('webRequestCity',[{code:code,name:name,origin:og,dev:DEV}],{action:'requestCity',code:code,name:name,origin:og,dev:DEV},function(r){
+  var ogPay=og==='multi'?'MULTI':(og==='both'?'ALL':og),ogList=og==='multi'?ORG.slice():(og==='both'||!og?ORIGINS.slice():[og]);
+  post('webRequestCity',[{code:code,name:name,origin:ogPay,origins:ogList,dev:DEV}],{action:'requestCity',code:code,name:name,origin:ogPay,origins:ogList,dev:DEV},function(r){
     if(r&&r.ok){if(RQ_LOCAL.indexOf(code)<0){RQ_LOCAL.push(code);try{localStorage.setItem('fly_rq',JSON.stringify(RQ_LOCAL.slice(-20)));}catch(_){}}rqMetaSet(code,{name:name,og:og,t:Date.now()});bkSchedule();
       if(D){D.reqCities=(D.reqCities||[]).filter(function(x){return x.code!==code;});var c=r.city||{code:code,name:name,status:'pending'};c.mine=true;D.reqCities.push(c);}
       toast(r.city&&r.city.status==='none'?'🚫 '+name+' 目前查無直飛':'✅ 已加入，下一輪查價會一起查');
@@ -733,14 +736,14 @@ function myCities(){var m=rqMeta(),out=[],seen={};
     var s=x.status==='active'?'active':x.status==='none'?(rqHasCn(x.code)?'conn':'none'):'pending';if(s==='active'&&!rqHasNs(x.code))s='active0';
     out.push({code:x.code,name:x.name||l.name||x.code,origins:x.origins||[],t:x.t||l.t||0,lv:x.lv||x.t||0,st:s,srv:true});});
   RQ_LOCAL.forEach(function(c){if(seen[c])return;var l=m[c]||{};var s=rqHasCn(c)?'conn':null;if(!s)return;   // 伺服器已移除（轉機查完）但結果還在
-    out.push({code:c,name:l.name||c,origins:l.og==='both'||!l.og?['TPE','KHH']:[l.og],t:l.t||0,st:s,srv:false});});
+    out.push({code:c,name:l.name||c,origins:(!l.og||l.og==='both'||l.og==='ALL'||l.og==='multi')?ORIGINS.slice():[l.og],t:l.t||0,st:s,srv:false});});
   return out.sort(function(a,b){return (b.t||0)-(a.t||0);});}
 var RQ_ST={pending:['⏳ 待查價','p'],active:['✈️ 已加入查價・看直飛票','a'],active0:['✈️ 已加入查價','a'],none:['🚫 無直飛・下一輪查轉機','n'],conn:['🔁 轉機結果已出爐・查看','c']};
 function rqTime(t){if(!t)return '';var d=new Date(+t+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+' 加入';}
 function myCitiesView(){var L=myCities();
   var h='<p class="step" style="margin-top:18px">📍 我加入的城市</p>';
   if(!L.length)return h+'<div class="panel mycy-empty"><div class="empty">還沒有加入城市。<br>到「查機票 → 想去哪裡？」的搜尋框輸入城市（例如 普吉島、HKT），找不到直飛票時按「➕ 加入查價」，就會出現在這裡。</div><button class="btn" data-act="rqgo:s:">🔎 去搜尋城市</button></div>';
-  return h+L.map(function(x){var S=RQ_ST[x.st],og=x.origins.map(function(o){return o==='KHH'?'高雄':'台北';}).join('・');
+  return h+L.map(function(x){var S=RQ_ST[x.st],og=x.origins.map(function(o){return ORIGIN[o]||o;}).join('・');
     var tap=x.st==='active'?'rqgo:ns:'+x.code:x.st==='conn'?'rqgo:cn:'+x.code:x.st==='active0'?'rqgo:q:'+x.code:'';
     return '<div class="card mycy"><div class="mycy-h"><b>'+esc(x.name)+'</b> <small>'+esc(x.code)+'</small><button class="mycy-x" aria-label="移除 '+esc(x.name)+'" data-act="rqdel:'+esc(x.code)+'">✕</button></div>'+
       '<div class="mycy-i">🛫 '+og+'出發'+(x.t?'・'+rqTime(x.t):'')+'</div>'+
@@ -781,7 +784,7 @@ function cities(){            // v24：這個地區／國家實際有資料的�
   return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){var i=ORD.indexOf(a.code),j=ORD.indexOf(b.code);return (i<0?99:i)-(j<0?99:j);});
 }
 function goCity(){st.city=null;if(cities().length>=2)st.step='city';else st.step='result';}
-function qWhere(x){var w=x.city?(x.cityName||cityName(x.city))+' '+x.city:x.country||x.region||'所有城市';return w+(x.origin?'・'+(x.origin==='KHH'?'高雄':'台北')+'出發':'');}
+function qWhere(x){var w=x.city?(x.cityName||cityName(x.city))+' '+x.city:x.country||x.region||'所有城市';return w+(x.origin?'・'+(ORIGIN[x.origin]||x.origin)+'出發':'');}
 function myqCard(){var ds=myDates();
   return '<button class="myqc" data-act="tab:mine"><span style="font-size:26px">📋</span><span style="flex:1"><b>我的查詢</b><span>'+(ds.length?ds.map(function(x){return md(x.from)+'–'+md(x.to);}).slice(0,3).join('、')+(ds.length>3?' 等 '+ds.length+' 組':'')+'・點我看結果':'還沒有存日期，選完後按「確認並儲存」才會出現在這裡')+(function(){var L=myCities();if(!L.length)return '';var cn=L.filter(function(x){return x.st==='conn'||x.st==='active';}).length;return '<br>📍 加入的城市：'+L.slice(0,3).map(function(x){return esc(x.name);}).join('、')+(L.length>3?' 等 '+L.length+' 個':'')+(cn?'・'+cn+' 個有結果':'');})()+'</span></span><span class="ar">›</span></button>';}
 function calendar(){
@@ -838,7 +841,7 @@ function hotelA(x,p){var u=hotelUrl(x,p);return (u?'<a class="hotel" href="'+esc
 var TRIP_URL='https://luke120513-sys.github.io/trip/';
 function tripUrl(x){var q=x.query||{},dep=(x.mode==='exact'&&q.from)||x.depart||q.from||st.dep,ret=(x.mode==='exact'&&q.to)||x.return||q.to||st.ret,c=String(x.code||'').toUpperCase(),re=/^\d{4}-\d\d-\d\d$/;
   if(!/^[A-Z]{3}$/.test(c))return '';var u=TRIP_URL+'?dest='+c;if(re.test(dep||'')&&re.test(ret||'')&&dep<ret)u+='&dep='+dep+'&ret='+ret;
-  var o=String(x.origin||x.orig||(ORG&&ORG.length===1?ORG[0]:'')||'').toUpperCase();return u+'&pax='+PAX+(o==='TPE'||o==='KHH'?'&orig='+o:'')+'&from=flysave';}
+  var o=String(x.origin||x.orig||(ORG&&ORG.length===1?ORG[0]:'')||'').toUpperCase();return u+'&pax='+PAX+(ORIGINS.indexOf(o)>=0?'&orig='+o:'')+'&from=flysave';}
 function tripA(x){var u=tripUrl(x);return u?'<a class="trip" href="'+esc(u)+'" target="_blank" rel="noopener" title="到旅伴規劃行程" aria-label="到旅伴規劃行程"><i class="si si-suitcase-trip"></i>規劃行程</a>':'';}
 var PAX=1,FROMFAN=false,FROMTRIP=false;
 function links(l,t,small,x){
@@ -1322,7 +1325,7 @@ function flAddTrip(i){var f=MYF[i];if(!f)return;var key=flTripKey(f),d=flTripDat
   if(TRIPADDED[key]){tripToast('已在旅伴行程',d);return;}
   addToTrip('flight',d);TRIPADDED[key]=Date.now();lss('fly_tripadded',TRIPADDED);tripToast('已加入旅伴行程',d);LAST_HTML=null;render();}
 function flightsView(){
-  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選，回程可選桃園、松山、高雄等台灣機場）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料存在這台裝置；到「其他」可以匯出備份，登入後也會自動備份。</p></div>';
+  var h='<div class="panel"><p class="step">🛬 我的航班・即時動態</p><div class="flform"><input id="mfno" placeholder="航班號碼，例如 BR198" maxlength="8" autocapitalize="characters"> <input id="mfdt" type="date"></div><button class="btn" data-act="mf:add">＋ 加入我的航班</button><p class="note" style="margin:8px 2px 0">輸入航班號碼就會先顯示<b>目的地天氣與當地時間</b>（查不到目的地可手動選，回程可選桃園、松山、台中、台南、高雄等台灣機場）。<b>桃園、高雄</b>起降的航班在出發前一兩天會自動加上航廈、登機門、櫃檯與即時動態（高雄只有當天），每 5 分鐘更新。資料存在這台裝置；到「其他」可以匯出備份，登入後也會自動備份。</p></div>';
   if(!MYF.length)return h+'<div class="empty">還沒有航班，輸入航班號碼加入。</div>';
   setTimeout(function(){flFetch(false);},0);
   return h+MYF.map(function(f,i){var c=FLS[flKey(f)],r=c&&c.r,b;
@@ -1373,7 +1376,7 @@ function notifyView(){
   if(!D)return '<div class="panel"><p class="step"><i class="si si-bell"></i>通知</p><div class="empty">載入中…</div></div>';
   if(!ns.length)return orgBar()+'<div class="panel"><p class="step"><i class="si si-bell"></i>通知</p><div class="empty">'+(ORG.length===1?'這個出發地':'目前')+'沒有特價通知。<br>開啟特價通知後，有新特價會推播給你，並列在這裡。</div></div>';
   function tm(t){var d=new Date(t);if(isNaN(d))return '';var x=new Date(d.getTime()+8*3600e3);return (x.getUTCMonth()+1)+'/'+x.getUTCDate()+' '+('0'+x.getUTCHours()).slice(-2)+':'+('0'+x.getUTCMinutes()).slice(-2);}
-  var ON={TPE:'台北',TSA:'台北',KHH:'高雄'};
+  var ON={TPE:'桃園',TSA:'松山',KHH:'高雄',RMQ:'台中',TNN:'台南'};
   return '<p class="summary">🔔 特價通知（'+ns.length+' 筆，最新在前）</p>'+orgBar()+ns.map(function(x){
     var p=x.sellerPrice&&x.sellerPrice<x.price?x.sellerPrice:x.price, b=[];
     if(okUrl(x.sellerLink))b.push('<a href="'+esc(x.sellerLink)+'" target="_blank" rel="noopener">'+esc(x.seller||'最便宜平台')+'</a>');
@@ -1422,7 +1425,7 @@ var SPONSOR_URL='https://portaly.cc/dreamworld369/support';                     
 var SITE_URL='https://luke120513-sys.github.io/flysave/';
 var SOCIAL='<span class="socg"><a class="sponsor soc" href="https://www.instagram.com/flysave_1/" target="_blank" rel="noopener" aria-label="飛省 Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a class="sponsor soc" href="https://www.threads.net/@flysave_1" target="_blank" rel="noopener" aria-label="飛省 Threads" title="Threads"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M18.263 11.097c-.03-3.486-1.92-5.586-5.111-5.586-2.13 0-3.922.963-4.863 2.499l2.062 1.438c.535-.843 1.272-1.543 2.628-1.543 1.528 0 2.318.85 2.544 2.431a15 15 0 0 0-2.236-.173c-4.125 0-6.068 1.867-6.068 4.336s1.943 3.99 4.804 3.99c3.139 0 5.013-2.115 5.781-4.735.798.361 1.348 1.204 1.348 2.47 0 3.387-3.907 5.232-7.22 5.232-4.885 0-8.077-3.207-8.077-8.424 0-6.392 4.223-10.487 9.9-10.487 3.808 0 5.69 1.671 6.97 3.914l2.108-1.475C21.44 2.078 18.331 0 13.663 0 6.227 0 1.168 5.277 1.168 12.934c0 7 4.953 11.066 10.856 11.066 4.878 0 9.809-2.846 9.809-7.716 0-2.545-1.46-4.231-3.569-5.187m-6.33 4.855c-1.077 0-2.026-.512-2.026-1.453 0-1.483 1.822-1.934 3.606-1.934.678 0 1.34.045 1.927.173-.422 1.927-1.671 3.215-3.508 3.214Z"/></svg></a></span>';
 var SHARE_BTN='<button type="button" class="sponsor" data-act="share">🔗 分享網頁</button>';
-function shareSite(){var d={title:'飛省 FlySave',text:'台灣出發直飛便宜機票・CP值比價',url:SITE_URL};
+function shareSite(){var d={title:'飛省 FlySave',text:'台灣五地出發直飛便宜機票・CP值比價',url:SITE_URL};
   var copy=function(){var ok=function(){toast('已複製網址');};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(SITE_URL).then(ok,fb);else fb();
     function fb(){try{var t=document.createElement('textarea');t.value=SITE_URL;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();ok();}catch(e){toast(SITE_URL);}}};
@@ -1444,7 +1447,7 @@ function footer(){
 }
 function page(title,body){return '<div class="panel help"><h3>'+title+'</h3>'+body+'</div>';}
 function about(){return page('✈️ 關於我們／服務說明',
-  '<p><b>飛省 FlySave</b> 是免費的機票比價資訊服務，幫你找台北（桃園／松山）和高雄出發、<b>來回都直飛</b>的便宜機票。</p>'+
+  '<p><b>飛省 FlySave</b> 是免費的機票比價資訊服務，幫你找桃園、松山、台中、台南、高雄出發（同機場來回直飛）的便宜機票。</p>'+
   '<ul><li>每天 07:00、15:00、23:00 自動查詢 Google Flights 與 Trip.com 的公開票價，整理成卡片，價錢以<b>新台幣（TWD）</b>顯示，為 1 位成人經濟艙來回含稅參考價。</li>'+
   '<li>可以依日期、出發地、地區比較，也可以存下想去的日期（最多 5 組），下次查詢後就會有結果。</li>'+
   '<li>我們不賣機票、不代訂、不收款。按「Google 訂票」或「Trip.com 訂票」會前往該網站，訂位與付款都在該網站完成。</li>'+
@@ -1477,7 +1480,7 @@ function help(){
   return video()+'<div class="sprow" style="margin:0 0 12px">'+(okUrl(SPONSOR_URL)?'<a class="sponsor" href="'+esc(SPONSOR_URL)+'" target="_blank" rel="noopener">☕ 贊助飛省</a>':'')+SHARE_BTN+SOCIAL+'</div>'+'<div class="panel help"><h3>✈️ 飛省 FlySave</h3><p>每天 07:00、15:00、23:00 會同時查 Google Flights 和 Trip.com 的<b>來回直飛</b>票價。</p>'+
     '<h3>🔎 查機票</h3><ul><li>🏆 CP值最高：前後挪 1～2 天找最划算的</li><li>📅 只查指定日期：只看你選的那兩天，列出每個班次</li><li>💰 不指定日期：最近最便宜的 5～7 天行程</li></ul>'+
     '<p>選好日期後，要按「確認並儲存」才會存起來（最多 5 組）。下一次查詢就會查這組日期。底部「📋 我的查詢」可以看結果。到「其他」可以選用 Google 備份，或匯出備份檔；不登入也不影響查詢。</p><p>🔔 <b>右上角鈴鐺＝特價通知</b>：推播過的好價都列在這裡，有新的會顯示紅色數字；📣 <b>左上角喇叭＝公告</b>：飛省的更新和公告。<b>每支手機各自一份</b>，別人刪除或清除不會影響你的。</p><p>💬 有建議或問題？到「其他 → 意見回饋」告訴我們。</p>'+
-    '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「最新優惠」和右上角 🔔 特價通知頁上方都有 <b>台北／高雄</b> 按鈕：選一個就只看那裡出發，<b>都不選＝兩個都看</b>。選擇會記在這台裝置，也會同步到特價通知要收哪個出發地。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
+    '<h3>🛫 出發地篩選</h3><p>「查機票」「我的查詢」「最新優惠」和右上角 🔔 特價通知頁上方都有 <b>桃園／松山／台中／台南／高雄</b> 按鈕：可複選只看那些出發（來回都回同一機場），<b>都不選＝五地都看</b>。選擇會記在這台裝置，也會同步到特價通知。</p><h3>💰 關於價錢</h3><p>所有價錢都是<b>來回含稅總價</b>（促銷只寫未稅價的，會另外標「未稅＋稅費約」，稅費為估算）。價錢前面的「約」代表查詢當下的價錢，每張卡片都有寫是在哪個網站、幾點查的。票價隨時會變，訂票網站也可能另加手續費或刷卡費，請以訂票頁面為準。超過 12 小時沒重查的票價不會顯示。</p>'+
     '<h3>📱 加到主畫面</h3><p>iPhone：Safari 下方「分享」→「加入主畫面」。<br>Android：Chrome 右上「⋮」→「加到主畫面」。</p>'+
     '<h3>🌍 遠程（北美／歐洲／大洋洲／中東/南亞）</h3><p>選地區時按「🌍遠程」再選區域。每天 23:00 用 Google Flights 查一次（固定兩組約 8 天的日期）。「✈️ 直飛」只看直飛最低價；「🔁 可轉機」直飛和轉 1 次一起比，用 <b>CP分數</b>排（票價＋轉機次數、總時間、停留太長或太短、過夜、自行轉機、廉航行李等扣分，越低越划算）。⚠️ 橘字是要注意的地方；回程轉機以實際頁面為準，行李未查證。</p>'+
     notifyPanel()+'</div>';
@@ -1601,7 +1604,7 @@ function notifyPanel(){
   var can=NAT||WEBPUSH, h='<h3>🔔 特價通知</h3>';
   if(!can)h+='<p>'+(GAS?'這個網頁版沒辦法收推播，請改用 <a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省網站</a>。':'這個瀏覽器不支援推播通知，請改用 Chrome、Edge 或 Safari（iPhone 請先加入主畫面，iOS 16.4 以上）。')+'</p>';
   else{h+='<p>有特價或比平常便宜 10% 以上時，直接推播到你的'+(NAT?'手機':'瀏覽器')+'。網頁推播需開啟通知；iPhone 請先把網站加入主畫面。</p><div class="chips">'+chip(PUSH==='on'?'🔔 特價通知：開':PUSH==='wait'?'⏳ 開啟中…':'🔕 特價通知：關',PUSH==='on'?'push:off':PUSH==='wait'?'push:wait':'push:on',PUSH==='on')+'</div>';
-    if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+chip('台北出發','pt:TPE',ORG.indexOf('TPE')>=0)+chip('高雄出發','pt:KHH',ORG.indexOf('KHH')>=0)+'<span style="font-size:12px;color:#999">（和畫面上的出發地篩選同步）</span>'+'</div>';}
+    if(PUSH==='on')h+='<p style="margin-top:8px">只想收某個出發地？（不選＝全部）</p><div class="chips">'+ORIGINS.map(function(c){return chip(ORIGIN[c],'pt:'+c,ORG.indexOf(c)>=0);}).join('')+'<span style="font-size:12px;color:#999">（和畫面上的出發地篩選同步）</span>'+'</div>';}
   if(PMSG)h+='<p class="hint">'+esc(PMSG)+'</p>';
   h+='<h3>🛫 航班提醒</h3>';
   if(NAT||WEBPUSH){h+='<p>'+(NAT?'起飛前 3 小時用手機通知提醒你航廈和報到櫃台。':'網頁版只有在飛省頁面開著時才會提醒（起飛前 3 小時），請記得自行留意航班時間。')+'</p>'+
@@ -1631,7 +1634,7 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
     if(q.tab)tab=q.tab; if(q.route==='notify'||q.route==='hot')tab='notify'; if(q.id){NFY_HL=q.id;ANN_HL=q.id;} ['mode','dep','ret','origin','region','country','step','month','lhSub'].forEach(function(k){if(q[k])st[k]=q[k];});if(st.step==='origin')st.step='region';}
 
   (function(){var P=new URLSearchParams(location.search);if(!P.get('to'))return;var dep=P.get('dep')||'',ret=P.get('ret')||'',re=/^\d{4}-\d\d-\d\d$/;
-    PAX=Math.max(1,Math.min(9,parseInt(P.get('pax'),10)||1));FROMFAN=P.get('from')==='fansave';FROMTRIP=P.get('from')==='trip';var og=(P.get('orig')||'').toUpperCase();if(og==='TPE'||og==='KHH')ORG=[og];
+    PAX=Math.max(1,Math.min(9,parseInt(P.get('pax'),10)||1));FROMFAN=P.get('from')==='fansave';FROMTRIP=P.get('from')==='trip';var og=(P.get('orig')||'').toUpperCase();if(ORIGINS.indexOf(og)>=0)ORG=[og];
     window.DEEP={to:P.get('to'),dep:re.test(dep)?dep:'',ret:re.test(ret)?ret:''};tab='search';
     try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}})();
   window.deepApply=function(){var q=window.DEEP;if(!q)return;var raw=String(q.to).trim(),u=raw.toUpperCase(),L=D?dsList():[],d=null;
