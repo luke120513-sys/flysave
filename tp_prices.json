@@ -61,11 +61,11 @@
         "transfers": 0
       },
       {
-        "airline": "FD",
-        "date": "2026-11-17",
+        "airline": "GK",
+        "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 9422,
-        "return_date": "2026-11-24",
+        "price_twd": 8851,
+        "return_date": "2026-11-25",
         "transfers": 0
       }
     ],
@@ -173,15 +173,24 @@
         "transfers": 0
       },
       {
-        "airline": "VZ",
+        "airline": "AK",
         "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 6581,
-        "return_date": "2026-11-10",
+        "price_twd": 6726,
+        "return_date": "2026-11-07",
         "transfers": 0
       }
     ],
-    "TPE-MFM": [],
+    "TPE-MFM": [
+      {
+        "airline": "NX",
+        "date": "2026-11-27",
+        "found_at": "",
+        "price_twd": 6712,
+        "return_date": "2026-11-29",
+        "transfers": 0
+      }
+    ],
     "TPE-NRT": [
       {
         "airline": "TR",
@@ -193,9 +202,9 @@
       },
       {
         "airline": "TR",
-        "date": "2026-11-02",
+        "date": "2026-11-03",
         "found_at": "",
-        "price_twd": 7796,
+        "price_twd": 7460,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -249,5 +258,5 @@
     "TPE-SGN": [],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-25T23:22:12Z"
+  "updated_at": "2026-10-26T07:49:46Z"
 }
