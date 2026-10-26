@@ -40,16 +40,7 @@
         "transfers": 0
       }
     ],
-    "KHH-KIX": [
-      {
-        "airline": "AK",
-        "date": "2026-11-04",
-        "found_at": "",
-        "price_twd": 6726,
-        "return_date": "2026-11-12",
-        "transfers": 0
-      }
-    ],
+    "KHH-KIX": [],
     "KHH-MFM": [],
     "KHH-NRT": [
       {
@@ -64,7 +55,7 @@
         "airline": "GK",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 8851,
+        "price_twd": 8854,
         "return_date": "2026-11-25",
         "transfers": 0
       }
@@ -112,8 +103,8 @@
         "airline": "SL",
         "date": "2026-10-30",
         "found_at": "",
-        "price_twd": 6759,
-        "return_date": "2026-11-01",
+        "price_twd": 7213,
+        "return_date": "2026-12-16",
         "transfers": 0
       },
       {
@@ -173,11 +164,11 @@
         "transfers": 0
       },
       {
-        "airline": "AK",
+        "airline": "VZ",
         "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 6726,
-        "return_date": "2026-11-07",
+        "price_twd": 6941,
+        "return_date": "2026-11-10",
         "transfers": 0
       }
     ],
@@ -186,7 +177,7 @@
         "airline": "NX",
         "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 6712,
+        "price_twd": 6714,
         "return_date": "2026-11-29",
         "transfers": 0
       }
@@ -204,18 +195,18 @@
         "airline": "TR",
         "date": "2026-11-03",
         "found_at": "",
-        "price_twd": 7460,
+        "price_twd": 7560,
         "return_date": "2026-11-07",
         "transfers": 0
       }
     ],
     "TPE-OKA": [
       {
-        "airline": "IT",
+        "airline": "VZ",
         "date": "2026-10-27",
         "found_at": "",
-        "price_twd": 5401,
-        "return_date": "2026-10-30",
+        "price_twd": 6049,
+        "return_date": "2026-10-31",
         "transfers": 0
       },
       {
@@ -258,5 +249,5 @@
     "TPE-SGN": [],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-26T07:49:46Z"
+  "updated_at": "2026-10-26T16:01:51Z"
 }
