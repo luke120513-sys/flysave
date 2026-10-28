@@ -422,7 +422,7 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v.filter(function(o){return ORIGINS.indexOf(o)>=0;});}catch(e){}return ORIGINS.indexOf(st.origin)>=0?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.37';
+var APPVER='v28.38';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
@@ -927,7 +927,7 @@ function result0(){
     orgBar()+'<div class="chips sortc"><span>調整</span>'+chip('換地區','again:region')+chip('重新查','again:mode')+'</div>';
   var general=merge(all('short').concat(all('long')).filter(okItem));
   if(st.mode==='nodate'){
-    if(!general.length)return head+again+'<div class="empty">這個範圍目前沒有直飛票價，換個地區或出發地看看。</div>';
+    if(!general.length){var sparse=ORG.length&&ORG.every(function(o){return /^(TSA|RMQ|TNN)$/.test(o);});var msg=sparse?'目前「'+ORG.map(function(o){return ORIGIN[o]||o;}).join('／')+'」出發還沒查到這區的直飛票（松山／台中／台南航線較少，松山國際多飛羽田／金浦）。可換地區或出發地，或等下次排程（07:00／15:00／23:00）後再看。':'這個範圍目前沒有直飛票價，換個地區或出發地看看。';return head+again+'<div class="empty">'+msg+'</div>';}
     return head+again+NOTE+cardsHtml(general,fareCard);
   }
   var mine=all('custom').filter(function(x){var q=x.query||{from:x.depart,to:x.return};if((x.mode==='exact'?'exact':'cp')!==st.mode||q.from!==st.dep||q.to!==st.ret||!okItem(x))return false;
