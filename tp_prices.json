@@ -31,6 +31,14 @@
         "price_twd": 7474,
         "return_date": "2026-11-05",
         "transfers": 0
+      },
+      {
+        "airline": "AK",
+        "date": "2026-11-02",
+        "found_at": "",
+        "price_twd": 8001,
+        "return_date": "2026-11-05",
+        "transfers": 0
       }
     ],
     "KHH-MFM": [],
@@ -204,18 +212,10 @@
     ],
     "TPE-PUS": [
       {
-        "airline": "BX",
-        "date": "2026-10-28",
-        "found_at": "",
-        "price_twd": 5083,
-        "return_date": "2026-11-10",
-        "transfers": 0
-      },
-      {
-        "airline": "BX",
+        "airline": "7C",
         "date": "2026-11-12",
         "found_at": "",
-        "price_twd": 5091,
+        "price_twd": 4797,
         "return_date": "2026-11-19",
         "transfers": 0
       }
@@ -242,5 +242,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-28T07:55:22Z"
+  "updated_at": "2026-10-28T15:48:40Z"
 }
