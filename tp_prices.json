@@ -36,7 +36,7 @@
         "airline": "AK",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 8001,
+        "price_twd": 7993,
         "return_date": "2026-11-05",
         "transfers": 0
       }
@@ -63,10 +63,10 @@
     "KHH-OKA": [
       {
         "airline": "IT",
-        "date": "2026-11-17",
+        "date": "2026-11-11",
         "found_at": "",
-        "price_twd": 5541,
-        "return_date": "2026-11-20",
+        "price_twd": 7591,
+        "return_date": "2026-11-16",
         "transfers": 0
       }
     ],
@@ -205,7 +205,7 @@
         "airline": "IT",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 4594,
+        "price_twd": 4690,
         "return_date": "2026-11-25",
         "transfers": 0
       }
@@ -215,7 +215,7 @@
         "airline": "7C",
         "date": "2026-11-12",
         "found_at": "",
-        "price_twd": 4797,
+        "price_twd": 5186,
         "return_date": "2026-11-19",
         "transfers": 0
       }
@@ -242,5 +242,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-28T15:48:40Z"
+  "updated_at": "2026-10-28T23:33:21Z"
 }
