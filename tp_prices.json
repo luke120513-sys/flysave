@@ -38,7 +38,7 @@
         "airline": "GK",
         "date": "2026-10-30",
         "found_at": "",
-        "price_twd": 9177,
+        "price_twd": 9180,
         "return_date": "2026-11-04",
         "transfers": 0
       },
@@ -46,7 +46,7 @@
         "airline": "FD",
         "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 8700,
+        "price_twd": 8703,
         "return_date": "2026-11-10",
         "transfers": 0
       }
@@ -62,14 +62,6 @@
       }
     ],
     "KHH-PUS": [
-      {
-        "airline": "7C",
-        "date": "2026-10-29",
-        "found_at": "",
-        "price_twd": 7676,
-        "return_date": "2026-10-30",
-        "transfers": 0
-      },
       {
         "airline": "7C",
         "date": "2026-11-01",
@@ -112,7 +104,7 @@
         "airline": "IT",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 8497,
+        "price_twd": 8499,
         "return_date": "2026-11-06",
         "transfers": 0
       }
@@ -146,14 +138,6 @@
       }
     ],
     "TPE-KIX": [
-      {
-        "airline": "HX",
-        "date": "2026-10-29",
-        "found_at": "",
-        "price_twd": 13878,
-        "return_date": "2026-11-05",
-        "transfers": 1
-      },
       {
         "airline": "VZ",
         "date": "2026-11-05",
@@ -233,5 +217,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-29T07:57:42Z"
+  "updated_at": "2026-10-29T15:50:35Z"
 }
