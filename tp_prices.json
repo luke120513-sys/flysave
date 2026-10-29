@@ -3,16 +3,7 @@
   "routes": {
     "KHH-BKK": [],
     "KHH-FUK": [],
-    "KHH-HKG": [
-      {
-        "airline": "UO",
-        "date": "2026-10-29",
-        "found_at": "",
-        "price_twd": 5451,
-        "return_date": "2026-10-30",
-        "transfers": 0
-      }
-    ],
+    "KHH-HKG": [],
     "KHH-ICN": [
       {
         "airline": "TW",
@@ -44,19 +35,19 @@
     "KHH-MFM": [],
     "KHH-NRT": [
       {
-        "airline": "IT",
+        "airline": "GK",
         "date": "2026-10-30",
         "found_at": "",
-        "price_twd": 8699,
+        "price_twd": 9177,
         "return_date": "2026-11-04",
         "transfers": 0
       },
       {
-        "airline": "GK",
-        "date": "2026-11-19",
+        "airline": "FD",
+        "date": "2026-11-05",
         "found_at": "",
-        "price_twd": 8758,
-        "return_date": "2026-11-26",
+        "price_twd": 8700,
+        "return_date": "2026-11-10",
         "transfers": 0
       }
     ],
@@ -118,21 +109,21 @@
     ],
     "TPE-FUK": [
       {
-        "airline": "AK",
-        "date": "2026-11-04",
+        "airline": "IT",
+        "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 6643,
-        "return_date": "2026-11-11",
+        "price_twd": 8497,
+        "return_date": "2026-11-06",
         "transfers": 0
       }
     ],
     "TPE-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-25",
+        "date": "2026-11-26",
         "found_at": "",
-        "price_twd": 4432,
-        "return_date": "2026-11-29",
+        "price_twd": 4496,
+        "return_date": "2026-11-30",
         "transfers": 0
       }
     ],
@@ -156,12 +147,12 @@
     ],
     "TPE-KIX": [
       {
-        "airline": "AK",
+        "airline": "HX",
         "date": "2026-10-29",
         "found_at": "",
-        "price_twd": 6851,
+        "price_twd": 13878,
         "return_date": "2026-11-05",
-        "transfers": 0
+        "transfers": 1
       },
       {
         "airline": "VZ",
@@ -242,5 +233,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-28T23:33:21Z"
+  "updated_at": "2026-10-29T07:57:42Z"
 }
