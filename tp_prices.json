@@ -25,10 +25,10 @@
     ],
     "KHH-KIX": [
       {
-        "airline": "AK",
-        "date": "2026-10-30",
+        "airline": "MM",
+        "date": "2026-10-31",
         "found_at": "",
-        "price_twd": 7474,
+        "price_twd": 7913,
         "return_date": "2026-11-05",
         "transfers": 0
       },
@@ -45,10 +45,10 @@
     "KHH-NRT": [
       {
         "airline": "GK",
-        "date": "2026-10-30",
+        "date": "2026-10-31",
         "found_at": "",
-        "price_twd": 9200,
-        "return_date": "2026-11-04",
+        "price_twd": 9343,
+        "return_date": "2026-11-05",
         "transfers": 0
       },
       {
@@ -83,10 +83,10 @@
     "KHH-SGN": [
       {
         "airline": "VJ",
-        "date": "2026-11-20",
+        "date": "2026-11-22",
         "found_at": "",
-        "price_twd": 5385,
-        "return_date": "2026-11-23",
+        "price_twd": 5451,
+        "return_date": "2026-11-30",
         "transfers": 0
       }
     ],
@@ -101,10 +101,10 @@
       },
       {
         "airline": "SL",
-        "date": "2026-11-14",
+        "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 6553,
-        "return_date": "2026-11-19",
+        "price_twd": 6572,
+        "return_date": "2026-11-25",
         "transfers": 0
       }
     ],
@@ -179,7 +179,7 @@
         "airline": "TR",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7756,
+        "price_twd": 7662,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -226,5 +226,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-29T23:33:24Z"
+  "updated_at": "2026-10-30T07:57:51Z"
 }
