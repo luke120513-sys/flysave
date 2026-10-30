@@ -47,7 +47,7 @@
         "airline": "GK",
         "date": "2026-10-31",
         "found_at": "",
-        "price_twd": 9344,
+        "price_twd": 9348,
         "return_date": "2026-11-05",
         "transfers": 0
       },
@@ -162,7 +162,7 @@
         "airline": "TR",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7663,
+        "price_twd": 7666,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -172,7 +172,7 @@
         "airline": "IT",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 4627,
+        "price_twd": 4492,
         "return_date": "2026-11-25",
         "transfers": 0
       }
@@ -210,5 +210,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-30T15:46:42Z"
+  "updated_at": "2026-10-30T23:32:26Z"
 }
