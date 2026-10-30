@@ -47,7 +47,7 @@
         "airline": "GK",
         "date": "2026-10-31",
         "found_at": "",
-        "price_twd": 9343,
+        "price_twd": 9344,
         "return_date": "2026-11-05",
         "transfers": 0
       },
@@ -60,16 +60,7 @@
         "transfers": 0
       }
     ],
-    "KHH-OKA": [
-      {
-        "airline": "IT",
-        "date": "2026-11-11",
-        "found_at": "",
-        "price_twd": 7591,
-        "return_date": "2026-11-16",
-        "transfers": 0
-      }
-    ],
+    "KHH-OKA": [],
     "KHH-PUS": [
       {
         "airline": "7C",
@@ -93,10 +84,10 @@
     "TPE-BKK": [
       {
         "airline": "SL",
-        "date": "2026-10-30",
+        "date": "2026-10-31",
         "found_at": "",
-        "price_twd": 7213,
-        "return_date": "2026-12-16",
+        "price_twd": 7514,
+        "return_date": "2026-11-04",
         "transfers": 0
       },
       {
@@ -138,11 +129,11 @@
         "transfers": 0
       },
       {
-        "airline": "IT",
-        "date": "2026-11-07",
+        "airline": "TR",
+        "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 7071,
-        "return_date": "2026-11-10",
+        "price_twd": 7495,
+        "return_date": "2026-12-01",
         "transfers": 0
       }
     ],
@@ -168,18 +159,10 @@
     ],
     "TPE-NRT": [
       {
-        "airline": "IT",
-        "date": "2026-10-31",
-        "found_at": "",
-        "price_twd": 8147,
-        "return_date": "2026-11-03",
-        "transfers": 0
-      },
-      {
         "airline": "TR",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7662,
+        "price_twd": 7663,
         "return_date": "2026-11-07",
         "transfers": 0
       }
@@ -204,16 +187,17 @@
         "transfers": 0
       }
     ],
-    "TPE-SDJ": [
+    "TPE-PVG": [
       {
-        "airline": "FD",
-        "date": "2026-11-13",
+        "airline": "CZ",
+        "date": "2026-11-25",
         "found_at": "",
-        "price_twd": 17749,
-        "return_date": "2026-11-20",
-        "transfers": 1
+        "price_twd": 6972,
+        "return_date": "2026-12-02",
+        "transfers": 0
       }
     ],
+    "TPE-SDJ": [],
     "TPE-SGN": [
       {
         "airline": "VJ",
@@ -226,5 +210,5 @@
     ],
     "TPE-TAE": []
   },
-  "updated_at": "2026-10-30T07:57:51Z"
+  "updated_at": "2026-10-30T15:46:42Z"
 }
