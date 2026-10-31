@@ -36,14 +36,6 @@
     "KHH-MFM": [],
     "KHH-NRT": [
       {
-        "airline": "UO",
-        "date": "2026-10-31",
-        "found_at": "",
-        "price_twd": 11623,
-        "return_date": "2026-11-07",
-        "transfers": 1
-      },
-      {
         "airline": "FD",
         "date": "2026-11-07",
         "found_at": "",
@@ -76,14 +68,6 @@
     "TPE-BKK": [
       {
         "airline": "SL",
-        "date": "2026-10-31",
-        "found_at": "",
-        "price_twd": 7514,
-        "return_date": "2026-11-04",
-        "transfers": 0
-      },
-      {
-        "airline": "SL",
         "date": "2026-11-21",
         "found_at": "",
         "price_twd": 6572,
@@ -113,19 +97,11 @@
     ],
     "TPE-ICN": [
       {
-        "airline": "MF",
-        "date": "2026-10-31",
-        "found_at": "",
-        "price_twd": 13266,
-        "return_date": "2026-11-04",
-        "transfers": 1
-      },
-      {
         "airline": "IT",
-        "date": "2026-11-16",
+        "date": "2026-11-07",
         "found_at": "",
-        "price_twd": 7788,
-        "return_date": "2026-11-21",
+        "price_twd": 6361,
+        "return_date": "2026-11-10",
         "transfers": 0
       }
     ],
@@ -211,5 +187,5 @@
       }
     ]
   },
-  "updated_at": "2026-10-31T07:49:18Z"
+  "updated_at": "2026-10-31T15:32:28Z"
 }
