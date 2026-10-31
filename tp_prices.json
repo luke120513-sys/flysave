@@ -9,10 +9,35 @@
         "price_twd": 5810,
         "return_date": "2026-11-15",
         "transfers": 0
+      },
+      {
+        "airline": "FD",
+        "date": "2026-12-06",
+        "found_at": "",
+        "price_twd": 6166,
+        "return_date": "2026-12-12",
+        "transfers": 0
       }
     ],
     "KHH-FUK": [],
-    "KHH-HKG": [],
+    "KHH-HKG": [
+      {
+        "airline": "UO",
+        "date": "2026-11-27",
+        "found_at": "",
+        "price_twd": 5076,
+        "return_date": "2026-11-29",
+        "transfers": 0
+      },
+      {
+        "airline": "UO",
+        "date": "2026-12-25",
+        "found_at": "",
+        "price_twd": 6864,
+        "return_date": "2026-12-27",
+        "transfers": 0
+      }
+    ],
     "KHH-ICN": [
       {
         "airline": "TW",
@@ -20,6 +45,14 @@
         "found_at": "",
         "price_twd": 9340,
         "return_date": "2026-11-28",
+        "transfers": 0
+      },
+      {
+        "airline": "TW",
+        "date": "2026-12-25",
+        "found_at": "",
+        "price_twd": 10952,
+        "return_date": "2026-12-30",
         "transfers": 0
       }
     ],
@@ -42,9 +75,26 @@
         "price_twd": 8501,
         "return_date": "2026-11-12",
         "transfers": 0
+      },
+      {
+        "airline": "GK",
+        "date": "2026-12-16",
+        "found_at": "",
+        "price_twd": 9881,
+        "return_date": "2026-12-21",
+        "transfers": 0
       }
     ],
-    "KHH-OKA": [],
+    "KHH-OKA": [
+      {
+        "airline": "IT",
+        "date": "2026-12-01",
+        "found_at": "",
+        "price_twd": 6833,
+        "return_date": "2026-12-31",
+        "transfers": 0
+      }
+    ],
     "KHH-PUS": [
       {
         "airline": "7C",
@@ -52,6 +102,14 @@
         "found_at": "",
         "price_twd": 6633,
         "return_date": "2026-11-02",
+        "transfers": 0
+      },
+      {
+        "airline": "7C",
+        "date": "2026-12-12",
+        "found_at": "",
+        "price_twd": 9374,
+        "return_date": "2026-12-17",
         "transfers": 0
       }
     ],
@@ -63,6 +121,14 @@
         "price_twd": 5451,
         "return_date": "2026-11-30",
         "transfers": 0
+      },
+      {
+        "airline": "VJ",
+        "date": "2026-12-12",
+        "found_at": "",
+        "price_twd": 5000,
+        "return_date": "2026-12-19",
+        "transfers": 0
       }
     ],
     "TPE-BKK": [
@@ -72,6 +138,14 @@
         "found_at": "",
         "price_twd": 6572,
         "return_date": "2026-11-25",
+        "transfers": 0
+      },
+      {
+        "airline": "SL",
+        "date": "2026-12-19",
+        "found_at": "",
+        "price_twd": 6227,
+        "return_date": "2026-12-25",
         "transfers": 0
       }
     ],
@@ -83,6 +157,14 @@
         "price_twd": 7666,
         "return_date": "2026-11-06",
         "transfers": 0
+      },
+      {
+        "airline": "IT",
+        "date": "2026-12-08",
+        "found_at": "",
+        "price_twd": 9287,
+        "return_date": "2026-12-12",
+        "transfers": 1
       }
     ],
     "TPE-HKG": [
@@ -92,6 +174,14 @@
         "found_at": "",
         "price_twd": 4496,
         "return_date": "2026-11-30",
+        "transfers": 0
+      },
+      {
+        "airline": "UO",
+        "date": "2026-12-12",
+        "found_at": "",
+        "price_twd": 4635,
+        "return_date": "2026-12-14",
         "transfers": 0
       }
     ],
@@ -103,6 +193,14 @@
         "price_twd": 6361,
         "return_date": "2026-11-10",
         "transfers": 0
+      },
+      {
+        "airline": "IT",
+        "date": "2026-12-01",
+        "found_at": "",
+        "price_twd": 7027,
+        "return_date": "2026-12-08",
+        "transfers": 0
       }
     ],
     "TPE-KIX": [
@@ -112,6 +210,14 @@
         "found_at": "",
         "price_twd": 6941,
         "return_date": "2026-11-10",
+        "transfers": 0
+      },
+      {
+        "airline": "AK",
+        "date": "2026-12-30",
+        "found_at": "",
+        "price_twd": 7593,
+        "return_date": "2027-01-05",
         "transfers": 0
       }
     ],
@@ -123,6 +229,14 @@
         "price_twd": 6231,
         "return_date": "2026-11-16",
         "transfers": 0
+      },
+      {
+        "airline": "NX",
+        "date": "2026-12-01",
+        "found_at": "",
+        "price_twd": 6803,
+        "return_date": "2026-12-04",
+        "transfers": 0
       }
     ],
     "TPE-NRT": [
@@ -132,6 +246,14 @@
         "found_at": "",
         "price_twd": 7634,
         "return_date": "2026-11-07",
+        "transfers": 0
+      },
+      {
+        "airline": "TR",
+        "date": "2026-12-01",
+        "found_at": "",
+        "price_twd": 8023,
+        "return_date": "2026-12-15",
         "transfers": 0
       }
     ],
@@ -143,6 +265,14 @@
         "price_twd": 4492,
         "return_date": "2026-11-25",
         "transfers": 0
+      },
+      {
+        "airline": "MM",
+        "date": "2026-12-05",
+        "found_at": "",
+        "price_twd": 5507,
+        "return_date": "2026-12-09",
+        "transfers": 0
       }
     ],
     "TPE-PUS": [
@@ -152,6 +282,14 @@
         "found_at": "",
         "price_twd": 5186,
         "return_date": "2026-11-19",
+        "transfers": 0
+      },
+      {
+        "airline": "7C",
+        "date": "2026-12-19",
+        "found_at": "",
+        "price_twd": 6416,
+        "return_date": "2026-12-23",
         "transfers": 0
       }
     ],
@@ -163,6 +301,14 @@
         "price_twd": 6972,
         "return_date": "2026-12-02",
         "transfers": 0
+      },
+      {
+        "airline": "CZ",
+        "date": "2026-12-13",
+        "found_at": "",
+        "price_twd": 6204,
+        "return_date": "2026-12-20",
+        "transfers": 0
       }
     ],
     "TPE-SDJ": [],
@@ -173,6 +319,14 @@
         "found_at": "",
         "price_twd": 7276,
         "return_date": "2026-11-19",
+        "transfers": 0
+      },
+      {
+        "airline": "VN",
+        "date": "2026-12-22",
+        "found_at": "",
+        "price_twd": 7111,
+        "return_date": "2027-01-07",
         "transfers": 0
       }
     ],
@@ -187,5 +341,5 @@
       }
     ]
   },
-  "updated_at": "2026-10-31T15:32:28Z"
+  "updated_at": "2026-10-31T23:31:03Z"
 }
