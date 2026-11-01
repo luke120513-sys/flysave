@@ -385,6 +385,17 @@ html.dark .uf .fib i,html.dark .uf .fsis i{box-shadow:0 0 0 2px rgba(255,255,255
 </style>
 </head>
 <body>
+<div id="fsSplash" style="position:fixed;inset:0;z-index:2147483000;background:#44915f;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease">
+<video id="fsSplashV" src="splash.mp4" muted playsinline webkit-playsinline autoplay preload="auto" style="width:100%;height:100%;object-fit:contain;background:#44915f"></video>
+<button id="fsSplashSkip" type="button" style="position:absolute;right:16px;top:calc(env(safe-area-inset-top,0px) + 14px);padding:7px 14px;border:0;border-radius:999px;background:rgba(0,0,0,.28);color:#fff;font-size:14px;cursor:pointer">略過</button>
+</div>
+<script>(function(){var o=document.getElementById('fsSplash'),v=document.getElementById('fsSplashV'),done=0;
+function end(){if(done)return;done=1;o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.remove()},550)}
+try{if(sessionStorage.getItem('fsSplashSeen')){o.remove();return}sessionStorage.setItem('fsSplashSeen','1')}catch(e){}
+document.getElementById('fsSplashSkip').onclick=end;v.onended=end;v.onerror=end;
+var p=v.play&&v.play();if(p&&p.catch)p.catch(end);
+setTimeout(function(){if(v.currentTime<0.1)end()},2500);setTimeout(end,7000);})();</script>
+
 <div id="splash" aria-hidden="true"><div class="lg" id="splogo">✈️</div><b>飛省 FlySave</b><small>來回直飛・含稅總價比價</small></div>
 <header><button id="annbell" data-act="an:list" aria-label="公告"><svg viewBox="0 0 24 24"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><b id="annn"></b></button><img id="logo" alt=""><h1>飛省 FlySave<small id="upd">來回直飛・含稅總價比價</small></h1><button id="thbtn" data-act="th:toggle" aria-label="切換深色／淺色"><svg class="mo" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="su" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button><button id="nfybell" data-act="nf:open" aria-label="特價通知"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><b id="nfyn"></b></button></header>
 <main id="main"></main>
@@ -422,7 +433,7 @@ try { var sv = JSON.parse(localStorage.getItem('fly_tb_st')||'{}'); if (sv.origi
 var ORG=(function(){try{var v=JSON.parse(localStorage.getItem('fly_org'));if(Array.isArray(v))return v.filter(function(o){return ORIGINS.indexOf(o)>=0;});}catch(e){}return ORIGINS.indexOf(st.origin)>=0?[st.origin]:[];})();
 // v24：每支手機自己的「我的查詢」— deviceId 存在 localStorage（App 的 WebView 也一樣會保留）
 var DEV=(function(){try{var v=localStorage.getItem('fly_dev');if(v&&/^d_[A-Za-z0-9_-]{6,60}$/.test(v))return v;v='d_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);localStorage.setItem('fly_dev',v);return v;}catch(e){return '';}})();
-var APPVER='v28.38';
+var APPVER='v28.39';
 var MYQ=(function(){try{var v=JSON.parse(localStorage.getItem('fly_myq'));if(Array.isArray(v))return v;}catch(e){}return [];})();
 function myqSave(){try{localStorage.setItem('fly_myq',JSON.stringify(MYQ));}catch(e){} bkSchedule();}
 function myDates(){return MYQ.filter(function(x){return x&&x.to>=today();});}
