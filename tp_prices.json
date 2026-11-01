@@ -9,14 +9,6 @@
         "price_twd": 5810,
         "return_date": "2026-11-15",
         "transfers": 0
-      },
-      {
-        "airline": "FD",
-        "date": "2026-12-06",
-        "found_at": "",
-        "price_twd": 6166,
-        "return_date": "2026-12-12",
-        "transfers": 0
       }
     ],
     "KHH-FUK": [],
@@ -98,14 +90,6 @@
     "KHH-PUS": [
       {
         "airline": "7C",
-        "date": "2026-11-01",
-        "found_at": "",
-        "price_twd": 6633,
-        "return_date": "2026-11-02",
-        "transfers": 0
-      },
-      {
-        "airline": "7C",
         "date": "2026-12-12",
         "found_at": "",
         "price_twd": 9374,
@@ -114,14 +98,6 @@
       }
     ],
     "KHH-SGN": [
-      {
-        "airline": "VJ",
-        "date": "2026-11-22",
-        "found_at": "",
-        "price_twd": 5451,
-        "return_date": "2026-11-30",
-        "transfers": 0
-      },
       {
         "airline": "VJ",
         "date": "2026-12-12",
@@ -152,9 +128,9 @@
     "TPE-FUK": [
       {
         "airline": "IT",
-        "date": "2026-11-03",
+        "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7666,
+        "price_twd": 8090,
         "return_date": "2026-11-06",
         "transfers": 0
       },
@@ -252,7 +228,7 @@
         "airline": "TR",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 8023,
+        "price_twd": 8449,
         "return_date": "2026-12-15",
         "transfers": 0
       }
@@ -298,7 +274,7 @@
         "airline": "CZ",
         "date": "2026-11-25",
         "found_at": "",
-        "price_twd": 6972,
+        "price_twd": 6900,
         "return_date": "2026-12-02",
         "transfers": 0
       },
@@ -341,5 +317,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-01T07:55:04Z"
+  "updated_at": "2026-11-01T15:32:00Z"
 }
