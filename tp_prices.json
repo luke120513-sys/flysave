@@ -306,7 +306,7 @@
         "airline": "CZ",
         "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 6204,
+        "price_twd": 6312,
         "return_date": "2026-12-20",
         "transfers": 0
       }
@@ -341,5 +341,5 @@
       }
     ]
   },
-  "updated_at": "2026-10-31T23:31:03Z"
+  "updated_at": "2026-11-01T07:55:04Z"
 }
