@@ -130,7 +130,7 @@
         "airline": "IT",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 8090,
+        "price_twd": 8482,
         "return_date": "2026-11-06",
         "transfers": 0
       },
@@ -217,10 +217,10 @@
     ],
     "TPE-NRT": [
       {
-        "airline": "TR",
+        "airline": "JX",
         "date": "2026-11-02",
         "found_at": "",
-        "price_twd": 7634,
+        "price_twd": 7666,
         "return_date": "2026-11-07",
         "transfers": 0
       },
@@ -308,14 +308,14 @@
     ],
     "TPE-TAE": [
       {
-        "airline": "TW",
-        "date": "2026-11-02",
+        "airline": "LJ",
+        "date": "2026-11-09",
         "found_at": "",
-        "price_twd": 6557,
-        "return_date": "2026-11-03",
-        "transfers": 0
+        "price_twd": 7732,
+        "return_date": "2026-11-10",
+        "transfers": 1
       }
     ]
   },
-  "updated_at": "2026-11-01T15:32:00Z"
+  "updated_at": "2026-11-01T23:32:58Z"
 }
