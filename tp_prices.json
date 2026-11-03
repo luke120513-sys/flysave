@@ -109,20 +109,20 @@
       },
       {
         "airline": "SL",
-        "date": "2026-12-19",
+        "date": "2026-12-12",
         "found_at": "",
-        "price_twd": 6227,
-        "return_date": "2026-12-25",
+        "price_twd": 6691,
+        "return_date": "2026-12-19",
         "transfers": 0
       }
     ],
     "TPE-FUK": [
       {
         "airline": "AK",
-        "date": "2026-11-03",
+        "date": "2026-11-15",
         "found_at": "",
-        "price_twd": 8580,
-        "return_date": "2026-11-06",
+        "price_twd": 9391,
+        "return_date": "2026-11-19",
         "transfers": 0
       },
       {
@@ -163,10 +163,10 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-01",
+        "date": "2026-12-12",
         "found_at": "",
-        "price_twd": 7027,
-        "return_date": "2026-12-08",
+        "price_twd": 5983,
+        "return_date": "2026-12-14",
         "transfers": 0
       }
     ],
@@ -211,7 +211,7 @@
         "airline": "TR",
         "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 7829,
+        "price_twd": 7798,
         "return_date": "2026-12-01",
         "transfers": 0
       },
@@ -234,11 +234,11 @@
         "transfers": 0
       },
       {
-        "airline": "VZ",
-        "date": "2026-12-11",
+        "airline": "IT",
+        "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 5523,
-        "return_date": "2026-12-16",
+        "price_twd": 5769,
+        "return_date": "2026-12-15",
         "transfers": 0
       }
     ],
@@ -270,15 +270,14 @@
         "transfers": 0
       },
       {
-        "airline": "CZ",
+        "airline": "MU",
         "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 6159,
+        "price_twd": 6450,
         "return_date": "2026-12-20",
         "transfers": 0
       }
     ],
-    "TPE-SDJ": [],
     "TPE-SGN": [
       {
         "airline": "VJ",
@@ -296,17 +295,7 @@
         "return_date": "2027-01-07",
         "transfers": 0
       }
-    ],
-    "TPE-TAE": [
-      {
-        "airline": "LJ",
-        "date": "2026-11-09",
-        "found_at": "",
-        "price_twd": 7732,
-        "return_date": "2026-11-10",
-        "transfers": 1
-      }
     ]
   },
-  "updated_at": "2026-11-02T23:35:41Z"
+  "updated_at": "2026-11-03T08:11:27Z"
 }
