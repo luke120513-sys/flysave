@@ -71,6 +71,14 @@
     "KHH-OKA": [
       {
         "airline": "IT",
+        "date": "2026-11-17",
+        "found_at": "",
+        "price_twd": 5315,
+        "return_date": "2026-11-20",
+        "transfers": 0
+      },
+      {
+        "airline": "IT",
         "date": "2026-12-01",
         "found_at": "",
         "price_twd": 6833,
@@ -165,7 +173,7 @@
         "airline": "IT",
         "date": "2026-12-12",
         "found_at": "",
-        "price_twd": 5983,
+        "price_twd": 5991,
         "return_date": "2026-12-14",
         "transfers": 0
       }
@@ -175,7 +183,7 @@
         "airline": "VZ",
         "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 8578,
+        "price_twd": 8530,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -211,7 +219,7 @@
         "airline": "TR",
         "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 7798,
+        "price_twd": 7809,
         "return_date": "2026-12-01",
         "transfers": 0
       },
@@ -270,11 +278,11 @@
         "transfers": 0
       },
       {
-        "airline": "MU",
-        "date": "2026-12-13",
+        "airline": "9C",
+        "date": "2026-12-04",
         "found_at": "",
-        "price_twd": 6450,
-        "return_date": "2026-12-20",
+        "price_twd": 5957,
+        "return_date": "2026-12-08",
         "transfers": 0
       }
     ],
@@ -297,5 +305,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-03T08:11:27Z"
+  "updated_at": "2026-11-03T15:48:13Z"
 }
