@@ -16,7 +16,7 @@
         "airline": "IT",
         "date": "2026-11-13",
         "found_at": "",
-        "price_twd": 7202,
+        "price_twd": 7208,
         "return_date": "2026-11-20",
         "transfers": 0
       }
@@ -183,7 +183,7 @@
         "airline": "SL",
         "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 8013,
+        "price_twd": 8020,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -219,7 +219,7 @@
         "airline": "TR",
         "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 7684,
+        "price_twd": 7691,
         "return_date": "2026-12-01",
         "transfers": 0
       },
@@ -227,7 +227,7 @@
         "airline": "TR",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 8078,
+        "price_twd": 8086,
         "return_date": "2026-12-17",
         "transfers": 0
       }
@@ -305,5 +305,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-04T08:17:50Z"
+  "updated_at": "2026-11-04T15:53:42Z"
 }
