@@ -61,10 +61,10 @@
     "KHH-MFM": [],
     "KHH-NRT": [
       {
-        "airline": "IT",
+        "airline": "GK",
         "date": "2026-11-17",
         "found_at": "",
-        "price_twd": 7831,
+        "price_twd": 8549,
         "return_date": "2026-11-24",
         "transfers": 0
       },
@@ -145,10 +145,10 @@
     "TPE-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-07",
+        "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 4632,
-        "return_date": "2026-11-14",
+        "price_twd": 4647,
+        "return_date": "2026-12-01",
         "transfers": 0
       },
       {
@@ -252,11 +252,11 @@
     ],
     "TPE-PUS": [
       {
-        "airline": "7C",
-        "date": "2026-11-12",
+        "airline": "IT",
+        "date": "2026-11-24",
         "found_at": "",
-        "price_twd": 5186,
-        "return_date": "2026-11-19",
+        "price_twd": 5725,
+        "return_date": "2026-11-30",
         "transfers": 0
       },
       {
@@ -305,5 +305,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-04T15:53:42Z"
+  "updated_at": "2026-11-05T03:24:45Z"
 }
