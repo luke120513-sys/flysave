@@ -4,6 +4,14 @@
     "KHH-BKK": [
       {
         "airline": "FD",
+        "date": "2026-11-10",
+        "found_at": "",
+        "price_twd": 7121,
+        "return_date": "2026-11-15",
+        "transfers": 0
+      },
+      {
+        "airline": "FD",
         "date": "2026-12-27",
         "found_at": "",
         "price_twd": 11268,
@@ -119,10 +127,10 @@
       },
       {
         "airline": "VZ",
-        "date": "2026-12-01",
+        "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 7682,
-        "return_date": "2026-12-06",
+        "price_twd": 7415,
+        "return_date": "2026-12-14",
         "transfers": 0
       }
     ],
@@ -157,7 +165,7 @@
         "airline": "UO",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4348,
+        "price_twd": 4175,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -283,7 +291,7 @@
         "airline": "9C",
         "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 5429,
+        "price_twd": 5377,
         "return_date": "2026-12-13",
         "transfers": 0
       }
@@ -293,7 +301,7 @@
         "airline": "VJ",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 7335,
+        "price_twd": 7057,
         "return_date": "2026-11-28",
         "transfers": 0
       },
@@ -307,5 +315,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-06T03:21:02Z"
+  "updated_at": "2026-11-06T14:55:51Z"
 }
