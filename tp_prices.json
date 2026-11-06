@@ -3,10 +3,10 @@
   "routes": {
     "KHH-BKK": [
       {
-        "airline": "FD",
-        "date": "2026-11-10",
+        "airline": "SL",
+        "date": "2026-11-08",
         "found_at": "",
-        "price_twd": 7121,
+        "price_twd": 6685,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -49,12 +49,12 @@
     ],
     "KHH-ICN": [
       {
-        "airline": "VJ",
-        "date": "2026-11-16",
+        "airline": "TW",
+        "date": "2026-11-19",
         "found_at": "",
-        "price_twd": 9475,
-        "return_date": "2026-11-20",
-        "transfers": 1
+        "price_twd": 10111,
+        "return_date": "2026-12-06",
+        "transfers": 0
       }
     ],
     "KHH-KIX": [
@@ -129,7 +129,7 @@
         "airline": "VZ",
         "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 7415,
+        "price_twd": 7421,
         "return_date": "2026-12-14",
         "transfers": 0
       }
@@ -165,7 +165,7 @@
         "airline": "UO",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4175,
+        "price_twd": 4179,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -291,7 +291,7 @@
         "airline": "9C",
         "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 5377,
+        "price_twd": 5382,
         "return_date": "2026-12-13",
         "transfers": 0
       }
@@ -301,7 +301,7 @@
         "airline": "VJ",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 7057,
+        "price_twd": 7063,
         "return_date": "2026-11-28",
         "transfers": 0
       },
@@ -315,5 +315,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-06T14:55:51Z"
+  "updated_at": "2026-11-06T20:49:11Z"
 }
