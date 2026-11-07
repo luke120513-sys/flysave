@@ -6,7 +6,7 @@
         "airline": "SL",
         "date": "2026-11-08",
         "found_at": "",
-        "price_twd": 6685,
+        "price_twd": 6692,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -129,7 +129,7 @@
         "airline": "VZ",
         "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 7421,
+        "price_twd": 7429,
         "return_date": "2026-12-14",
         "transfers": 0
       }
@@ -165,7 +165,7 @@
         "airline": "UO",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4179,
+        "price_twd": 4183,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -193,7 +193,7 @@
         "airline": "SL",
         "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 8020,
+        "price_twd": 8464,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -244,11 +244,11 @@
     ],
     "TPE-OKA": [
       {
-        "airline": "IT",
-        "date": "2026-11-18",
+        "airline": "SL",
+        "date": "2026-11-23",
         "found_at": "",
-        "price_twd": 4492,
-        "return_date": "2026-11-25",
+        "price_twd": 5252,
+        "return_date": "2026-11-28",
         "transfers": 0
       },
       {
@@ -291,7 +291,7 @@
         "airline": "9C",
         "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 5382,
+        "price_twd": 5387,
         "return_date": "2026-12-13",
         "transfers": 0
       }
@@ -301,7 +301,7 @@
         "airline": "VJ",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 7063,
+        "price_twd": 7070,
         "return_date": "2026-11-28",
         "transfers": 0
       },
@@ -315,5 +315,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-06T20:49:11Z"
+  "updated_at": "2026-11-07T02:39:28Z"
 }
