@@ -12,10 +12,10 @@
       },
       {
         "airline": "FD",
-        "date": "2026-12-27",
+        "date": "2026-12-04",
         "found_at": "",
-        "price_twd": 11268,
-        "return_date": "2027-01-02",
+        "price_twd": 5375,
+        "return_date": "2026-12-21",
         "transfers": 0
       }
     ],
@@ -136,12 +136,12 @@
     ],
     "TPE-FUK": [
       {
-        "airline": "TW",
-        "date": "2026-11-28",
+        "airline": "IT",
+        "date": "2026-11-12",
         "found_at": "",
-        "price_twd": 8837,
-        "return_date": "2026-12-02",
-        "transfers": 1
+        "price_twd": 7375,
+        "return_date": "2026-11-17",
+        "transfers": 0
       },
       {
         "airline": "IT",
@@ -155,10 +155,10 @@
     "TPE-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-27",
+        "date": "2026-11-19",
         "found_at": "",
-        "price_twd": 4647,
-        "return_date": "2026-12-01",
+        "price_twd": 4556,
+        "return_date": "2026-11-23",
         "transfers": 0
       },
       {
@@ -193,7 +193,7 @@
         "airline": "SL",
         "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 8464,
+        "price_twd": 8292,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -209,10 +209,10 @@
     "TPE-MFM": [
       {
         "airline": "NX",
-        "date": "2026-11-14",
+        "date": "2026-11-09",
         "found_at": "",
-        "price_twd": 6231,
-        "return_date": "2026-11-16",
+        "price_twd": 6218,
+        "return_date": "2026-11-12",
         "transfers": 0
       },
       {
@@ -237,18 +237,18 @@
         "airline": "TR",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 8086,
+        "price_twd": 7899,
         "return_date": "2026-12-17",
         "transfers": 0
       }
     ],
     "TPE-OKA": [
       {
-        "airline": "SL",
-        "date": "2026-11-23",
+        "airline": "MM",
+        "date": "2026-11-16",
         "found_at": "",
-        "price_twd": 5252,
-        "return_date": "2026-11-28",
+        "price_twd": 4647,
+        "return_date": "2026-11-18",
         "transfers": 0
       },
       {
@@ -315,5 +315,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-07T02:39:28Z"
+  "updated_at": "2026-11-07T13:52:14Z"
 }
