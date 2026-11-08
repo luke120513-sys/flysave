@@ -3,10 +3,10 @@
   "routes": {
     "KHH-BKK": [
       {
-        "airline": "SL",
-        "date": "2026-11-08",
+        "airline": "FD",
+        "date": "2026-11-10",
         "found_at": "",
-        "price_twd": 6692,
+        "price_twd": 7135,
         "return_date": "2026-11-15",
         "transfers": 0
       },
@@ -91,10 +91,10 @@
     "KHH-PUS": [
       {
         "airline": "7C",
-        "date": "2026-12-12",
+        "date": "2026-12-21",
         "found_at": "",
-        "price_twd": 9939,
-        "return_date": "2026-12-15",
+        "price_twd": 8625,
+        "return_date": "2026-12-24",
         "transfers": 0
       }
     ],
@@ -137,10 +137,10 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-01",
+        "date": "2026-12-14",
         "found_at": "",
-        "price_twd": 7942,
-        "return_date": "2026-12-05",
+        "price_twd": 8666,
+        "return_date": "2026-12-18",
         "transfers": 0
       }
     ],
@@ -307,5 +307,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-08T02:16:28Z"
+  "updated_at": "2026-11-08T14:13:36Z"
 }
