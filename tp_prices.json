@@ -32,14 +32,6 @@
     "KHH-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-27",
-        "found_at": "",
-        "price_twd": 5076,
-        "return_date": "2026-11-29",
-        "transfers": 0
-      },
-      {
-        "airline": "UO",
         "date": "2026-12-14",
         "found_at": "",
         "price_twd": 4566,
@@ -237,7 +229,7 @@
         "airline": "TR",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 7899,
+        "price_twd": 7866,
         "return_date": "2026-12-17",
         "transfers": 0
       }
@@ -252,11 +244,11 @@
         "transfers": 0
       },
       {
-        "airline": "MM",
-        "date": "2026-12-19",
+        "airline": "IT",
+        "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4392,
-        "return_date": "2026-12-23",
+        "price_twd": 5021,
+        "return_date": "2026-12-05",
         "transfers": 0
       }
     ],
@@ -315,5 +307,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-07T19:20:30Z"
+  "updated_at": "2026-11-08T02:16:28Z"
 }
