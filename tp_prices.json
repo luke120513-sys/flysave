@@ -32,10 +32,10 @@
     "KHH-HKG": [
       {
         "airline": "UO",
-        "date": "2026-12-14",
+        "date": "2026-12-09",
         "found_at": "",
-        "price_twd": 4566,
-        "return_date": "2026-12-21",
+        "price_twd": 4618,
+        "return_date": "2026-12-11",
         "transfers": 0
       }
     ],
@@ -50,6 +50,14 @@
       }
     ],
     "KHH-KIX": [
+      {
+        "airline": "MM",
+        "date": "2026-11-26",
+        "found_at": "",
+        "price_twd": 6353,
+        "return_date": "2026-12-01",
+        "transfers": 0
+      },
       {
         "airline": "TW",
         "date": "2026-12-01",
@@ -201,17 +209,9 @@
     "TPE-MFM": [
       {
         "airline": "NX",
-        "date": "2026-11-09",
-        "found_at": "",
-        "price_twd": 6218,
-        "return_date": "2026-11-12",
-        "transfers": 0
-      },
-      {
-        "airline": "NX",
         "date": "2026-12-06",
         "found_at": "",
-        "price_twd": 6761,
+        "price_twd": 6595,
         "return_date": "2026-12-10",
         "transfers": 0
       }
@@ -226,39 +226,39 @@
         "transfers": 0
       },
       {
-        "airline": "TR",
+        "airline": "MM",
         "date": "2026-12-23",
         "found_at": "",
-        "price_twd": 7014,
+        "price_twd": 7416,
         "return_date": "2027-01-07",
         "transfers": 0
       }
     ],
     "TPE-OKA": [
       {
-        "airline": "MM",
-        "date": "2026-11-16",
+        "airline": "IT",
+        "date": "2026-11-17",
         "found_at": "",
-        "price_twd": 4647,
-        "return_date": "2026-11-18",
+        "price_twd": 4452,
+        "return_date": "2026-12-01",
         "transfers": 0
       },
       {
         "airline": "IT",
-        "date": "2026-12-01",
+        "date": "2026-12-03",
         "found_at": "",
-        "price_twd": 5021,
-        "return_date": "2026-12-05",
+        "price_twd": 4299,
+        "return_date": "2026-12-09",
         "transfers": 0
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "IT",
-        "date": "2026-11-24",
+        "airline": "BX",
+        "date": "2026-11-16",
         "found_at": "",
-        "price_twd": 5725,
-        "return_date": "2026-11-30",
+        "price_twd": 7246,
+        "return_date": "2026-11-19",
         "transfers": 0
       },
       {
@@ -273,10 +273,10 @@
     "TPE-PVG": [
       {
         "airline": "MU",
-        "date": "2026-11-12",
+        "date": "2026-11-27",
         "found_at": "",
-        "price_twd": 6030,
-        "return_date": "2026-11-16",
+        "price_twd": 6293,
+        "return_date": "2026-11-29",
         "transfers": 0
       },
       {
@@ -299,13 +299,13 @@
       },
       {
         "airline": "VJ",
-        "date": "2026-12-22",
+        "date": "2026-12-14",
         "found_at": "",
-        "price_twd": 6490,
-        "return_date": "2027-01-07",
+        "price_twd": 6853,
+        "return_date": "2026-12-18",
         "transfers": 0
       }
     ]
   },
-  "updated_at": "2026-11-09T02:32:49Z"
+  "updated_at": "2026-11-09T17:22:34Z"
 }
