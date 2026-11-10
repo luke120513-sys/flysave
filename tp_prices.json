@@ -3,11 +3,11 @@
   "routes": {
     "KHH-BKK": [
       {
-        "airline": "FD",
-        "date": "2026-11-10",
+        "airline": "SL",
+        "date": "2026-11-15",
         "found_at": "",
-        "price_twd": 7135,
-        "return_date": "2026-11-15",
+        "price_twd": 8663,
+        "return_date": "2026-11-29",
         "transfers": 0
       },
       {
@@ -30,6 +30,14 @@
       }
     ],
     "KHH-HKG": [
+      {
+        "airline": "UO",
+        "date": "2026-11-17",
+        "found_at": "",
+        "price_twd": 7476,
+        "return_date": "2026-11-20",
+        "transfers": 0
+      },
       {
         "airline": "UO",
         "date": "2026-12-09",
@@ -89,10 +97,10 @@
     "KHH-OKA": [
       {
         "airline": "IT",
-        "date": "2026-11-17",
+        "date": "2026-12-17",
         "found_at": "",
-        "price_twd": 5316,
-        "return_date": "2026-11-20",
+        "price_twd": 4669,
+        "return_date": "2026-12-25",
         "transfers": 0
       }
     ],
@@ -157,7 +165,7 @@
         "airline": "UO",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 4464,
+        "price_twd": 4477,
         "return_date": "2026-11-25",
         "transfers": 0
       },
@@ -165,7 +173,7 @@
         "airline": "UO",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4183,
+        "price_twd": 4334,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -193,16 +201,16 @@
         "airline": "MM",
         "date": "2026-11-25",
         "found_at": "",
-        "price_twd": 7833,
+        "price_twd": 7856,
         "return_date": "2026-11-26",
         "transfers": 0
       },
       {
-        "airline": "MM",
-        "date": "2026-12-10",
+        "airline": "VZ",
+        "date": "2026-12-21",
         "found_at": "",
-        "price_twd": 7768,
-        "return_date": "2026-12-15",
+        "price_twd": 5610,
+        "return_date": "2026-12-24",
         "transfers": 0
       }
     ],
@@ -211,7 +219,7 @@
         "airline": "NX",
         "date": "2026-12-06",
         "found_at": "",
-        "price_twd": 6589,
+        "price_twd": 6719,
         "return_date": "2026-12-10",
         "transfers": 0
       }
@@ -237,10 +245,10 @@
     "TPE-OKA": [
       {
         "airline": "IT",
-        "date": "2026-11-17",
+        "date": "2026-11-30",
         "found_at": "",
-        "price_twd": 4448,
-        "return_date": "2026-12-01",
+        "price_twd": 4199,
+        "return_date": "2026-12-04",
         "transfers": 0
       },
       {
@@ -307,5 +315,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-10T04:34:26Z"
+  "updated_at": "2026-11-10T15:30:53Z"
 }
