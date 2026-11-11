@@ -22,10 +22,10 @@
     "KHH-FUK": [
       {
         "airline": "IT",
-        "date": "2026-11-13",
+        "date": "2026-11-20",
         "found_at": "",
-        "price_twd": 7208,
-        "return_date": "2026-11-20",
+        "price_twd": 8680,
+        "return_date": "2026-11-27",
         "transfers": 0
       }
     ],
@@ -50,10 +50,18 @@
     "KHH-ICN": [
       {
         "airline": "TW",
-        "date": "2026-11-19",
+        "date": "2026-11-24",
         "found_at": "",
-        "price_twd": 10111,
-        "return_date": "2026-12-06",
+        "price_twd": 8646,
+        "return_date": "2026-11-27",
+        "transfers": 0
+      },
+      {
+        "airline": "TW",
+        "date": "2026-12-16",
+        "found_at": "",
+        "price_twd": 9886,
+        "return_date": "2026-12-18",
         "transfers": 0
       }
     ],
@@ -79,10 +87,10 @@
     "KHH-NRT": [
       {
         "airline": "GK",
-        "date": "2026-11-27",
+        "date": "2026-11-26",
         "found_at": "",
-        "price_twd": 8685,
-        "return_date": "2026-12-02",
+        "price_twd": 8911,
+        "return_date": "2026-12-01",
         "transfers": 0
       },
       {
@@ -173,7 +181,7 @@
         "airline": "UO",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 4342,
+        "price_twd": 4189,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -209,7 +217,7 @@
         "airline": "MM",
         "date": "2026-12-19",
         "found_at": "",
-        "price_twd": 5940,
+        "price_twd": 6112,
         "return_date": "2026-12-23",
         "transfers": 0
       }
@@ -226,12 +234,12 @@
     ],
     "TPE-NRT": [
       {
-        "airline": "TR",
-        "date": "2026-11-27",
+        "airline": "TW",
+        "date": "2026-11-28",
         "found_at": "",
-        "price_twd": 7691,
-        "return_date": "2026-12-01",
-        "transfers": 0
+        "price_twd": 9350,
+        "return_date": "2026-12-02",
+        "transfers": 1
       },
       {
         "airline": "MM",
@@ -289,10 +297,10 @@
       },
       {
         "airline": "9C",
-        "date": "2026-12-11",
+        "date": "2026-12-07",
         "found_at": "",
-        "price_twd": 5387,
-        "return_date": "2026-12-13",
+        "price_twd": 5642,
+        "return_date": "2026-12-17",
         "transfers": 0
       }
     ],
@@ -315,5 +323,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-11T02:40:47Z"
+  "updated_at": "2026-11-11T15:02:25Z"
 }
