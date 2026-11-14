@@ -88,7 +88,7 @@
         "airline": "NX",
         "date": "2026-12-07",
         "found_at": "",
-        "price_twd": 7262,
+        "price_twd": 7265,
         "return_date": "2026-12-09",
         "transfers": 0
       }
@@ -172,7 +172,7 @@
         "airline": "IT",
         "date": "2026-12-08",
         "found_at": "",
-        "price_twd": 8597,
+        "price_twd": 8601,
         "return_date": "2026-12-12",
         "transfers": 0
       }
@@ -197,11 +197,11 @@
     ],
     "TPE-ICN": [
       {
-        "airline": "IT",
-        "date": "2026-11-16",
+        "airline": "TR",
+        "date": "2026-11-26",
         "found_at": "",
-        "price_twd": 8290,
-        "return_date": "2026-11-19",
+        "price_twd": 6844,
+        "return_date": "2026-12-02",
         "transfers": 0
       },
       {
@@ -236,7 +236,7 @@
         "airline": "NX",
         "date": "2026-11-22",
         "found_at": "",
-        "price_twd": 9333,
+        "price_twd": 9338,
         "return_date": "2026-11-22",
         "transfers": 0
       },
@@ -244,7 +244,7 @@
         "airline": "NX",
         "date": "2026-12-12",
         "found_at": "",
-        "price_twd": 6606,
+        "price_twd": 6381,
         "return_date": "2026-12-16",
         "transfers": 0
       }
@@ -278,10 +278,10 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-01",
+        "date": "2026-12-21",
         "found_at": "",
-        "price_twd": 4803,
-        "return_date": "2026-12-04",
+        "price_twd": 4899,
+        "return_date": "2026-12-25",
         "transfers": 0
       }
     ],
@@ -290,7 +290,7 @@
         "airline": "LJ",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 5499,
+        "price_twd": 5502,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -308,7 +308,7 @@
         "airline": "MU",
         "date": "2026-12-10",
         "found_at": "",
-        "price_twd": 5721,
+        "price_twd": 5394,
         "return_date": "2026-12-13",
         "transfers": 0
       }
@@ -324,5 +324,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-13T15:16:29Z"
+  "updated_at": "2026-11-14T03:01:30Z"
 }
