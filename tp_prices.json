@@ -152,10 +152,10 @@
       },
       {
         "airline": "VZ",
-        "date": "2026-12-19",
+        "date": "2026-12-03",
         "found_at": "",
-        "price_twd": 7029,
-        "return_date": "2026-12-23",
+        "price_twd": 7006,
+        "return_date": "2026-12-07",
         "transfers": 0
       }
     ],
@@ -170,10 +170,10 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-08",
+        "date": "2026-12-07",
         "found_at": "",
-        "price_twd": 8601,
-        "return_date": "2026-12-12",
+        "price_twd": 8958,
+        "return_date": "2026-12-11",
         "transfers": 0
       }
     ],
@@ -278,20 +278,20 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-21",
+        "date": "2026-12-06",
         "found_at": "",
-        "price_twd": 4899,
-        "return_date": "2026-12-25",
+        "price_twd": 4798,
+        "return_date": "2026-12-10",
         "transfers": 0
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "LJ",
-        "date": "2026-12-01",
+        "airline": "7C",
+        "date": "2026-12-21",
         "found_at": "",
-        "price_twd": 5502,
-        "return_date": "2026-12-05",
+        "price_twd": 5402,
+        "return_date": "2026-12-25",
         "transfers": 0
       }
     ],
@@ -316,13 +316,13 @@
     "TPE-SGN": [
       {
         "airline": "VJ",
-        "date": "2026-12-14",
+        "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6853,
-        "return_date": "2026-12-18",
+        "price_twd": 6878,
+        "return_date": "2026-12-05",
         "transfers": 0
       }
     ]
   },
-  "updated_at": "2026-11-14T14:03:31Z"
+  "updated_at": "2026-11-14T19:51:33Z"
 }
