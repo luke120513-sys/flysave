@@ -76,10 +76,10 @@
       },
       {
         "airline": "MM",
-        "date": "2026-12-26",
+        "date": "2026-12-20",
         "found_at": "",
-        "price_twd": 13674,
-        "return_date": "2026-12-30",
+        "price_twd": 7811,
+        "return_date": "2026-12-25",
         "transfers": 0
       }
     ],
@@ -104,10 +104,10 @@
       },
       {
         "airline": "GK",
-        "date": "2026-12-12",
+        "date": "2026-12-10",
         "found_at": "",
-        "price_twd": 8755,
-        "return_date": "2026-12-15",
+        "price_twd": 7918,
+        "return_date": "2027-01-06",
         "transfers": 0
       }
     ],
@@ -124,10 +124,10 @@
     "KHH-PUS": [
       {
         "airline": "7C",
-        "date": "2026-12-21",
+        "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 8625,
-        "return_date": "2026-12-24",
+        "price_twd": 9277,
+        "return_date": "2026-12-15",
         "transfers": 0
       }
     ],
@@ -144,10 +144,10 @@
     "TPE-BKK": [
       {
         "airline": "VZ",
-        "date": "2026-11-16",
+        "date": "2026-11-28",
         "found_at": "",
-        "price_twd": 7506,
-        "return_date": "2026-11-22",
+        "price_twd": 7874,
+        "return_date": "2026-11-28",
         "transfers": 0
       },
       {
@@ -208,8 +208,8 @@
         "airline": "IT",
         "date": "2026-12-02",
         "found_at": "",
-        "price_twd": 6486,
-        "return_date": "2026-12-05",
+        "price_twd": 6513,
+        "return_date": "2026-12-06",
         "transfers": 0
       }
     ],
@@ -278,20 +278,20 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-06",
+        "date": "2026-12-07",
         "found_at": "",
-        "price_twd": 4798,
-        "return_date": "2026-12-10",
+        "price_twd": 4898,
+        "return_date": "2026-12-11",
         "transfers": 0
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "7C",
-        "date": "2026-12-21",
+        "airline": "ZE",
+        "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 5402,
-        "return_date": "2026-12-25",
+        "price_twd": 5066,
+        "return_date": "2026-12-05",
         "transfers": 0
       }
     ],
@@ -324,5 +324,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-15T02:30:46Z"
+  "updated_at": "2026-11-15T14:39:39Z"
 }
