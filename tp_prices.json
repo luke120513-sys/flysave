@@ -40,10 +40,10 @@
     "KHH-HKG": [
       {
         "airline": "UO",
-        "date": "2026-11-17",
+        "date": "2026-11-25",
         "found_at": "",
-        "price_twd": 7491,
-        "return_date": "2026-11-20",
+        "price_twd": 4703,
+        "return_date": "2026-11-26",
         "transfers": 0
       },
       {
@@ -86,7 +86,7 @@
         "airline": "MM",
         "date": "2026-12-20",
         "found_at": "",
-        "price_twd": 7861,
+        "price_twd": 8074,
         "return_date": "2026-12-25",
         "transfers": 0
       }
@@ -104,10 +104,10 @@
     "KHH-NRT": [
       {
         "airline": "GK",
-        "date": "2026-11-19",
+        "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 8806,
-        "return_date": "2026-11-26",
+        "price_twd": 8625,
+        "return_date": "2026-11-23",
         "transfers": 0
       },
       {
@@ -144,7 +144,7 @@
         "airline": "VJ",
         "date": "2026-11-23",
         "found_at": "",
-        "price_twd": 7632,
+        "price_twd": 7633,
         "return_date": "2026-11-25",
         "transfers": 0
       },
@@ -180,7 +180,7 @@
         "airline": "IT",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6625,
+        "price_twd": 6626,
         "return_date": "2026-12-05",
         "transfers": 0
       }
@@ -190,7 +190,7 @@
         "airline": "UO",
         "date": "2026-11-21",
         "found_at": "",
-        "price_twd": 4570,
+        "price_twd": 4571,
         "return_date": "2026-11-25",
         "transfers": 0
       },
@@ -270,7 +270,7 @@
         "airline": "GK",
         "date": "2026-12-23",
         "found_at": "",
-        "price_twd": 7713,
+        "price_twd": 7714,
         "return_date": "2027-01-07",
         "transfers": 0
       }
@@ -288,7 +288,7 @@
         "airline": "IT",
         "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 4573,
+        "price_twd": 4387,
         "return_date": "2026-12-17",
         "transfers": 0
       }
@@ -308,11 +308,11 @@
         "airline": "VJ",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6791,
+        "price_twd": 6792,
         "return_date": "2026-12-05",
         "transfers": 0
       }
     ]
   },
-  "updated_at": "2026-11-16T16:56:06Z"
+  "updated_at": "2026-11-17T05:01:39Z"
 }
