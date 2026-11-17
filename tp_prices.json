@@ -11,11 +11,11 @@
         "transfers": 0
       },
       {
-        "airline": "FD",
-        "date": "2026-12-08",
+        "airline": "SL",
+        "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 6976,
-        "return_date": "2026-12-13",
+        "price_twd": 6096,
+        "return_date": "2026-12-17",
         "transfers": 0
       }
     ],
@@ -42,7 +42,7 @@
         "airline": "UO",
         "date": "2026-11-25",
         "found_at": "",
-        "price_twd": 4703,
+        "price_twd": 4699,
         "return_date": "2026-11-26",
         "transfers": 0
       },
@@ -86,8 +86,8 @@
         "airline": "MM",
         "date": "2026-12-20",
         "found_at": "",
-        "price_twd": 8074,
-        "return_date": "2026-12-25",
+        "price_twd": 7910,
+        "return_date": "2027-01-13",
         "transfers": 0
       }
     ],
@@ -106,7 +106,7 @@
         "airline": "GK",
         "date": "2026-11-18",
         "found_at": "",
-        "price_twd": 8625,
+        "price_twd": 8618,
         "return_date": "2026-11-23",
         "transfers": 0
       },
@@ -121,11 +121,11 @@
     ],
     "KHH-OKA": [
       {
-        "airline": "IT",
-        "date": "2026-12-17",
+        "airline": "GK",
+        "date": "2026-12-11",
         "found_at": "",
-        "price_twd": 4678,
-        "return_date": "2026-12-25",
+        "price_twd": 5637,
+        "return_date": "2026-12-18",
         "transfers": 0
       }
     ],
@@ -180,8 +180,8 @@
         "airline": "IT",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6626,
-        "return_date": "2026-12-05",
+        "price_twd": 6525,
+        "return_date": "2026-12-22",
         "transfers": 0
       }
     ],
@@ -224,10 +224,10 @@
     "TPE-KIX": [
       {
         "airline": "MM",
-        "date": "2026-11-25",
+        "date": "2026-11-22",
         "found_at": "",
-        "price_twd": 7871,
-        "return_date": "2026-11-26",
+        "price_twd": 9278,
+        "return_date": "2026-11-30",
         "transfers": 0
       },
       {
@@ -267,10 +267,10 @@
         "transfers": 1
       },
       {
-        "airline": "GK",
+        "airline": "IT",
         "date": "2026-12-23",
         "found_at": "",
-        "price_twd": 7714,
+        "price_twd": 7942,
         "return_date": "2027-01-07",
         "transfers": 0
       }
@@ -288,18 +288,18 @@
         "airline": "IT",
         "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 4387,
+        "price_twd": 4383,
         "return_date": "2026-12-17",
         "transfers": 0
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "ZE",
-        "date": "2026-12-01",
+        "airline": "IT",
+        "date": "2026-12-12",
         "found_at": "",
-        "price_twd": 5066,
-        "return_date": "2026-12-05",
+        "price_twd": 4975,
+        "return_date": "2026-12-16",
         "transfers": 0
       }
     ],
@@ -314,5 +314,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-17T05:01:39Z"
+  "updated_at": "2026-11-17T16:49:20Z"
 }
