@@ -95,11 +95,11 @@
         "transfers": 0
       },
       {
-        "airline": "GK",
-        "date": "2026-12-10",
+        "airline": "IT",
+        "date": "2026-12-28",
         "found_at": "",
-        "price_twd": 8020,
-        "return_date": "2027-01-06",
+        "price_twd": 6827,
+        "return_date": "2027-01-07",
         "transfers": 0
       }
     ],
@@ -188,10 +188,10 @@
       },
       {
         "airline": "UO",
-        "date": "2026-12-23",
+        "date": "2026-12-05",
         "found_at": "",
-        "price_twd": 4092,
-        "return_date": "2027-01-07",
+        "price_twd": 4478,
+        "return_date": "2026-12-09",
         "transfers": 0
       }
     ],
@@ -251,10 +251,10 @@
         "transfers": 1
       },
       {
-        "airline": "IT",
+        "airline": "GK",
         "date": "2026-12-23",
         "found_at": "",
-        "price_twd": 8086,
+        "price_twd": 7748,
         "return_date": "2027-01-07",
         "transfers": 0
       }
@@ -292,11 +292,11 @@
         "airline": "VJ",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6106,
+        "price_twd": 6971,
         "return_date": "2026-12-05",
         "transfers": 0
       }
     ]
   },
-  "updated_at": "2026-11-21T03:52:52Z"
+  "updated_at": "2026-11-21T15:14:54Z"
 }
