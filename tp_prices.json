@@ -272,7 +272,7 @@
         "airline": "IT",
         "date": "2026-12-17",
         "found_at": "",
-        "price_twd": 4506,
+        "price_twd": 4675,
         "return_date": "2026-12-24",
         "transfers": 0
       }
@@ -282,7 +282,7 @@
         "airline": "IT",
         "date": "2026-12-15",
         "found_at": "",
-        "price_twd": 4451,
+        "price_twd": 4675,
         "return_date": "2026-12-31",
         "transfers": 0
       }
@@ -298,5 +298,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-21T15:14:54Z"
+  "updated_at": "2026-11-22T02:57:09Z"
 }
