@@ -80,7 +80,7 @@
         "airline": "NX",
         "date": "2026-12-07",
         "found_at": "",
-        "price_twd": 6931,
+        "price_twd": 7437,
         "return_date": "2026-12-09",
         "transfers": 0
       }
@@ -270,19 +270,19 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-17",
+        "date": "2026-12-28",
         "found_at": "",
-        "price_twd": 4675,
-        "return_date": "2026-12-24",
+        "price_twd": 4753,
+        "return_date": "2027-01-05",
         "transfers": 0
       }
     ],
     "TPE-PUS": [
       {
-        "airline": "LJ",
+        "airline": "BX",
         "date": "2026-11-23",
         "found_at": "",
-        "price_twd": 5818,
+        "price_twd": 6092,
         "return_date": "2026-11-24",
         "transfers": 0
       },
@@ -290,7 +290,7 @@
         "airline": "IT",
         "date": "2026-12-15",
         "found_at": "",
-        "price_twd": 4675,
+        "price_twd": 4674,
         "return_date": "2026-12-31",
         "transfers": 0
       }
@@ -306,5 +306,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-22T15:11:51Z"
+  "updated_at": "2026-11-23T03:39:30Z"
 }
