@@ -32,10 +32,10 @@
       },
       {
         "airline": "UO",
-        "date": "2026-12-08",
+        "date": "2026-12-10",
         "found_at": "",
-        "price_twd": 4458,
-        "return_date": "2026-12-09",
+        "price_twd": 4305,
+        "return_date": "2026-12-14",
         "transfers": 0
       }
     ],
@@ -62,7 +62,7 @@
         "airline": "AK",
         "date": "2026-12-29",
         "found_at": "",
-        "price_twd": 7254,
+        "price_twd": 7097,
         "return_date": "2027-01-05",
         "transfers": 0
       }
@@ -180,20 +180,20 @@
       },
       {
         "airline": "UO",
-        "date": "2026-12-10",
+        "date": "2026-12-02",
         "found_at": "",
-        "price_twd": 4478,
-        "return_date": "2026-12-14",
+        "price_twd": 4489,
+        "return_date": "2026-12-06",
         "transfers": 0
       }
     ],
     "TPE-ICN": [
       {
         "airline": "IT",
-        "date": "2026-11-26",
+        "date": "2026-11-30",
         "found_at": "",
-        "price_twd": 7791,
-        "return_date": "2026-12-05",
+        "price_twd": 9562,
+        "return_date": "2026-12-06",
         "transfers": 0
       },
       {
@@ -290,5 +290,5 @@
       }
     ]
   },
-  "updated_at": "2026-11-26T04:52:54Z"
+  "updated_at": "2026-11-26T17:39:50Z"
 }
