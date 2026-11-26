@@ -34,7 +34,7 @@
         "airline": "UO",
         "date": "2026-12-08",
         "found_at": "",
-        "price_twd": 4467,
+        "price_twd": 4458,
         "return_date": "2026-12-09",
         "transfers": 0
       }
@@ -59,10 +59,10 @@
         "transfers": 0
       },
       {
-        "airline": "MM",
+        "airline": "AK",
         "date": "2026-12-29",
         "found_at": "",
-        "price_twd": 6925,
+        "price_twd": 7254,
         "return_date": "2027-01-05",
         "transfers": 0
       }
@@ -189,11 +189,11 @@
     ],
     "TPE-ICN": [
       {
-        "airline": "LJ",
+        "airline": "IT",
         "date": "2026-11-26",
         "found_at": "",
-        "price_twd": 7492,
-        "return_date": "2026-12-02",
+        "price_twd": 7791,
+        "return_date": "2026-12-05",
         "transfers": 0
       },
       {
@@ -243,10 +243,10 @@
         "transfers": 1
       },
       {
-        "airline": "GK",
-        "date": "2026-12-23",
+        "airline": "TR",
+        "date": "2026-12-28",
         "found_at": "",
-        "price_twd": 7781,
+        "price_twd": 6902,
         "return_date": "2027-01-07",
         "transfers": 0
       }
@@ -262,9 +262,9 @@
       },
       {
         "airline": "IT",
-        "date": "2026-12-10",
+        "date": "2026-12-13",
         "found_at": "",
-        "price_twd": 4626,
+        "price_twd": 4845,
         "return_date": "2026-12-17",
         "transfers": 0
       }
@@ -284,11 +284,11 @@
         "airline": "VJ",
         "date": "2026-12-01",
         "found_at": "",
-        "price_twd": 6042,
+        "price_twd": 6030,
         "return_date": "2026-12-05",
         "transfers": 0
       }
     ]
   },
-  "updated_at": "2026-11-25T17:55:02Z"
+  "updated_at": "2026-11-26T04:52:54Z"
 }
